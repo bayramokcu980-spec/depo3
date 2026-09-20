@@ -3,2981 +3,1671 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Warehouse Tycoon</title>
+<title>AutoLux | Car Dealer</title>
 
 <style>
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0}
 body{
- margin:0;
- background:#080b0f;
- color:#fff;
- font-family:Arial,Helvetica,sans-serif
+    font-family:Inter,Arial,sans-serif;
+    background:#080a0e;
+    color:#f5f5f5;
+    min-height:100vh;
 }
-button{
- border:0;
- border-radius:9px;
- padding:10px 14px;
- background:#f5b900;
- color:#111;
- font-weight:bold;
- cursor:pointer
-}
-button:hover{filter:brightness(1.1)}
-.dark{
- background:#202731;
- color:white;
- border:1px solid #37404b
-}
-.red{background:#d93636;color:white}
-.green{background:#20a866;color:white}
+button,input{font:inherit}
+button{cursor:pointer}
 
-.auth{
- min-height:100vh;
- display:flex;
- align-items:center;
- justify-content:center;
- background:
- radial-gradient(circle at top,#26303d,#080b0f 65%)
+:root{
+    --panel:#10131a;
+    --panel2:#151922;
+    --border:#272d38;
+    --text:#f5f5f5;
+    --muted:#8f98a8;
+    --accent:#e8b84b;
+    --green:#35d07f;
+    --red:#ff5d67;
+    --blue:#4c9aff;
 }
-.authBox{
- width:420px;
- max-width:92%;
- background:#12171d;
- border:1px solid #343d48;
- border-radius:18px;
- padding:30px;
- box-shadow:0 20px 80px #000
-}
-.logo{
- font-size:30px;
- font-weight:900;
- margin-bottom:8px
-}
-.gold{color:#f5b900}
-input,select{
- width:100%;
- background:#0c1015;
- color:#fff;
- border:1px solid #343d48;
- border-radius:9px;
- padding:12px;
- margin:6px 0
-}
-.tabs{
- display:flex;
- gap:8px;
- margin:20px 0 10px
-}
-.tabs button{flex:1}
-.app{display:none}
-.header{
- height:62px;
- position:sticky;
- top:0;
- z-index:20;
- background:#11161c;
- border-bottom:1px solid #29313b;
- display:flex;
- align-items:center;
- padding:0 15px;
- gap:15px
-}
-.headerLogo{font-weight:900;font-size:19px}
-.stats{
- margin-left:auto;
- display:flex;
- gap:8px
-}
-.stat{
- background:#1a2028;
- border:1px solid #303944;
- border-radius:9px;
- padding:8px 11px
-}
-.layout{display:flex}
-.sidebar{
- width:245px;
- min-height:calc(100vh - 62px);
- background:#0d1217;
- border-right:1px solid #29313b;
- padding:10px;
- position:sticky;
- top:62px;
- align-self:flex-start
-}
-.nav{
- width:100%;
- text-align:left;
- margin:3px 0;
- background:transparent;
- color:#bfc6cf;
- border:1px solid transparent
-}
-.nav:hover,.nav.active{
- background:#1b222b;
- color:white;
- border-color:#303944
-}
-.main{
- flex:1;
- padding:22px;
- max-width:1550px;
- margin:auto
-}
-.page{display:none}
-.page.active{display:block}
-.cards{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
- gap:12px
-}
-.grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
- gap:14px
-}
-.card{
- background:#12171d;
- border:1px solid #2d3640;
- border-radius:14px;
- padding:16px
-}
-.big{
- font-size:27px;
- font-weight:900
-}
-.small{
- color:#929aa5;
- font-size:12px
-}
-.badge{
- display:inline-block;
- background:#252d37;
- border-radius:20px;
- padding:5px 9px;
- font-size:12px
-}
-.ok{color:#6ee59a}
-.warn{color:#f5b900}
-.bad{color:#ff7070}
-.bar{
- height:9px;
- background:#252c34;
- border-radius:10px;
- overflow:hidden
-}
-.fill{
- height:100%;
- background:#f5b900
-}
-table{
- width:100%;
- border-collapse:collapse
-}
-th,td{
- padding:10px;
- border-bottom:1px solid #29313b;
- text-align:left
-}
-th{color:#f5b900}
-.row{
- display:flex;
- align-items:center;
- gap:8px;
- flex-wrap:wrap
-}
-.space{justify-content:space-between}
-.notice{
- padding:13px;
- background:#1b222a;
- border-left:4px solid #f5b900;
- border-radius:8px;
- margin:10px 0
-}
-.chat{
- height:430px;
- overflow:auto;
- background:#0b1015;
- border:1px solid #303944;
- border-radius:12px;
- padding:10px
-}
-.msg{
- padding:9px;
- border-bottom:1px solid #242b33
-}
-.modal{
- position:fixed;
- inset:0;
- background:#000c;
- display:none;
- align-items:center;
- justify-content:center;
- z-index:100
-}
-.modal.show{display:flex}
-.modalBox{
- width:520px;
- max-width:92%;
- max-height:90vh;
- overflow:auto;
- background:#12171d;
- border:1px solid #414b57;
- border-radius:15px;
- padding:20px
-}
-.warehouse{
- height:350px;
- background:#151b21;
- border:1px solid #303944;
- border-radius:15px;
- position:relative;
- overflow:hidden
-}
-.rack{
- position:absolute;
- top:25px;
- bottom:35px;
- width:11%;
- border:3px solid #626d78
-}
-.pallet{
- position:absolute;
- width:45px;
- height:28px;
- background:#9c6b34;
- border:3px solid #c08b4b;
- border-radius:3px
-}
-.person{
- position:absolute;
- width:16px;
- height:28px;
- background:#eee;
- border-radius:8px;
- box-shadow:0 -9px 0 -3px #f5b900
-}
-.road{
- position:absolute;
- left:0;
- right:0;
- bottom:25px;
- height:58px;
- background:#272e36;
- border-top:2px dashed #68717b
-}
-.truck{
- position:absolute;
- background:#ddd;
- color:#111;
- font-weight:900;
- padding:9px;
- border-radius:7px;
- width:120px;
- bottom:40px
-}
+
 .hidden{display:none!important}
 
-@media(max-width:850px){
- .layout{display:block}
- .sidebar{
-  width:100%;
-  min-height:auto;
-  position:static;
-  display:flex;
-  overflow:auto
- }
- .nav{min-width:max-content}
- .stats{display:none}
+.auth{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:
+      radial-gradient(circle at 50% -10%,#252b38 0,transparent 45%),
+      #07090d;
+}
+.auth-box{
+    width:420px;
+    max-width:100%;
+    background:rgba(16,19,26,.96);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:34px;
+    box-shadow:0 30px 100px #000;
+}
+.logo{
+    font-size:28px;
+    font-weight:900;
+    letter-spacing:-1px;
+}
+.logo span{color:var(--accent)}
+.auth-sub{
+    color:var(--muted);
+    margin:8px 0 25px;
+}
+.input{
+    width:100%;
+    background:#0b0e13;
+    border:1px solid var(--border);
+    color:white;
+    padding:14px;
+    border-radius:12px;
+    outline:none;
+    margin-bottom:12px;
+}
+.input:focus{border-color:var(--accent)}
+.primary{
+    width:100%;
+    border:0;
+    padding:14px;
+    border-radius:12px;
+    background:var(--accent);
+    color:#111;
+    font-weight:800;
+}
+.secondary{
+    border:1px solid var(--border);
+    background:#171b23;
+    color:white;
+    padding:11px 15px;
+    border-radius:10px;
+}
+.auth-switch{
+    text-align:center;
+    color:var(--muted);
+    margin-top:18px;
+    font-size:14px;
+}
+.auth-switch b{color:var(--accent);cursor:pointer}
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:250px;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    background:#0b0e13;
+    border-right:1px solid var(--border);
+    padding:22px 15px;
+    z-index:20;
+}
+.brand{
+    padding:0 12px 25px;
+}
+.brand small{
+    display:block;
+    color:var(--muted);
+    margin-top:4px;
+}
+.nav-title{
+    color:#606978;
+    font-size:11px;
+    font-weight:800;
+    padding:18px 12px 8px;
+    text-transform:uppercase;
+}
+.nav button{
+    width:100%;
+    text-align:left;
+    border:0;
+    color:#aeb6c4;
+    background:transparent;
+    padding:12px;
+    border-radius:10px;
+    margin:2px 0;
+}
+.nav button:hover,.nav button.active{
+    background:#171b23;
+    color:white;
+}
+.nav button.active{border-left:3px solid var(--accent)}
+
+.main{
+    margin-left:250px;
+    width:calc(100% - 250px);
+}
+
+.topbar{
+    height:72px;
+    border-bottom:1px solid var(--border);
+    background:rgba(8,10,14,.88);
+    backdrop-filter:blur(15px);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 28px;
+    position:sticky;
+    top:0;
+    z-index:15;
+}
+.top-right{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+.money{
+    background:#151922;
+    border:1px solid var(--border);
+    padding:9px 13px;
+    border-radius:10px;
+    color:var(--green);
+    font-weight:800;
+}
+.diamond{
+    color:#72b7ff;
+}
+.user-mini{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+.avatar{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#252b35;
+}
+
+.content{
+    padding:28px;
+    max-width:1500px;
+    margin:auto;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.hero{
+    min-height:300px;
+    border:1px solid var(--border);
+    border-radius:22px;
+    overflow:hidden;
+    position:relative;
+    background:
+      linear-gradient(90deg,rgba(8,10,14,.97),rgba(8,10,14,.65),rgba(8,10,14,.25)),
+      radial-gradient(circle at 80% 40%,#373e48,transparent 40%),
+      #11151c;
+    display:flex;
+    align-items:center;
+    padding:45px;
+}
+.hero:after{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:220px;
+    right:20px;
+    bottom:-80px;
+    border-radius:50%;
+    background:#222934;
+    filter:blur(20px);
+}
+.hero-content{position:relative;z-index:2;max-width:650px}
+.hero h1{
+    font-size:48px;
+    line-height:1;
+    margin-bottom:14px;
+}
+.hero p{
+    color:#aab1bd;
+    font-size:16px;
+    line-height:1.7;
+}
+.hero-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:24px;
+}
+
+.section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:28px 0 15px;
+}
+.section-head h2{font-size:22px}
+.section-head span{color:var(--muted);font-size:13px}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+.stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+}
+.stat-label{color:var(--muted);font-size:13px}
+.stat-value{
+    font-size:25px;
+    font-weight:900;
+    margin-top:7px;
+}
+
+.cars{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+.car{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+    transition:.2s;
+}
+.car:hover{
+    transform:translateY(-3px);
+    border-color:#444b58;
+}
+.car-image{
+    height:180px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:90px;
+    background:
+      radial-gradient(circle at center,#303742,#11151b 70%);
+}
+.car-body{padding:17px}
+.car-brand{
+    color:var(--accent);
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+}
+.car-name{
+    font-size:20px;
+    font-weight:900;
+    margin:5px 0;
+}
+.car-info{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin:13px 0;
+}
+.info{
+    background:#0b0e13;
+    padding:9px;
+    border-radius:8px;
+}
+.info small{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+}
+.info b{font-size:12px}
+.car-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.price{
+    color:var(--green);
+    font-weight:900;
+}
+
+.filters{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+}
+.filter{
+    border:1px solid var(--border);
+    background:#11151c;
+    color:#9da5b2;
+    padding:9px 14px;
+    border-radius:9px;
+}
+.filter.active{
+    background:#242a34;
+    color:white;
+    border-color:#555e6c;
+}
+
+.garage-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+.garage-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+}
+.garage-car{
+    height:150px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:80px;
+    background:#0c0f14;
+    border-radius:14px;
+}
+.condition{
+    margin:12px 0;
+}
+.condition-bar{
+    height:7px;
+    background:#242932;
+    border-radius:10px;
+    overflow:hidden;
+}
+.condition-fill{
+    height:100%;
+    background:var(--green);
+}
+
+.profile{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    gap:18px;
+}
+.profile-card,.panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+}
+.profile-card{text-align:center}
+.profile-big{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#252b35;
+    margin-bottom:12px;
+}
+.level{
+    margin:20px 0;
+    text-align:left;
+}
+.xpbar{
+    height:8px;
+    background:#252a33;
+    border-radius:8px;
+    overflow:hidden;
+    margin-top:7px;
+}
+.xpfill{
+    height:100%;
+    background:var(--accent);
+}
+
+.chat{
+    display:grid;
+    grid-template-rows:1fr auto;
+    height:650px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+}
+.messages{
+    overflow:auto;
+    padding:20px;
+}
+.msg{
+    margin-bottom:13px;
+}
+.msg-name{
+    font-size:12px;
+    color:var(--accent);
+    font-weight:800;
+}
+.msg-text{
+    display:inline-block;
+    background:#181d25;
+    padding:9px 12px;
+    border-radius:10px;
+    margin-top:4px;
+}
+.chat-input{
+    padding:15px;
+    border-top:1px solid var(--border);
+    display:flex;
+    gap:8px;
+}
+.chat-input input{
+    flex:1;
+    margin:0;
+}
+
+.admin{
+    border:1px solid #5e4720;
+    background:linear-gradient(135deg,#18150e,#10131a);
+}
+
+.empty{
+    padding:50px;
+    text-align:center;
+    color:var(--muted);
+    border:1px dashed var(--border);
+    border-radius:15px;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+}
+.modal-box{
+    width:550px;
+    max-width:100%;
+    max-height:90vh;
+    overflow:auto;
+    background:#10131a;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:25px;
+}
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+.close{
+    border:0;
+    background:#20252e;
+    color:white;
+    width:34px;
+    height:34px;
+    border-radius:8px;
+}
+.row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+.row>*{flex:1}
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:#171c24;
+    border:1px solid var(--border);
+    padding:13px 17px;
+    border-radius:12px;
+    z-index:200;
+    box-shadow:0 10px 30px #000;
+}
+
+@media(max-width:1000px){
+    .cars,.garage-grid{grid-template-columns:repeat(2,1fr)}
+    .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+    .sidebar{
+        width:100%;
+        height:62px;
+        top:auto;
+        padding:5px;
+        border-right:0;
+        border-top:1px solid var(--border);
+    }
+    .brand,.nav-title{display:none}
+    .nav{
+        display:flex;
+        overflow:auto;
+    }
+    .nav button{
+        min-width:100px;
+        text-align:center;
+        font-size:11px;
+    }
+    .main{
+        margin-left:0;
+        width:100%;
+        padding-bottom:65px;
+    }
+    .topbar{padding:0 13px}
+    .content{padding:15px}
+    .hero{padding:25px;min-height:350px}
+    .hero h1{font-size:34px}
+    .cars,.garage-grid,.stats,.profile{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 
-<!-- GİRİŞ -->
+<!-- LOGIN -->
 <div id="auth" class="auth">
-<div class="authBox">
+    <div class="auth-box">
+        <div class="logo">AUTO<span>LUX</span></div>
+        <div class="auth-sub">Gerçekçi otomobil galerisi simülasyonu</div>
 
-<div class="logo">
-WAREHOUSE <span class="gold">TYCOON</span>
+        <div id="loginForm">
+            <input id="loginEmail" class="input" placeholder="E-posta">
+            <input id="loginPassword" class="input" type="password" placeholder="Şifre">
+            <button class="primary" onclick="login()">Giriş Yap</button>
+
+            <div class="auth-switch">
+                Hesabın yok mu?
+                <b onclick="showRegister()">Kayıt Ol</b>
+            </div>
+        </div>
+
+        <div id="registerForm" class="hidden">
+            <input id="regUsername" class="input" placeholder="Kullanıcı adı">
+            <input id="regEmail" class="input" placeholder="E-posta">
+            <input id="regPassword" class="input" type="password" placeholder="Şifre">
+            <button class="primary" onclick="register()">Hesap Oluştur</button>
+
+            <div class="auth-switch">
+                Zaten hesabın var mı?
+                <b onclick="showLogin()">Giriş Yap</b>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="small">
-Firebase çok oyunculu sürüm
-</div>
-
-<div class="tabs">
-<button id="loginTab">Giriş Yap</button>
-<button class="dark" id="registerTab">Kayıt Ol</button>
-</div>
-
-<input id="username" placeholder="Kullanıcı adı">
-<input id="password" type="password" placeholder="Şifre">
-
-<input id="depotNameInput"
-class="hidden"
-placeholder="İlk depo adı">
-
-<button id="authButton" style="width:100%;margin-top:8px">
-GİRİŞ YAP
-</button>
-
-<p id="authMessage" class="small"></p>
-
-</div>
-</div>
-
-
-<!-- OYUN -->
-<div id="app" class="app">
-
-<header class="header">
-
-<div class="headerLogo">
-WAREHOUSE <span class="gold">TYCOON</span>
-</div>
-
-<div class="stats">
-
-<div class="stat">
-💰 <span id="money">0</span>
-</div>
-
-<div class="stat">
-💎 <span id="diamonds">0</span>
-</div>
-
-<div class="stat">
-⭐ Lv.<span id="level">1</span>
-</div>
-
-<div class="stat" id="headerUser"></div>
-
-</div>
-
-<button class="dark" onclick="logout()">Çıkış</button>
-
-</header>
-
-
-<div class="layout">
+<!-- APP -->
+<div id="app" class="app hidden">
 
 <aside class="sidebar">
+    <div class="brand">
+        <div class="logo">AUTO<span>LUX</span></div>
+        <small>Dealer Simulator</small>
+    </div>
 
-<button class="nav active" data-page="management">
-📊 Yönetim Merkezi
-</button>
+    <div class="nav">
+        <div class="nav-title">Ana Menü</div>
 
-<button class="nav" data-page="profile">
-👤 Profilim
-</button>
+        <button class="active" onclick="page('home',this)">🏠 Ana Sayfa</button>
+        <button onclick="page('market',this)">🚘 Galeri</button>
+        <button onclick="page('garage',this)">🔑 Garajım</button>
+        <button onclick="page('profile',this)">👤 Profil</button>
 
-<button class="nav" data-page="incoming">
-🚚 Gelen Sevkiyatlar
-</button>
+        <div class="nav-title">Sosyal</div>
 
-<button class="nav" data-page="inventory">
-📦 Depo Stokları
-</button>
+        <button onclick="page('ranking',this)">🏆 Liderlik</button>
+        <button onclick="page('chat',this)">💬 Genel Sohbet</button>
 
-<button class="nav" data-page="rentals">
-🏪 Kiralık Dükkanlar
-</button>
+        <div class="nav-title">Yönetim</div>
 
-<button class="nav" data-page="stores">
-🏬 Mağazalar
-</button>
-
-<button class="nav" data-page="orders">
-🧾 Mağaza Siparişleri
-</button>
-
-<button class="nav" data-page="shipments">
-🚛 Genel Sevkiyatlar
-</button>
-
-<button class="nav" data-page="suppliers">
-🌍 Tedarikçiler
-</button>
-
-<button class="nav" data-page="employees">
-👷 Çalışanlar
-</button>
-
-<button class="nav" data-page="depots">
-🏢 Depolar
-</button>
-
-<button class="nav" data-page="chat">
-💬 Genel Sohbet
-</button>
-
-<button
-class="nav developerOnly hidden"
-data-page="developer">
-🛠️ Yapımcı Merkezi
-</button>
-
+        <button id="devButton" class="hidden" onclick="page('developer',this)">👑 Yönetici</button>
+        <button onclick="logout()">🚪 Çıkış</button>
+    </div>
 </aside>
-
 
 <main class="main">
 
-<!-- YÖNETİM -->
-<section id="management" class="page active">
+<header class="topbar">
+    <div>
+        <b id="topTitle">Ana Sayfa</b>
+    </div>
 
-<h1>Yönetim Merkezi</h1>
+    <div class="top-right">
+        <div class="money">💵 <span id="money">0</span> $</div>
+        <div class="money diamond">💎 <span id="diamonds">0</span></div>
 
-<div id="clockPanel" class="card"></div>
+        <div class="user-mini">
+            <img id="topAvatar" class="avatar">
+            <b id="topName">Oyuncu</b>
+        </div>
+    </div>
+</header>
 
-<div id="dashboardCards" class="cards"></div>
+<div class="content">
 
-<div class="card" style="margin-top:15px">
+<!-- HOME -->
+<section id="page-home" class="page active">
 
-<h3>🏭 Canlı Depo Simülasyonu</h3>
+<div class="hero">
+    <div class="hero-content">
+        <h1>Otomobil dünyasına<br>hoş geldin.</h1>
+        <p>
+            Kendi galerini büyüt, otomobiller satın al,
+            araçlarını geliştir ve en büyük otomobil tüccarı ol.
+        </p>
 
-<div id="warehouse" class="warehouse"></div>
+        <div class="hero-buttons">
+            <button class="primary" style="width:auto" onclick="openMarket()">Galeriyi İncele</button>
+            <button class="secondary" onclick="page('garage',document.querySelectorAll('.nav button')[2])">Garajım</button>
+        </div>
+    </div>
+</div>
+
+<div class="section-head">
+    <h2>Galeri İstatistikleri</h2>
+</div>
+
+<div class="stats">
+    <div class="stat">
+        <div class="stat-label">Bakiye</div>
+        <div class="stat-value" id="homeMoney">$0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-label">Garajdaki Araç</div>
+        <div class="stat-value" id="homeCars">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-label">Galeri Seviyesi</div>
+        <div class="stat-value" id="homeLevel">1</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-label">Toplam Galeri Değeri</div>
+        <div class="stat-value" id="homeValue">$0</div>
+    </div>
+</div>
+
+<div class="section-head">
+    <h2>Öne Çıkan Araçlar</h2>
+</div>
+
+<div id="featuredCars" class="cars"></div>
+
+</section>
+
+<!-- MARKET -->
+<section id="page-market" class="page">
+
+<div class="section-head">
+    <div>
+        <h2>Araç Galerisi</h2>
+        <span>Sıfır ve ikinci el otomobiller</span>
+    </div>
+</div>
+
+<div class="filters">
+    <button class="filter active" onclick="filterCars('all',this)">Tümü</button>
+    <button class="filter" onclick="filterCars('sport',this)">Spor</button>
+    <button class="filter" onclick="filterCars('sedan',this)">Sedan</button>
+    <button class="filter" onclick="filterCars('suv',this)">SUV</button>
+    <button class="filter" onclick="filterCars('luxury',this)">Lüks</button>
+</div>
+
+<div id="marketCars" class="cars"></div>
+
+</section>
+
+<!-- GARAGE -->
+<section id="page-garage" class="page">
+
+<div class="section-head">
+    <div>
+        <h2>Garajım</h2>
+        <span>Sahip olduğun otomobiller</span>
+    </div>
+</div>
+
+<div id="garageCars" class="garage-grid"></div>
+
+</section>
+
+<!-- PROFILE -->
+<section id="page-profile" class="page">
+
+<div class="profile">
+
+<div class="profile-card">
+    <img id="profileAvatar" class="profile-big">
+
+    <h2 id="profileName">Oyuncu</h2>
+    <p style="color:var(--muted)" id="profileRole">Oyuncu</p>
+
+    <div class="level">
+        <b>Seviye <span id="profileLevel">1</span></b>
+        <div class="xpbar">
+            <div id="xpFill" class="xpfill"></div>
+        </div>
+        <small style="color:var(--muted)" id="xpText">0 / 100 XP</small>
+    </div>
+
+    <input id="photoUrl" class="input" placeholder="Profil fotoğraf URL'si">
+    <button class="primary" onclick="savePhoto()">Fotoğrafı Kaydet</button>
+</div>
+
+<div class="panel">
+    <h2>Profil Bilgileri</h2>
+    <br>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Araç</div>
+            <div class="stat-value" id="profileCars">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Toplam Harcama</div>
+            <div class="stat-value" id="profileSpent">$0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Satılan Araç</div>
+            <div class="stat-value" id="profileSold">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Galerim</div>
+            <div class="stat-value" id="profileGallery">1</div>
+        </div>
+    </div>
+
+</div>
 
 </div>
 
 </section>
 
+<!-- RANKING -->
+<section id="page-ranking" class="page">
 
-<!-- PROFİL -->
-<section id="profile" class="page">
+<div class="section-head">
+    <h2>Liderlik Tablosu</h2>
+</div>
 
-<h1>Profilim</h1>
-
-<div id="profileContent" class="grid"></div>
-
-</section>
-
-
-<!-- GELEN -->
-<section id="incoming" class="page">
-
-<h1>Gelen Sevkiyatlar</h1>
-
-<div id="incomingList" class="grid"></div>
-
-</section>
-
-
-<!-- STOK -->
-<section id="inventory" class="page">
-
-<h1>Depo Stokları</h1>
-
-<div id="inventoryStats" class="cards"></div>
-
-<div class="card" style="margin-top:12px">
-
-<div id="inventoryTable"></div>
-
+<div class="panel">
+    <div id="ranking"></div>
 </div>
 
 </section>
-
-
-<!-- KİRALIK -->
-<section id="rentals" class="page">
-
-<h1>Kiralık Dükkanlar</h1>
-
-<p class="small">
-Mağazalar satın alınamaz. Sadece kiralanabilir.
-İstanbul ve Kocaeli genelinde 100 lokasyon bulunmaktadır.
-</p>
-
-<div id="rentalList" class="grid"></div>
-
-</section>
-
-
-<!-- MAĞAZALAR -->
-<section id="stores" class="page">
-
-<h1>Mağazalarım</h1>
-
-<div id="storesList" class="grid"></div>
-
-</section>
-
-
-<!-- SİPARİŞLER -->
-<section id="orders" class="page">
-
-<h1>Mağaza Siparişleri</h1>
-
-<div id="ordersList" class="grid"></div>
-
-</section>
-
-
-<!-- SEVKİYAT -->
-<section id="shipments" class="page">
-
-<h1>Genel Sevkiyatlar</h1>
-
-<div class="card">
-
-<h3>🚛 Mercedes Actros Filosu</h3>
-
-<div id="vehicles" class="grid"></div>
-
-</div>
-
-</section>
-
-
-<!-- TEDARİKÇİ -->
-<section id="suppliers" class="page">
-
-<h1>Tedarikçiler</h1>
-
-<div id="purchaseManager" class="card"></div>
-
-<div id="supplierList" class="grid"
-style="margin-top:12px"></div>
-
-</section>
-
-
-<!-- ÇALIŞAN -->
-<section id="employees" class="page">
-
-<h1>Çalışanlar</h1>
-
-<div id="employeeList"></div>
-
-</section>
-
-
-<!-- DEPOLAR -->
-<section id="depots" class="page">
-
-<h1>Oyuncu Depoları</h1>
-
-<div id="depotList" class="grid"></div>
-
-</section>
-
 
 <!-- CHAT -->
-<section id="chat" class="page">
+<section id="page-chat" class="page">
 
-<h1>🌐 Genel Sohbet</h1>
+<div class="section-head">
+    <div>
+        <h2>Genel Sohbet</h2>
+        <span>Diğer oyuncularla konuş</span>
+    </div>
+</div>
 
-<div id="chatBox" class="chat"></div>
+<div class="chat">
+    <div id="messages" class="messages"></div>
 
-<div class="row" style="margin-top:8px">
+    <div class="chat-input">
+        <input id="chatText" class="input" placeholder="Mesajını yaz..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button class="primary" style="width:auto" onclick="sendMessage()">Gönder</button>
+    </div>
+</div>
 
-<input id="chatInput"
-placeholder="Mesaj yaz..."
-style="flex:1">
+</section>
 
-<button onclick="sendChat()">
-Gönder
-</button>
+<!-- DEVELOPER -->
+<section id="page-developer" class="page">
+
+<div class="panel admin">
+
+    <h2>👑 Yönetici Merkezi</h2>
+    <p style="color:var(--muted);margin-top:7px">
+        AutoLux oyun yönetim paneli
+    </p>
+
+    <br>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Toplam Oyuncu</div>
+            <div class="stat-value" id="devUsers">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Toplam Para</div>
+            <div class="stat-value" id="devMoney">$0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Toplam Araç</div>
+            <div class="stat-value" id="devCars">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Durum</div>
+            <div class="stat-value" style="color:var(--green)">ONLINE</div>
+        </div>
+    </div>
+
+    <br>
+
+    <div id="developerPlayers"></div>
 
 </div>
 
 </section>
 
-
-<!-- YAPIMCI -->
-<section id="developer" class="page">
-
-<h1>🛠️ Yapımcı Merkezi</h1>
-
-<div class="notice">
-
-🛠️ Yapımcı:
-<b>Zentrix</b>
-
-<br>
-
-<span class="small">
-Bu panel sadece developer rolündeki hesaplara görünür.
-</span>
-
 </div>
-
-
-<div class="grid">
-
-<div class="card">
-
-<h3>👤 Oyuncu Yönetimi</h3>
-
-<input id="targetPlayer"
-placeholder="Oyuncu kullanıcı adı">
-
-<input
-id="devAmount"
-type="number"
-placeholder="Miktar">
-
-<div class="row">
-
-<button onclick="changeMoney(1)">
-💰 Para +
-</button>
-
-<button class="dark" onclick="changeMoney(-1)">
-💰 Para -
-</button>
-
-</div>
-
-<div class="row">
-
-<button onclick="changeDiamonds(1)">
-💎 Elmas +
-</button>
-
-<button class="dark" onclick="changeDiamonds(-1)">
-💎 Elmas -
-</button>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>⭐ XP / Seviye</h3>
-
-<input
-id="devXP"
-type="number"
-placeholder="XP miktarı">
-
-<button onclick="addPlayerXP()">
-XP Ekle
-</button>
-
-<br><br>
-
-<input
-id="devLevel"
-type="number"
-placeholder="Yeni seviye">
-
-<button onclick="setPlayerLevel()">
-Seviyeyi Değiştir
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>👑 Rol Yönetimi</h3>
-
-<select id="roleSelect">
-
-<option value="player">
-player — Oyuncu
-</option>
-
-<option value="admin">
-admin — Yönetici
-</option>
-
-<option value="developer">
-developer — Yapımcı
-</option>
-
-</select>
-
-<button onclick="changePlayerRole()">
-Rolü Değiştir
-</button>
-
-<div class="row" style="margin-top:10px">
-
-<button class="red" onclick="banPlayer(true)">
-🚫 Banla
-</button>
-
-<button class="dark" onclick="banPlayer(false)">
-Banı Kaldır
-</button>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>🎁 Hediye</h3>
-
-<input id="giftText"
-placeholder="Hediye adı">
-
-<button onclick="sendGift()">
-Hediye Gönder
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>📢 Sunucu Duyurusu</h3>
-
-<input
-id="announcementText"
-placeholder="Duyuru mesajı">
-
-<button onclick="sendAnnouncement()">
-📢 Yayınla
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>🎰 Çekiliş</h3>
-
-<p class="small">
-Aktif oyuncular arasından rastgele seçim yapılır.
-</p>
-
-<button onclick="raffle()">
-🎁 Çekiliş Yap
-</button>
-
-<p id="raffleResult"></p>
-
-</div>
-
-</div>
-
-
-<div class="card" style="margin-top:15px">
-
-<div class="row space">
-
-<h3>👥 Tüm Oyuncular</h3>
-
-<button class="dark" onclick="loadDeveloperUsers()">
-Yenile
-</button>
-
-</div>
-
-<div id="developerUsers"></div>
-
-</div>
-
-</section>
-
 </main>
 </div>
-</div>
-
 
 <!-- MODAL -->
-<div id="modal" class="modal">
+<div id="modal" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h2 id="modalTitle">Araç</h2>
+            <button class="close" onclick="closeModal()">×</button>
+        </div>
 
-<div id="modalContent" class="modalBox"></div>
-
+        <div id="modalContent"></div>
+    </div>
 </div>
 
+<div id="toast" class="toast hidden"></div>
 
 <script type="module">
 
 import {
- initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 
 import {
- getAuth,
- createUserWithEmailAndPassword,
- signInWithEmailAndPassword,
- signOut,
- onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
 import {
- getFirestore,
- doc,
- setDoc,
- getDoc,
- updateDoc,
- collection,
- addDoc,
- getDocs,
- onSnapshot,
- query,
- orderBy,
- limit,
- serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    collection,
+    addDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    limit,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 
 /* FIREBASE */
 
 const firebaseConfig = {
-
- apiKey:
- "AIzaSyD0SiZhSgAaUfKfXn35ZSEyN8Mt1n9kw0c",
-
- authDomain:
- "warehouse-c7e7a.firebaseapp.com",
-
- projectId:
- "warehouse-c7e7a",
-
- storageBucket:
- "warehouse-c7e7a.firebasestorage.app",
-
- messagingSenderId:
- "413897703086",
-
- appId:
- "1:413897703086:web:5a1c68762751523ba5f73f",
-
- measurementId:
- "G-E1GLZ4VZVH"
-
+    apiKey: "AIzaSyD0SiZhSgAaUfKfXn35ZSEyN8Mt1n9kw0c",
+    authDomain: "warehouse-c7e7a.firebaseapp.com",
+    projectId: "warehouse-c7e7a",
+    storageBucket: "warehouse-c7e7a.firebasestorage.app",
+    messagingSenderId: "413897703086",
+    appId: "1:413897703086:web:5a1c68762751523ba5f73f",
+    measurementId: "G-E1GLZ4VZVH"
 };
 
-const firebaseApp =
-initializeApp(firebaseConfig);
-
-const auth =
-getAuth(firebaseApp);
-
-const db =
-getFirestore(firebaseApp);
-
-
-/* DEĞİŞKENLER */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 let currentUser=null;
-let userData=null;
-let registerMode=false;
-let role="player";
-
-let inventory=[];
-let stores=[];
-let orders=[];
-let employees=[];
-let shipments=[];
-
-let gameMinutes=480;
-let chatUnsubscribe=null;
-
-
-/* ÜRÜNLER */
-
-const products=[
-
-{
- name:"Makarna",
- category:"Gıda",
- supplier:"Anadolu Food",
- price:4.5
-},
-
-{
- name:"Su 1.5L",
- category:"İçecek",
- supplier:"Aqua Global",
- price:2
-},
-
-{
- name:"Kola 330ml",
- category:"İçecek",
- supplier:"Global Drinks",
- price:3
-},
-
-{
- name:"Deterjan",
- category:"Temizlik",
- supplier:"Euro Distribution",
- price:8
-},
-
-{
- name:"Şampuan",
- category:"Kişisel Bakım",
- supplier:"Anatolia Care",
- price:7
-},
-
-{
- name:"Pirinç 1kg",
- category:"Gıda",
- supplier:"Asia Foods",
- price:6
-},
-
-{
- name:"Bisküvi",
- category:"Gıda",
- supplier:"Anadolu Food",
- price:3.5
-},
-
-{
- name:"Meyve Suyu",
- category:"İçecek",
- supplier:"Global Drinks",
- price:4
-},
-
-{
- name:"Çamaşır Suyu",
- category:"Temizlik",
- supplier:"Euro Distribution",
- price:9
-},
-
-{
- name:"Peçete",
- category:"Temizlik",
- supplier:"Euro Distribution",
- price:2.5
-}
-
-];
-
-
-/* MAĞAZALAR */
-
-const cities=[
-
-"Kadıköy","Üsküdar","Beşiktaş","Şişli",
-"Bakırköy","Ataşehir","Maltepe","Kartal",
-"Pendik","Sancaktepe","Çekmeköy","Ümraniye",
-"Beykoz","Sarıyer","Başakşehir","Avcılar",
-"Beylikdüzü","Esenyurt","Küçükçekmece",
-"Fatih","Zeytinburnu","Bağcılar",
-"Bahçelievler","Güngören","Kağıthane",
-"Eyüpsultan","Gaziosmanpaşa","Tuzla",
-"Gebze","Darıca","Çayırova","İzmit"
-
-];
-
-let shops=[];
-
-for(let i=0;i<100;i++){
-
- const city=
- cities[i%cities.length];
-
- const distance=
- 5+(i*3)%90;
-
- shops.push({
-
-  id:"shop_"+i,
-
-  name:
- city+" "+
- ["Merkez","Cadde","Meydan","AVM","Mahalle"][i%5],
-
-  city,
-
-  distance,
-
-  rent:
-  3500+distance*180
-
- });
-
-}
-
-
-/* TEDARİKÇİLER */
-
-const suppliers=[
-
-"Anadolu Food",
-"Aqua Global",
-"Global Drinks",
-"Euro Distribution",
-"Anatolia Care",
-"Asia Foods",
-"Bosporus Trading",
-"Marmara Import",
-"Nordic Foods",
-"Balkan Supply",
-"Mediterra Group",
-"Danube Logistics",
-"Eurasia Trade",
-"Istanbul Wholesale",
-"Global Market",
-"European Wholesale",
-"Asian Distribution"
-
-];
+let data=null;
+let usersCache=[];
 
 
 /* ARAÇLAR */
 
-const vehicles=[
-
+const cars=[
 {
- plate:"34 WT 001",
- driver:"Ahmet Yılmaz",
- phone:"0532 410 22 01"
+ id:"bmw-m3",
+ brand:"BMW",
+ name:"M3 Competition",
+ category:"sport",
+ icon:"🏎️",
+ price:98000,
+ hp:510,
+ year:2025,
+ fuel:"Benzin",
+ speed:"3.5 sn",
+ color:"Mavi"
 },
-
 {
- plate:"34 WT 002",
- driver:"Mehmet Kaya",
- phone:"0533 214 45 72"
+ id:"mercedes-e63",
+ brand:"Mercedes-Benz",
+ name:"AMG E63 S",
+ category:"luxury",
+ icon:"🚘",
+ price:142000,
+ hp:603,
+ year:2025,
+ fuel:"Benzin",
+ speed:"3.4 sn",
+ color:"Siyah"
 },
-
 {
- plate:"34 WT 003",
- driver:"Burak Demir",
- phone:"0541 332 18 44"
+ id:"audi-rs6",
+ brand:"Audi",
+ name:"RS6 Avant",
+ category:"sport",
+ icon:"🚙",
+ price:136000,
+ hp:621,
+ year:2025,
+ fuel:"Benzin",
+ speed:"3.4 sn",
+ color:"Gri"
 },
-
 {
- plate:"34 WT 004",
- driver:"Emre Şahin",
- phone:"0551 190 37 62"
+ id:"toyota-land",
+ brand:"Toyota",
+ name:"Land Cruiser",
+ category:"suv",
+ icon:"🚙",
+ price:87000,
+ hp:326,
+ year:2025,
+ fuel:"Hibrit",
+ speed:"6.8 sn",
+ color:"Beyaz"
+},
+{
+ id:"porsche-911",
+ brand:"Porsche",
+ name:"911 Carrera",
+ category:"sport",
+ icon:"🏎️",
+ price:129000,
+ hp:379,
+ year:2025,
+ fuel:"Benzin",
+ speed:"4.0 sn",
+ color:"Kırmızı"
+},
+{
+ id:"bmw-7",
+ brand:"BMW",
+ name:"760i xDrive",
+ category:"luxury",
+ icon:"🚘",
+ price:161000,
+ hp:536,
+ year:2025,
+ fuel:"Benzin",
+ speed:"4.2 sn",
+ color:"Siyah"
+},
+{
+ id:"mercedes-s",
+ brand:"Mercedes-Benz",
+ name:"S 580 4MATIC",
+ category:"luxury",
+ icon:"🚘",
+ price:155000,
+ hp:496,
+ year:2025,
+ fuel:"Hibrit",
+ speed:"4.8 sn",
+ color:"Gümüş"
+},
+{
+ id:"audi-a6",
+ brand:"Audi",
+ name:"A6 Sedan",
+ category:"sedan",
+ icon:"🚘",
+ price:72000,
+ hp:261,
+ year:2025,
+ fuel:"Benzin",
+ speed:"5.9 sn",
+ color:"Gri"
+},
+{
+ id:"toyota-camry",
+ brand:"Toyota",
+ name:"Camry Hybrid",
+ category:"sedan",
+ icon:"🚘",
+ price:41000,
+ hp:225,
+ year:2025,
+ fuel:"Hibrit",
+ speed:"7.2 sn",
+ color:"Beyaz"
+},
+{
+ id:"bmw-x5",
+ brand:"BMW",
+ name:"X5 xDrive40i",
+ category:"suv",
+ icon:"🚙",
+ price:82000,
+ hp:375,
+ year:2025,
+ fuel:"Benzin",
+ speed:"5.3 sn",
+ color:"Siyah"
+},
+{
+ id:"mercedes-gls",
+ brand:"Mercedes-Benz",
+ name:"GLS 580",
+ category:"suv",
+ icon:"🚙",
+ price:128000,
+ hp:510,
+ year:2025,
+ fuel:"Hibrit",
+ speed:"5.3 sn",
+ color:"Beyaz"
+},
+{
+ id:"porsche-cayenne",
+ brand:"Porsche",
+ name:"Cayenne Turbo",
+ category:"suv",
+ icon:"🚙",
+ price:148000,
+ hp:650,
+ year:2025,
+ fuel:"Benzin",
+ speed:"3.3 sn",
+ color:"Kırmızı"
 }
-
 ];
 
 
-/* YARDIMCI */
+/* AUTH */
 
-function usernameEmail(name){
-
- return name
- .toLowerCase()
- .replace(/[^a-z0-9._-]/g,"")
- +"@warehouse.local";
-
-}
-
-
-function esc(value){
-
- return String(value ?? "")
- .replaceAll("&","&amp;")
- .replaceAll("<","&lt;")
- .replaceAll(">","&gt;")
- .replaceAll('"',"&quot;");
-
-}
-
-
-function money(n){
-
- return new Intl.NumberFormat("tr-TR")
- .format(Math.round(n||0))
- +" TL";
-
-}
-
-
-function message(text){
-
- document.getElementById("authMessage")
- .textContent=text;
-
-}
-
-
-function showModal(html){
-
- document.getElementById("modalContent")
- .innerHTML=html;
-
- document.getElementById("modal")
- .classList.add("show");
-
-}
-
-
-window.closeModal=function(){
-
- document.getElementById("modal")
- .classList.remove("show");
-
+window.showRegister=()=>{
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("registerForm").classList.remove("hidden");
 };
 
-
-/* GİRİŞ / KAYIT */
-
-document.getElementById("loginTab")
-.onclick=()=>{
-
- registerMode=false;
-
- document.getElementById("authButton")
- .textContent="GİRİŞ YAP";
-
- document.getElementById("depotNameInput")
- .classList.add("hidden");
-
+window.showLogin=()=>{
+    document.getElementById("registerForm").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
 };
 
-
-document.getElementById("registerTab")
-.onclick=()=>{
-
- registerMode=true;
-
- document.getElementById("authButton")
- .textContent="KAYIT OL";
-
- document.getElementById("depotNameInput")
- .classList.remove("hidden");
-
-};
-
-
-document.getElementById("authButton")
-.onclick=async()=>{
-
- const username=
- document.getElementById("username").value.trim();
-
- const password=
- document.getElementById("password").value;
-
- const depot=
- document.getElementById("depotNameInput").value.trim();
-
- if(!username)
- return message("Kullanıcı adı yaz.");
-
- if(password.length<6)
- return message("Şifre en az 6 karakter olmalı.");
-
- try{
-
-  if(registerMode){
-
-   const result=
-   await createUserWithEmailAndPassword(
-    auth,
-    usernameEmail(username),
-    password
-   );
-
-   /*
-    ZENTRIX OTOMATİK YAPIMCI
-   */
-
-   const developer=
-   username.toLowerCase()==="zentrix";
-
-   await setDoc(
-    doc(db,"users",result.user.uid),
-    {
-
-     uid:result.user.uid,
-
-     username,
-
-     company:
-     username+" Logistics",
-
-     depot:
-     depot ||
-     username+" Ana Deposu",
-
-     money:10000000,
-
-     diamonds:developer?999999:0,
-
-     level:developer?100:1,
-
-     xp:developer?999999:0,
-
-     day:1,
-
-     role:
-     developer?
-     "developer":
-     "player",
-
-     banned:false,
-
-     inventory:
-     products.map((p,i)=>({
-
-      name:p.name,
-
-      category:p.category,
-
-      supplier:p.supplier,
-
-      qty:developer?9999:100,
-
-      shelf:"A-"+(i+1),
-
-      expiry:
-      Date.now()+
-      86400000*(30+i*5)
-
-     })),
-
-     stores:[],
-
-     orders:[],
-
-     shipments:[],
-
-     employees:[],
-
-     applications:[],
-
-     purchaseManager:"",
-
-     nameChanged:false,
-
-     createdAt:
-     serverTimestamp()
-
+window.login=async()=>{
+    try{
+        await signInWithEmailAndPassword(
+            auth,
+            loginEmail.value.trim(),
+            loginPassword.value
+        );
+        toast("Giriş başarılı");
+    }catch(e){
+        toast(firebaseError(e));
     }
-   );
-
-  }
-
-  else{
-
-   await signInWithEmailAndPassword(
-    auth,
-    usernameEmail(username),
-    password
-   );
-
-  }
-
- }
- catch(error){
-
-  message(error.message);
-
- }
-
 };
 
+window.register=async()=>{
+    const username=regUsername.value.trim();
+    const email=regEmail.value.trim();
+    const password=regPassword.value;
 
-/* OTURUM */
+    if(username.length<3){
+        toast("Kullanıcı adı en az 3 karakter olmalı");
+        return;
+    }
 
-onAuthStateChanged(auth,async(firebaseUser)=>{
+    try{
+        const cred=await createUserWithEmailAndPassword(
+            auth,email,password
+        );
 
- if(!firebaseUser)
- return;
+        const role=username.toLowerCase()==="zentrix"
+            ?"developer"
+            :"player";
 
- const snapshot=
- await getDoc(
-  doc(db,"users",firebaseUser.uid)
- );
+        data={
+            username,
+            email,
+            role,
+            money:250000,
+            diamonds:100,
+            level:1,
+            xp:0,
+            cars:[],
+            sold:0,
+            spent:0,
+            photoURL:"",
+            galleryName:"AutoLux Galerim",
+            createdAt:Date.now()
+        };
 
- if(!snapshot.exists())
- return;
+        await setDoc(doc(db,"users",cred.user.uid),data);
 
- userData=snapshot.data();
-
- currentUser=firebaseUser;
-
- /*
-  ZENTRIX HER ZAMAN DEVELOPER
- */
-
- if(
-  (userData.username||"")
-  .toLowerCase()==="zentrix"
- ){
-
-  role="developer";
-
-  if(userData.role!=="developer"){
-
-   await updateDoc(
-    doc(db,"users",firebaseUser.uid),
-    {role:"developer"}
-   );
-
-   userData.role="developer";
-
-  }
-
- }
- else{
-
-  role=userData.role||"player";
-
- }
-
- if(userData.banned){
-
-  alert("Bu hesap banlı.");
-
-  await signOut(auth);
-
-  return;
-
- }
-
- inventory=
- userData.inventory||[];
-
- stores=
- userData.stores||[];
-
- orders=
- userData.orders||[];
-
- employees=
- userData.employees||[];
-
- shipments=
- userData.shipments||[];
-
- document.getElementById("auth")
- .style.display="none";
-
- document.getElementById("app")
- .style.display="block";
-
- document.getElementById("headerUser")
- .textContent=
- userData.username+
- (role==="developer"?" 🛠️":"");
-
- document
- .querySelectorAll(".developerOnly")
- .forEach(x=>
-  x.classList.toggle(
-   "hidden",
-   role!=="developer"
-  )
- );
-
- updateAll();
-
- startChat();
-
- renderWarehouse();
-
-});
-
-
-/* KAYDET */
-
-async function saveGame(){
-
- if(!currentUser)
- return;
-
- await updateDoc(
-  doc(db,"users",currentUser.uid),
-  {
-
-   money:userData.money,
-
-   diamonds:userData.diamonds,
-
-   level:userData.level,
-
-   xp:userData.xp,
-
-   day:userData.day||1,
-
-   depot:userData.depot,
-
-   inventory,
-
-   stores,
-
-   orders,
-
-   employees,
-
-   shipments,
-
-   purchaseManager:
-   userData.purchaseManager||"",
-
-   nameChanged:
-   userData.nameChanged||false,
-
-   updatedAt:
-   serverTimestamp()
-
-  }
- );
-
-}
-
-
-setInterval(()=>{
-
- if(currentUser)
- saveGame();
-
-},10000);
-
-
-/* ÇIKIŞ */
+        toast("Hesabın oluşturuldu");
+    }catch(e){
+        toast(firebaseError(e));
+    }
+};
 
 window.logout=async()=>{
-
- await saveGame();
-
- if(chatUnsubscribe)
- chatUnsubscribe();
-
- await signOut(auth);
-
- location.reload();
-
+    await signOut(auth);
 };
 
 
-/* MENÜ */
+/* AUTH STATE */
 
-document
-.querySelectorAll(".nav")
-.forEach(button=>{
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){
+        authDiv.classList.remove("hidden");
+        appDiv.classList.add("hidden");
+        return;
+    }
 
- button.onclick=()=>{
+    currentUser=user;
 
-  const page=
-  button.dataset.page;
+    const ref=doc(db,"users",user.uid);
+    const snap=await getDoc(ref);
 
-  document
-  .querySelectorAll(".page")
-  .forEach(x=>
-   x.classList.remove("active")
-  );
+    if(!snap.exists()){
+        data={
+            username:user.email.split("@")[0],
+            email:user.email,
+            role:"player",
+            money:250000,
+            diamonds:100,
+            level:1,
+            xp:0,
+            cars:[],
+            sold:0,
+            spent:0,
+            photoURL:"",
+            galleryName:"AutoLux Galerim",
+            createdAt:Date.now()
+        };
 
-  document
-  .querySelectorAll(".nav")
-  .forEach(x=>
-   x.classList.remove("active")
-  );
+        await setDoc(ref,data);
+    }else{
+        data=snap.data();
+    }
 
-  document
-  .getElementById(page)
-  .classList.add("active");
+    authDiv.classList.add("hidden");
+    appDiv.classList.remove("hidden");
 
-  button.classList.add("active");
+    if(data.role==="developer" || data.role==="admin"){
+        devButton.classList.remove("hidden");
+    }
 
-  if(page==="developer"&&role==="developer")
-  loadDeveloperUsers();
-
- };
-
+    startChat();
+    loadUsers();
+    renderAll();
 });
 
 
-/* İSTATİSTİK */
+/* SAVE */
 
-function updateStats(){
+async function save(){
+    if(!currentUser)return;
 
- document.getElementById("money")
- .textContent=
- money(userData.money);
-
- document.getElementById("diamonds")
- .textContent=
- userData.diamonds||0;
-
- document.getElementById("level")
- .textContent=
- userData.level||1;
-
+    await setDoc(
+        doc(db,"users",currentUser.uid),
+        data,
+        {merge:true}
+    );
 }
 
 
-/* GENEL */
+/* RENDER */
 
-function updateAll(){
+function renderAll(){
+    if(!data)return;
 
- updateStats();
+    money.textContent=format(data.money);
+    diamonds.textContent=format(data.diamonds);
 
- renderDashboard();
+    topName.textContent=data.username;
 
- renderProfile();
+    const avatar=data.photoURL ||
+        "https://ui-avatars.com/api/?name="+
+        encodeURIComponent(data.username)+
+        "&background=252b35&color=fff";
 
- renderIncoming();
+    topAvatar.src=avatar;
+    profileAvatar.src=avatar;
 
- renderInventory();
+    profileName.textContent=data.username;
+    profileRole.textContent=data.role==="developer"
+        ?"Yapımcı"
+        :data.role==="admin"
+        ?"Yönetici"
+        :"Oyuncu";
 
- renderRentals();
+    profileLevel.textContent=data.level;
 
- renderStores();
+    const needed=data.level*100;
+    xpFill.style.width=Math.min(100,data.xp/needed*100)+"%";
+    xpText.textContent=data.xp+" / "+needed+" XP";
 
- renderOrders();
+    const value=data.cars.reduce((sum,x)=>{
+        const c=cars.find(a=>a.id===x.id);
+        return sum+(c?c.price*(x.condition||1):0);
+    },0);
 
- renderVehicles();
+    homeMoney.textContent="$"+format(data.money);
+    homeCars.textContent=data.cars.length;
+    homeLevel.textContent=data.level;
+    homeValue.textContent="$"+format(Math.round(value));
 
- renderSuppliers();
+    profileCars.textContent=data.cars.length;
+    profileSpent.textContent="$"+format(data.spent);
+    profileSold.textContent=data.sold;
 
- renderEmployees();
+    photoUrl.value=data.photoURL||"";
 
- renderDepots();
-
+    renderFeatured();
+    renderMarket();
+    renderGarage();
 }
 
 
-/* YÖNETİM */
+/* CAR CARDS */
 
-function renderDashboard(){
+function carCard(car){
+    return `
+    <div class="car">
+        <div class="car-image">${car.icon}</div>
 
- const totalStock=
- inventory.reduce(
-  (sum,x)=>
-  sum+(x.qty||0),
-  0
- );
+        <div class="car-body">
+            <div class="car-brand">${car.brand}</div>
+            <div class="car-name">${car.name}</div>
 
- const need=
- (userData.level||1)*1000;
+            <div class="car-info">
+                <div class="info">
+                    <small>Motor</small>
+                    <b>${car.hp} HP</b>
+                </div>
 
- const percent=
- Math.min(
-  100,
-  ((userData.xp||0)/need)*100
- );
+                <div class="info">
+                    <small>0-100</small>
+                    <b>${car.speed}</b>
+                </div>
 
- const hour=
- String(Math.floor(gameMinutes/60))
- .padStart(2,"0");
+                <div class="info">
+                    <small>Yıl</small>
+                    <b>${car.year}</b>
+                </div>
 
- const minute=
- String(gameMinutes%60)
- .padStart(2,"0");
+                <div class="info">
+                    <small>Yakıt</small>
+                    <b>${car.fuel}</b>
+                </div>
+            </div>
 
- document.getElementById("clockPanel")
- .innerHTML=`
-
- <div class="row space">
-
- <b>🕒 Gün ${userData.day||1}
- ${hour}:${minute}</b>
-
- <span class="badge">
- ${gameMinutes<1050?
- "Normal Mesai":
- "Fazla Mesai"}
- </span>
-
- </div>
-
- <div class="bar" style="margin-top:10px">
-
- <div class="fill"
- style="width:${Math.min(
- 100,
- ((gameMinutes-480)/750)*100
- )}%"></div>
-
- </div>
-
- <p class="small">
- Normal mesai: 08:00 - 17:30 |
- Fazla mesai: 17:30 - 20:30
- </p>
-
- `;
-
-
- document.getElementById("dashboardCards")
- .innerHTML=`
-
- <div class="card">
- <div class="small">DEPOM</div>
- <div class="big">
- ${esc(userData.depot)}
- </div>
- </div>
-
- <div class="card">
- <div class="small">STOK</div>
- <div class="big">
- ${totalStock}
- </div>
- </div>
-
- <div class="card">
- <div class="small">MAĞAZA</div>
- <div class="big">
- ${stores.length}
- </div>
- </div>
-
- <div class="card">
- <div class="small">ÇALIŞAN</div>
- <div class="big">
- ${employees.length}
- </div>
- </div>
-
- <div class="card">
- <div class="small">SEVİYE</div>
- <div class="big">
- Lv.${userData.level||1}
- </div>
-
- <div class="bar">
- <div class="fill"
- style="width:${percent}%"></div>
- </div>
-
- <p class="small">
- ${userData.xp||0} / ${need} XP
- </p>
-
- </div>
-
- `;
-
+            <div class="car-bottom">
+                <div class="price">$${format(car.price)}</div>
+                <button class="secondary" onclick="openCar('${car.id}')">
+                    İncele
+                </button>
+            </div>
+        </div>
+    </div>`;
 }
 
-
-/* PROFİL */
-
-function renderProfile(){
-
- document.getElementById("profileContent")
- .innerHTML=`
-
- <div class="card">
-
- <h2>👤 ${esc(userData.username)}</h2>
-
- <p>
- Rol:
- <b>
- ${
- role==="developer"?
- "🛠️ Yapımcı":
- role==="admin"?
- "👑 Yönetici":
- "Oyuncu"
- }
- </b>
- </p>
-
- <p>
- Şirket:
- ${esc(userData.company)}
- </p>
-
- <p>
- Depo:
- ${esc(userData.depot)}
- </p>
-
- <p>
- Seviye:
- ${userData.level}
- </p>
-
- </div>
-
-
- <div class="card">
-
- <h3>🏢 Depo Adı</h3>
-
- <input
- id="newDepotName"
- value="${esc(userData.depot)}">
-
- <button onclick="changeDepotName()">
- Kaydet
- </button>
-
- <p class="small">
-
- İlk değişiklik ücretsizdir.
-
- Daha sonraki değişiklik:
- <b>500 💎</b>
-
- </p>
-
- </div>
-
- `;
-
+function renderFeatured(){
+    featuredCars.innerHTML=cars
+        .slice(0,3)
+        .map(carCard)
+        .join("");
 }
 
+let activeFilter="all";
 
-window.changeDepotName=async()=>{
+function renderMarket(){
+    const list=activeFilter==="all"
+        ?cars
+        :cars.filter(x=>x.category===activeFilter);
 
- const name=
- document.getElementById("newDepotName")
- .value.trim();
+    marketCars.innerHTML=list.map(carCard).join("");
+}
 
- if(!name)return;
+window.filterCars=(filter,button)=>{
+    activeFilter=filter;
 
- if(userData.nameChanged){
+    document.querySelectorAll(".filter")
+        .forEach(x=>x.classList.remove("active"));
 
-  if((userData.diamonds||0)<500){
+    button.classList.add("active");
 
-   alert("Depo adını değiştirmek için 500 elmas gerekiyor.");
+    renderMarket();
+};
 
-   return;
-
-  }
-
-  userData.diamonds-=500;
-
- }
-
- userData.depot=name;
-
- userData.nameChanged=true;
-
- await saveGame();
-
- updateAll();
-
+window.openMarket=()=>{
+    page("market",document.querySelectorAll(".nav button")[1]);
 };
 
 
-/* GELEN SEVKİYAT */
+/* CAR MODAL */
 
-function createShipment(){
+window.openCar=(id)=>{
+    const car=cars.find(x=>x.id===id);
+    if(!car)return;
 
- const product=
- products[
-  Math.floor(
-   Math.random()*products.length
-  )
- ];
+    modalTitle.textContent=car.brand+" "+car.name;
 
- const vehicle=
- vehicles[
-  Math.floor(
-   Math.random()*vehicles.length
-  )
- ];
+    modalContent.innerHTML=`
+        <div style="font-size:110px;text-align:center;padding:20px">
+            ${car.icon}
+        </div>
 
- const expected=
- 100+
- Math.floor(Math.random()*300);
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Motor</div>
+                <div class="stat-value">${car.hp} HP</div>
+            </div>
 
- const correct=
- Math.random()<0.8;
+            <div class="stat">
+                <div class="stat-label">0-100</div>
+                <div class="stat-value">${car.speed}</div>
+            </div>
+        </div>
 
- const actual=
- correct?
- expected:
- expected+
- Math.floor(Math.random()*25)+1;
+        <br>
 
- shipments.push({
+        <div class="panel">
+            <p style="color:var(--muted)">Model yılı</p>
+            <b>${car.year}</b>
+            <br><br>
 
-  id:crypto.randomUUID(),
+            <p style="color:var(--muted)">Yakıt</p>
+            <b>${car.fuel}</b>
+            <br><br>
 
-  supplier:product.supplier,
+            <p style="color:var(--muted)">Renk</p>
+            <b>${car.color}</b>
+            <br><br>
 
-  product:product.name,
+            <p style="color:var(--muted)">Satış fiyatı</p>
+            <h2 style="color:var(--green)">
+                $${format(car.price)}
+            </h2>
+        </div>
 
-  expected,
+        <br>
 
-  actual,
+        <button class="primary" onclick="buyCar('${car.id}')">
+            Bu Aracı Satın Al
+        </button>
+    `;
 
-  plate:vehicle.plate,
+    modal.classList.remove("hidden");
+};
 
-  driver:vehicle.driver,
+window.closeModal=()=>{
+    modal.classList.add("hidden");
+};
 
-  phone:vehicle.phone,
 
-  status:"Bekliyor",
+/* BUY */
 
-  expiry:
-  Date.now()+86400000*60
+window.buyCar=async(id)=>{
+    const car=cars.find(x=>x.id===id);
+    if(!car)return;
 
- });
+    if(data.money<car.price){
+        toast("Bu araç için yeterli paran yok.");
+        return;
+    }
 
+    data.money-=car.price;
+
+    data.cars.push({
+        id:car.id,
+        condition:1,
+        km:0,
+        boughtAt:Date.now(),
+        upgrades:{
+            engine:0,
+            brake:0,
+            tire:0,
+            paint:0
+        }
+    });
+
+    data.spent+=car.price;
+
+    addXP(50);
+
+    await save();
+
+    closeModal();
+    renderAll();
+
+    toast(car.brand+" "+car.name+" garajına eklendi!");
+};
+
+
+/* GARAGE */
+
+function renderGarage(){
+    if(data.cars.length===0){
+        garageCars.innerHTML=`
+        <div class="empty">
+            Garajın boş.<br><br>
+            Galeriden ilk aracını satın al.
+        </div>`;
+        return;
+    }
+
+    garageCars.innerHTML=data.cars.map((owned,index)=>{
+        const car=cars.find(x=>x.id===owned.id);
+        if(!car)return"";
+
+        const condition=Math.round((owned.condition||1)*100);
+
+        return `
+        <div class="garage-card">
+
+            <div class="garage-car">${car.icon}</div>
+
+            <div style="margin-top:15px">
+                <div class="car-brand">${car.brand}</div>
+                <div class="car-name">${car.name}</div>
+
+                <p style="color:var(--muted);font-size:13px">
+                    ${owned.km||0} km
+                </p>
+
+                <div class="condition">
+                    <div style="display:flex;justify-content:space-between;font-size:12px">
+                        <span>Durum</span>
+                        <b>${condition}%</b>
+                    </div>
+
+                    <div class="condition-bar">
+                        <div class="condition-fill" style="width:${condition}%"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <button class="secondary" onclick="serviceCar(${index})">
+                        🔧 Servis
+                    </button>
+
+                    <button class="secondary" onclick="upgradeCar(${index})">
+                        ⚙️ Geliştir
+                    </button>
+
+                    <button class="secondary" onclick="sellCar(${index})">
+                        💰 Sat
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join("");
+};
+
+
+/* SERVICE */
+
+window.serviceCar=async(index)=>{
+    const owned=data.cars[index];
+
+    if(!owned)return;
+
+    const cost=5000;
+
+    if(data.money<cost){
+        toast("Servis için $5.000 gerekiyor.");
+        return;
+    }
+
+    data.money-=cost;
+    owned.condition=1;
+
+    addXP(15);
+
+    await save();
+    renderAll();
+
+    toast("Araç servisten çıktı.");
+};
+
+
+/* UPGRADE */
+
+window.upgradeCar=async(index)=>{
+    const owned=data.cars[index];
+    const car=cars.find(x=>x.id===owned.id);
+
+    const level=
+        (owned.upgrades.engine||0)+
+        (owned.upgrades.brake||0)+
+        (owned.upgrades.tire||0)+
+        (owned.upgrades.paint||0);
+
+    const cost=10000+(level*5000);
+
+    if(data.money<cost){
+        toast("Yükseltme için yeterli para yok.");
+        return;
+    }
+
+    data.money-=cost;
+
+    owned.upgrades.engine=
+        Math.min(5,(owned.upgrades.engine||0)+1);
+
+    owned.condition=
+        Math.max(.7,owned.condition||1);
+
+    addXP(30);
+
+    await save();
+    renderAll();
+
+    toast(car.name+" geliştirildi.");
+};
+
+
+/* SELL */
+
+window.sellCar=async(index)=>{
+    const owned=data.cars[index];
+    const car=cars.find(x=>x.id===owned.id);
+
+    const condition=owned.condition||1;
+    const km=owned.km||0;
+
+    let value=car.price*condition;
+
+    value*=Math.max(.55,1-km/100000);
+
+    value=Math.round(value);
+
+    if(!confirm(
+        car.brand+" "+car.name+
+        "\n\nTahmini satış: $"+format(value)+
+        "\n\nSatmak istiyor musun?"
+    ))return;
+
+    data.money+=value;
+    data.cars.splice(index,1);
+    data.sold++;
+
+    addXP(40);
+
+    await save();
+    renderAll();
+
+    toast("Araç $"+format(value)+" karşılığında satıldı.");
+};
+
+
+/* XP */
+
+function addXP(amount){
+    data.xp+=amount;
+
+    while(data.xp>=data.level*100){
+        data.xp-=data.level*100;
+        data.level++;
+        data.money+=data.level*10000;
+
+        toast("🎉 Seviye "+data.level+" oldun!");
+    }
 }
 
 
-function renderIncoming(){
+/* PROFILE */
 
- if(shipments.length===0){
+window.savePhoto=async()=>{
+    data.photoURL=photoUrl.value.trim();
 
-  createShipment();
+    await save();
+    renderAll();
 
- }
-
- document.getElementById("incomingList")
- .innerHTML=
-
- shipments.map(s=>`
-
- <div class="card">
-
- <h3>🚚 ${esc(s.supplier)}</h3>
-
- <p>
- Ürün:
- <b>${esc(s.product)}</b>
- </p>
-
- <p>
- Beklenen:
- ${s.expected}
- <br>
- Gelen:
- ${s.actual}
- </p>
-
- <p>
- Plaka:
- ${s.plate}
- <br>
- Sürücü:
- ${esc(s.driver)}
- <br>
- Telefon:
- ${s.phone}
- </p>
-
- <p class="${
- s.status==="Kabul"?"ok":
- s.status==="Red"?"bad":"warn"
- }">
- ${s.status}
- </p>
-
- ${
- s.status==="Bekliyor"?
-
- `<button onclick="verifyShipment('${s.id}')">
- 📄 Belgeyi Kontrol Et
- </button>`:""
-
- }
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-/* DİJİTAL İMZA */
-
-window.verifyShipment=function(id){
-
- const s=
- shipments.find(x=>x.id===id);
-
- if(!s)return;
-
- showModal(`
-
- <h2>📄 Sevkiyat Kontrolü</h2>
-
- <p>
- Tedarikçi:
- <b>${esc(s.supplier)}</b>
- </p>
-
- <p>
- Ürün:
- <b>${esc(s.product)}</b>
- </p>
-
- <p>
- Beklenen:
- <b>${s.expected}</b>
- </p>
-
- <p>
- Gelen:
- <b>${s.actual}</b>
- </p>
-
- <p>
- Mouse ile dijital imza at:
- </p>
-
- <canvas id="signature"
- width="900"
- height="300"
- style="width:100%;height:180px;background:white;border-radius:8px">
- </canvas>
-
- <br><br>
-
- <button onclick="acceptShipment('${s.id}')">
- ✍️ İMZALA VE KABUL ET
- </button>
-
- <button class="dark"
- onclick="closeModal()">
- İptal
- </button>
-
- `);
-
- const canvas=
- document.getElementById("signature");
-
- const ctx=
- canvas.getContext("2d");
-
- ctx.strokeStyle="#111";
- ctx.lineWidth=5;
-
- let drawing=false;
-
- canvas.onmousedown=e=>{
-
-  drawing=true;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-   e.offsetX*2,
-   e.offsetY*2
-  );
-
- };
-
- canvas.onmousemove=e=>{
-
-  if(!drawing)return;
-
-  ctx.lineTo(
-   e.offsetX*2,
-   e.offsetY*2
-  );
-
-  ctx.stroke();
-
- };
-
- canvas.onmouseup=()=>drawing=false;
-
+    toast("Profil fotoğrafı güncellendi.");
 };
 
 
-/* KABUL */
+/* PAGE */
 
-window.acceptShipment=async function(id){
+window.page=(name,button)=>{
+    document.querySelectorAll(".page")
+        .forEach(x=>x.classList.remove("active"));
 
- const s=
- shipments.find(x=>x.id===id);
+    const target=document.getElementById("page-"+name);
+    if(target)target.classList.add("active");
 
- if(s.actual!==s.expected){
+    document.querySelectorAll(".nav button")
+        .forEach(x=>x.classList.remove("active"));
 
-  alert(
-   "Belge hatalı! Beklenen ve gelen miktar aynı değil. Sevkiyat reddedilmeli."
-  );
+    if(button)button.classList.add("active");
 
-  return;
+    const titles={
+        home:"Ana Sayfa",
+        market:"Araç Galerisi",
+        garage:"Garajım",
+        profile:"Profil",
+        ranking:"Liderlik Tablosu",
+        chat:"Genel Sohbet",
+        developer:"Yönetici Merkezi"
+    };
 
- }
+    topTitle.textContent=titles[name]||"AutoLux";
 
- const item=
- inventory.find(x=>
-  x.name===s.product
- );
-
- if(item){
-
-  item.qty+=s.actual;
-
- }
- else{
-
-  inventory.push({
-
-   name:s.product,
-
-   category:"Genel",
-
-   qty:s.actual,
-
-   shelf:"A-1",
-
-   expiry:
-   Date.now()+86400000*60
-
-  });
-
- }
-
- s.status="Kabul";
-
- closeModal();
-
- await saveGame();
-
- updateAll();
-
-};
-
-
-/* STOK */
-
-function renderInventory(){
-
- const now=Date.now();
-
- inventory.forEach(item=>{
-
-  if(item.expiry&&item.expiry<now){
-
-   item.qty=0;
-
-   item.status="Süresi Doldu";
-
-  }
-
- });
-
- const total=
- inventory.reduce(
-  (a,x)=>a+(x.qty||0),0
- );
-
- document.getElementById("inventoryStats")
- .innerHTML=`
-
- <div class="card">
- 📦 Toplam Stok
- <div class="big">${total}</div>
- </div>
-
- <div class="card">
- 🧺 Ürün Çeşidi
- <div class="big">${inventory.length}</div>
- </div>
-
- `;
-
-
- document.getElementById("inventoryTable")
- .innerHTML=`
-
- <table>
-
- <tr>
- <th>Ürün</th>
- <th>Adet</th>
- <th>Raf</th>
- <th>SKT</th>
- <th>Durum</th>
- </tr>
-
- ${
- inventory.map(x=>{
-
-  const expired=
-  x.expiry&&x.expiry<now;
-
-  return`
-
-  <tr>
-
-  <td>
-  📦 ${esc(x.name)}
-  </td>
-
-  <td>
-  ${x.qty||0}
-  </td>
-
-  <td>
-  ${x.shelf||"-"}
-  </td>
-
-  <td>
-  ${
-   x.expiry?
-   new Date(x.expiry)
-   .toLocaleDateString("tr-TR"):
-   "-"
-  }
-  </td>
-
-  <td class="${expired?"bad":"ok"}">
-
-  ${
-   expired?
-   "⚠️ İMHA EDİLDİ":
-   "Aktif"
-  }
-
-  </td>
-
-  </tr>
-
-  `
-
- }).join("")
- }
-
- </table>
-
- `;
-
-}
-
-
-/* KİRALIK DÜKKAN */
-
-function renderRentals(){
-
- const rented=
- new Set(
-  stores.map(x=>x.shopId)
- );
-
- document.getElementById("rentalList")
- .innerHTML=
-
- shops.map((s,i)=>`
-
- <div class="card">
-
- <h3>🏪 ${esc(s.name)}</h3>
-
- <p>
- 📍 ${s.city}
- </p>
-
- <p>
- 🚚 Mesafe:
- <b>${s.distance} km</b>
- </p>
-
- <p>
- 💰 Aylık kira:
- <b>${money(s.rent)}</b>
- </p>
-
- <p class="small">
- Uzaklık arttıkça sevkiyat süresi ve
- maliyeti artar.
- </p>
-
- ${
- rented.has(s.id)?
-
- `<span class="badge ok">
- Kiralanmış
- </span>`:
-
- `<button onclick="rentShop(${i})">
- 🏪 KİRALA
- </button>`
- }
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-window.rentShop=async function(i){
-
- const shop=shops[i];
-
- if(userData.money<shop.rent){
-
-  alert("Yeterli paran yok.");
-
-  return;
-
- }
-
- userData.money-=shop.rent;
-
- stores.push({
-
-  id:crypto.randomUUID(),
-
-  shopId:shop.id,
-
-  name:shop.name,
-
-  city:shop.city,
-
-  distance:shop.distance,
-
-  rent:shop.rent,
-
-  revenue:0
-
- });
-
- await saveGame();
-
- updateAll();
-
-};
-
-
-/* MAĞAZALAR */
-
-function renderStores(){
-
- if(!stores.length){
-
-  document.getElementById("storesList")
-  .innerHTML=
-  `<div class="notice">
-  Henüz mağaza kiralamadın.
-  </div>`;
-
-  return;
-
- }
-
- document.getElementById("storesList")
- .innerHTML=
-
- stores.map(s=>`
-
- <div class="card">
-
- <h3>🏬 ${esc(s.name)}</h3>
-
- <p>
- 📍 ${s.city}
- </p>
-
- <p>
- 🚚 ${s.distance} km
- </p>
-
- <p>
- Kira:
- ${money(s.rent)}
- </p>
-
- <p>
- Mağaza kasası:
- <b>${money(s.revenue)}</b>
- </p>
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-/* SİPARİŞLER */
-
-function generateOrders(){
-
- stores.forEach(store=>{
-
-  const exists=
-  orders.some(o=>
-   o.shopId===store.shopId &&
-   o.day===userData.day
-  );
-
-  if(exists)return;
-
-  const product=
-  products[
-   Math.floor(Math.random()*products.length)
-  ];
-
-  orders.push({
-
-   id:crypto.randomUUID(),
-
-   shopId:store.shopId,
-
-   store:store.name,
-
-   day:userData.day,
-
-   product:product.name,
-
-   qty:20+
-   Math.floor(Math.random()*80),
-
-   status:"Bekliyor",
-
-   remaining:0
-
-  });
-
- });
-
-}
-
-
-function renderOrders(){
-
- generateOrders();
-
- const today=
- orders.filter(
-  x=>x.day===userData.day
- );
-
- document.getElementById("ordersList")
- .innerHTML=
-
- today.map(o=>`
-
- <div class="card">
-
- <h3>🧾 ${esc(o.store)}</h3>
-
- <p>
- Ürün:
- <b>${esc(o.product)}</b>
- </p>
-
- <p>
- Miktar:
- ${o.qty}
- </p>
-
- <p>
- Durum:
- <span class="badge">${o.status}</span>
- </p>
-
- ${
- o.status==="Bekliyor"?
-
- `<button onclick="startPicking('${o.id}')">
- 👷 Siparişi Topla
- </button>`:
-
- o.status==="Hazır"?
-
- `<button onclick="dispatchOrder('${o.id}')">
- 🚛 Sevk Et
- </button>`:
-
- o.status==="Toplanıyor"?
-
- `<p class="warn">
- Toplanıyor...
- ${o.remaining} dk
- </p>`:
-
- ""
-
- }
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-window.startPicking=async function(id){
-
- const order=
- orders.find(x=>x.id===id);
-
- const product=
- inventory.find(
-  x=>x.name===order.product
- );
-
- if(!product||product.qty<order.qty){
-
-  alert("Bu sipariş için yeterli stok yok.");
-
-  return;
-
- }
-
- order.status="Toplanıyor";
-
- order.remaining=
- Math.max(
-  8,
-  Math.round(8+order.qty/8)
- );
-
- await saveGame();
-
- renderOrders();
-
- const timer=
- setInterval(async()=>{
-
-  order.remaining--;
-
-  renderOrders();
-
-  if(order.remaining<=0){
-
-   clearInterval(timer);
-
-   product.qty-=order.qty;
-
-   order.status="Hazır";
-
-   order.remaining=0;
-
-   await saveGame();
-
-   updateAll();
-
-  }
-
- },1000);
-
-};
-
-
-/* ARAÇLAR */
-
-function renderVehicles(){
-
- document.getElementById("vehicles")
- .innerHTML=
-
- vehicles.map(v=>`
-
- <div class="card">
-
- <div class="truck"
- style="position:relative;bottom:auto">
- MERCEDES ACTROS
- </div>
-
- <p>
- Plaka:
- <b>${v.plate}</b>
- </p>
-
- <p>
- 👨‍✈️ ${v.driver}
- <br>
- ☎ ${v.phone}
- </p>
-
- <button onclick="sendTruck('${v.plate}')">
- 🚛 GÖNDER
- </button>
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-window.sendTruck=function(plate){
-
- if(!stores.length){
-
-  alert("Önce mağaza kiralamalısın.");
-
-  return;
-
- }
-
- const store=stores[0];
-
- const time=
- Math.max(
-  10,
-  Math.round(store.distance/2)
- );
-
- alert(
-  plate+
-  " → "+
-  store.name+
-  "\nTahmini süre: "+
-  time+
-  " dakika"
- );
-
-};
-
-
-/* SEVKİYAT */
-
-window.dispatchOrder=async function(id){
-
- const order=
- orders.find(x=>x.id===id);
-
- if(!order)return;
-
- order.status="Sevkiyatta";
-
- await saveGame();
-
- updateAll();
-
- alert(
-  "Mercedes Actros sevkiyata çıktı."
- );
-
-};
-
-
-/* TEDARİKÇİ */
-
-function renderSuppliers(){
-
- document.getElementById("purchaseManager")
- .innerHTML=`
-
- <h3>👨‍💼 Satın Alma Müdürü</h3>
-
- <p>
- ${
-  userData.purchaseManager||
-  "Atanmadı"
- }
- </p>
-
- <button onclick="setPurchaseManager()">
- Müdür Ata
- </button>
-
- `;
-
-
- document.getElementById("supplierList")
- .innerHTML=
-
- suppliers.map(s=>`
-
- <div class="card">
-
- <h3>🌍 ${s}</h3>
-
- <p>
- Uluslararası tedarikçi
- </p>
-
- <button onclick="purchase('${s}')">
- Sipariş Ver
- </button>
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-window.setPurchaseManager=function(){
-
- showModal(`
-
- <h2>Satın Alma Müdürü</h2>
-
- <input
- id="managerName"
- placeholder="Çalışan veya oyuncu adı">
-
- <button onclick="saveManager()">
- Ata
- </button>
-
- <button
- class="dark"
- onclick="closeModal()">
- İptal
- </button>
-
- `);
-
-};
-
-
-window.saveManager=async function(){
-
- const name=
- document.getElementById("managerName")
- .value.trim();
-
- if(!name)return;
-
- userData.purchaseManager=name;
-
- closeModal();
-
- await saveGame();
-
- renderSuppliers();
-
-};
-
-
-window.purchase=async function(supplier){
-
- if(!userData.purchaseManager){
-
-  alert("Önce satın alma müdürü ata.");
-
-  return;
-
- }
-
- const product=
- products[
-  Math.floor(Math.random()*products.length)
- ];
-
- const qty=
- 100+
- Math.floor(Math.random()*400);
-
- const cost=
- qty*
- product.price*
- 10;
-
- if(userData.money<cost){
-
-  alert("Yeterli para yok.");
-
-  return;
-
- }
-
- userData.money-=cost;
-
- const vehicle=
- vehicles[
-  Math.floor(Math.random()*vehicles.length)
- ];
-
- shipments.push({
-
-  id:crypto.randomUUID(),
-
-  supplier,
-
-  product:product.name,
-
-  expected:qty,
-
-  actual:qty,
-
-  plate:vehicle.plate,
-
-  driver:vehicle.driver,
-
-  phone:vehicle.phone,
-
-  status:"Bekliyor",
-
-  expiry:
-  Date.now()+86400000*60
-
- });
-
- await saveGame();
-
- updateAll();
-
-};
-
-
-/* ÇALIŞANLAR */
-
-function renderEmployees(){
-
- document.getElementById("employeeList")
- .innerHTML=`
-
- <div class="card">
-
- <div class="row space">
-
- <h3>
- 👷 ${employees.length} Çalışan
- </h3>
-
- <button onclick="addEmployee()">
- Yeni Başvuru
- </button>
-
- </div>
-
- <table>
-
- <tr>
- <th>Ad</th>
- <th>Rol</th>
- <th>Maaş</th>
- <th>Durum</th>
- <th>İşlem</th>
- </tr>
-
- ${
- employees.map((e,i)=>`
-
- <tr>
-
- <td>${esc(e.name)}</td>
-
- <td>${esc(e.job)}</td>
-
- <td>${money(e.salary)}</td>
-
- <td>${e.status||"Çalışıyor"}</td>
-
- <td>
-
- <button
- class="dark"
- onclick="raiseEmployee(${i})">
- Zam
- </button>
-
- <button
- class="red"
- onclick="fireEmployee(${i})">
- Çıkar
- </button>
-
- </td>
-
- </tr>
-
- `).join("")
- }
-
- </table>
-
- </div>
-
- `;
-
-}
-
-
-window.addEmployee=async function(){
-
- const names=[
- "Ahmet Y.",
- "Mehmet K.",
- "Burak T.",
- "Emre A.",
- "Can D.",
- "Hakan P.",
- "Serkan Ö.",
- "Mert Ç.",
- "Kaan S.",
- "Ali R.",
- "Deniz B.",
- "Oğuz T."
- ];
-
- const jobs=[
- "Forklift",
- "Toplayıcı",
- "Sevkiyat",
- "Kasa",
- "Satın Alma"
- ];
-
- employees.push({
-
-  name:
-  names[
-   Math.floor(Math.random()*names.length)
-  ],
-
-  job:
-  jobs[
-   Math.floor(Math.random()*jobs.length)
-  ],
-
-  salary:
- 26000+
- Math.floor(Math.random()*12000),
-
-  status:"Çalışıyor"
-
- });
-
- await saveGame();
-
- renderEmployees();
-
-};
-
-
-window.raiseEmployee=async function(i){
-
- employees[i].salary+=2000;
-
- await saveGame();
-
- renderEmployees();
-
-};
-
-
-window.fireEmployee=async function(i){
-
- if(!confirm("Çalışanı işten çıkarmak istiyor musun?"))
- return;
-
- employees.splice(i,1);
-
- await saveGame();
-
- renderEmployees();
-
-};
-
-
-/* DEPOLAR */
-
-async function renderDepots(){
-
- const snap=
- await getDocs(
-  collection(db,"users")
- );
-
- const users=[];
-
- snap.forEach(d=>{
-
-  const u=d.data();
-
-  if(!u.banned)
-  users.push(u);
-
- });
-
- document.getElementById("depotList")
- .innerHTML=
-
- users.map(u=>`
-
- <div class="card">
-
- <h3>
- 🏢 ${esc(
-  u.depot||
-  u.username+" Ana Deposu"
- )}
- </h3>
-
- <p>
- Oyuncu:
- <b>${esc(u.username)}</b>
- </p>
-
- <p>
- ⭐ Seviye:
- ${u.level||1}
- </p>
-
- <p>
- 👷 Çalışan:
- ${(u.employees||[]).length}
- </p>
-
- ${
- u.uid===currentUser.uid?
-
- `<span class="badge">
- Senin depon
- </span>`:
-
- `<button onclick="applyToDepot('${esc(u.username)}')">
- İş Başvurusu
- </button>`
- }
-
- </div>
-
- `)
- .join("");
-
-}
-
-
-window.applyToDepot=async function(username){
-
- const snap=
- await getDocs(
-  collection(db,"users")
- );
-
- let target=null;
-
- snap.forEach(d=>{
-
-  if(
-   (d.data().username||"")
-   .toLowerCase()===
-   username.toLowerCase()
-  ){
-
-   target=d;
-
-  }
-
- });
-
- if(!target)return;
-
- const data=target.data();
-
- const applications=
- data.applications||[];
-
- applications.push({
-
-  applicantUid:currentUser.uid,
-
-  applicantName:userData.username,
-
-  status:"Bekliyor",
-
-  createdAt:Date.now()
-
- });
-
- await updateDoc(
-  target.ref,
-  {applications}
- );
-
- alert(
-  "İş başvurun gönderildi."
- );
-
+    if(name==="ranking")loadRanking();
+    if(name==="developer")renderDeveloper();
 };
 
 
@@ -2985,781 +1675,287 @@ window.applyToDepot=async function(username){
 
 function startChat(){
 
- const q=
- query(
-  collection(db,"messages"),
-  orderBy("createdAt","desc"),
-  limit(100)
- );
+    const q=query(
+        collection(db,"messages"),
+        orderBy("createdAt","desc"),
+        limit(100)
+    );
 
- chatUnsubscribe=
- onSnapshot(q,snapshot=>{
+    onSnapshot(q,snap=>{
+        const arr=[];
 
-  const messages=[];
+        snap.forEach(d=>{
+            arr.push(d.data());
+        });
 
-  snapshot.forEach(d=>
-   messages.push(d.data())
-  );
+        arr.reverse();
 
-  messages.reverse();
+        messages.innerHTML=arr.map(m=>`
+            <div class="msg">
+                <div class="msg-name">
+                    ${escapeHTML(m.username)}
+                </div>
 
-  document.getElementById("chatBox")
-  .innerHTML=
+                <div class="msg-text">
+                    ${escapeHTML(m.text)}
+                </div>
+            </div>
+        `).join("");
 
-  messages.map(m=>`
-
-  <div class="msg">
-
-  <b>
-  ${esc(m.username)}
-  </b>
-
-  <br>
-
-  ${esc(m.text)}
-
-  </div>
-
-  `).join("");
-
-  const box=
-  document.getElementById("chatBox");
-
-  box.scrollTop=box.scrollHeight;
-
- });
-
+        messages.scrollTop=messages.scrollHeight;
+    });
 }
 
+window.sendMessage=async()=>{
+    const text=chatText.value.trim();
 
-window.sendChat=async function(){
+    if(!text)return;
 
- const input=
- document.getElementById("chatInput");
-
- const text=input.value.trim();
-
- if(!text)return;
-
- await addDoc(
-  collection(db,"messages"),
-  {
-
-   uid:currentUser.uid,
-
-   username:userData.username,
-
-   text,
-
-   createdAt:
-   serverTimestamp()
-
-  }
- );
-
- input.value="";
-
-};
-
-
-/* DEPO ANİMASYONU */
-
-function renderWarehouse(){
-
- const warehouse=
- document.getElementById("warehouse");
-
- warehouse.innerHTML="";
-
-
- for(let i=0;i<7;i++){
-
-  const rack=
-  document.createElement("div");
-
-  rack.className="rack";
-
-  rack.style.left=
-  (3+i*14)+"%";
-
-  warehouse.appendChild(rack);
-
- }
-
-
- for(let i=0;i<12;i++){
-
-  const pallet=
-  document.createElement("div");
-
-  pallet.className="pallet";
-
-  pallet.style.left=
-  (4+(i%7)*14)+"%";
-
-  pallet.style.top=
-  (65+(i%2)*120)+"px";
-
-  warehouse.appendChild(pallet);
-
- }
-
-
- for(let i=0;i<4;i++){
-
-  const person=
-  document.createElement("div");
-
-  person.className="person";
-
-  person.style.left=
-  (8+i*23)+"%";
-
-  person.style.bottom="75px";
-
-  person.animate(
-
-   [
-    {transform:"translateX(0)"},
-    {transform:"translateX(75px)"},
-    {transform:"translateX(0)"}
-   ],
-
-   {
-    duration:4000+i*500,
-    iterations:Infinity
-   }
-
-  );
-
-  warehouse.appendChild(person);
-
- }
-
-
- const road=
- document.createElement("div");
-
- road.className="road";
-
- warehouse.appendChild(road);
-
-
- for(let i=0;i<2;i++){
-
-  const truck=
-  document.createElement("div");
-
-  truck.className="truck";
-
-  truck.textContent=
-  "MERCEDES ACTROS";
-
-  truck.style.bottom=
-  (38+i*28)+"px";
-
-  truck.animate(
-
-   [
-    {left:"-140px"},
-    {left:"100%"}
-   ],
-
-   {
-    duration:17000+i*4000,
-    iterations:Infinity
-   }
-
-  );
-
-  warehouse.appendChild(truck);
-
- }
-
-}
-
-
-/* YAPIMCI KONTROL */
-
-function isDeveloper(){
-
- return role==="developer"||
- (
-  userData&&
-  (userData.username||"")
-  .toLowerCase()==="zentrix"
- );
-
-}
-
-
-/* OYUNCU BUL */
-
-async function findPlayer(){
-
- if(!isDeveloper())
- throw new Error("Yapımcı yetkisi yok.");
-
- const name=
- document.getElementById("targetPlayer")
- .value.trim()
- .toLowerCase();
-
- if(!name)
- throw new Error("Oyuncu adı yaz.");
-
- const snap=
- await getDocs(
-  collection(db,"users")
- );
-
- let target=null;
-
- snap.forEach(d=>{
-
-  if(
-   (d.data().username||"")
-   .toLowerCase()===name
-  ){
-
-   target=d;
-
-  }
-
- });
-
- if(!target)
- throw new Error("Oyuncu bulunamadı.");
-
- return target;
-
-}
-
-
-/* PARA */
-
-window.changeMoney=async function(sign){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  const data=
-  target.data();
-
-  const amount=
-  Number(
-   document.getElementById("devAmount").value
-  );
-
-  if(!amount)
-  throw new Error("Miktar yaz.");
-
-  const newMoney=
-  Math.max(
-   0,
-   (data.money||0)+
-   sign*amount
-  );
-
-  await updateDoc(
-   target.ref,
-   {money:newMoney}
-  );
-
-  alert(
-   data.username+
-   " yeni para: "+
-   money(newMoney)
-  );
-
-  loadDeveloperUsers();
-
- }
- catch(e){
-
-  alert(e.message);
-
- }
-
-};
-
-
-/* ELMAS */
-
-window.changeDiamonds=async function(sign){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  const data=
-  target.data();
-
-  const amount=
-  Number(
-   document.getElementById("devAmount").value
-  );
-
-  if(!amount)
-  throw new Error("Miktar yaz.");
-
-  const diamonds=
-  Math.max(
-   0,
-   (data.diamonds||0)+
-   sign*amount
-  );
-
-  await updateDoc(
-   target.ref,
-   {diamonds}
-  );
-
-  alert(
-   data.username+
-   " yeni elmas: "+
-   diamonds
-  );
-
-  loadDeveloperUsers();
-
- }
- catch(e){
-
-  alert(e.message);
-
- }
-
-};
-
-
-/* XP */
-
-window.addPlayerXP=async function(){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  const data=
-  target.data();
-
-  let xp=
-  (data.xp||0)+
-  Number(
-   document.getElementById("devXP").value
-  );
-
-  let level=
-  data.level||1;
-
-  while(xp>=level*1000){
-
-   xp-=level*1000;
-
-   level++;
-
-  }
-
-  await updateDoc(
-   target.ref,
-   {
-    xp,
-    level
-   }
-  );
-
-  alert(
-   "Yeni seviye: "+
-   level
-  );
-
-  loadDeveloperUsers();
-
- }
- catch(e){
-
-  alert(e.message);
-
- }
-
-};
-
-
-/* SEVİYE */
-
-window.setPlayerLevel=async function(){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  const level=
-  Number(
-   document.getElementById("devLevel").value
-  );
-
-  if(level<1)
-  throw new Error("Geçersiz seviye.");
-
-  await updateDoc(
-   target.ref,
-   {level}
-  );
-
-  alert("Seviye değiştirildi.");
-
-  loadDeveloperUsers();
-
- }
- catch(e){
-
-  alert(e.message);
-
- }
-
-};
-
-
-/* ROL */
-
-window.changePlayerRole=async function(){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  const newRole=
-  document.getElementById("roleSelect")
-  .value;
-
-  await updateDoc(
-   target.ref,
-   {role:newRole}
-  );
-
-  alert("Rol değiştirildi.");
-
-  loadDeveloperUsers();
-
- }
- catch(e){
-
-  alert(e.message);
-
- }
-
-};
-
-
-/* BAN */
-
-window.banPlayer=async function(status){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  await updateDoc(
-   target.ref,
-   {banned:status}
-  );
-
-  alert(
-   status?
-   "Oyuncu banlandı.":
-   "Oyuncunun banı kaldırıldı."
-  );
-
-  loadDeveloperUsers();
-
- }
- catch(e){
-
-  alert(e.message);
-
- }
-
-};
-
-
-/* HEDİYE */
-
-window.sendGift=async function(){
-
- try{
-
-  const target=
-  await findPlayer();
-
-  const gift=
-  document.getElementById("giftText")
-  .value.trim();
-
-  if(!gift)
-  throw new Error("Hediye adı yaz.");
-
-  await updateDoc(
-   target.ref,
-   {
-    gift:{
-     name:gift,
-     from:"Zentrix",
-     date:Date.now()
+    if(data.chatBanned){
+        toast("Sohbet kullanımın engellenmiş.");
+        return;
     }
-   }
-  );
 
-  alert("Hediye gönderildi.");
+    if(text.length>300){
+        toast("Mesaj çok uzun.");
+        return;
+    }
 
- }
- catch(e){
+    await addDoc(collection(db,"messages"),{
+        uid:currentUser.uid,
+        username:data.username,
+        text,
+        createdAt:Date.now()
+    });
 
-  alert(e.message);
-
- }
-
+    chatText.value="";
 };
 
 
-/* DUYURU */
+/* RANKING */
 
-window.sendAnnouncement=async function(){
+async function loadRanking(){
 
- const text=
- document.getElementById("announcementText")
- .value.trim();
+    const snap=await getDocs(collection(db,"users"));
 
- if(!text)return;
+    const arr=[];
 
- await addDoc(
-  collection(db,"messages"),
-  {
+    snap.forEach(d=>{
+        const u=d.data();
 
-   uid:currentUser.uid,
+        arr.push({
+            username:u.username||"Oyuncu",
+            money:u.money||0,
+            level:u.level||1,
+            cars:(u.cars||[]).length
+        });
+    });
 
-   username:"Zentrix 🛠️",
+    arr.sort((a,b)=>b.money-a.money);
 
-   text:
-   "📢 DUYURU: "+text,
+    ranking.innerHTML=arr.slice(0,50).map((u,i)=>`
+        <div class="panel" style="margin-bottom:8px;padding:15px">
+            <div style="display:flex;justify-content:space-between">
+                <b>#${i+1} ${escapeHTML(u.username)}</b>
 
-   createdAt:
-   serverTimestamp()
+                <span>
+                    Seviye ${u.level}
+                    · 🚗 ${u.cars}
+                    · 💵 $${format(u.money)}
+                </span>
+            </div>
+        </div>
+    `).join("");
+}
 
-  }
- );
 
- document.getElementById(
-  "announcementText"
- ).value="";
+/* USERS */
 
- alert("Duyuru yayınlandı.");
+async function loadUsers(){
 
+    onSnapshot(collection(db,"users"),snap=>{
+
+        usersCache=[];
+
+        snap.forEach(d=>{
+            usersCache.push({
+                id:d.id,
+                ...d.data()
+            });
+        });
+
+        renderDeveloper();
+    });
+}
+
+
+/* DEVELOPER */
+
+function renderDeveloper(){
+
+    if(!data)return;
+
+    if(data.role!=="developer" && data.role!=="admin"){
+        return;
+    }
+
+    devUsers.textContent=usersCache.length;
+
+    devMoney.textContent="$"+
+        format(
+            usersCache.reduce(
+                (sum,u)=>sum+(u.money||0),0
+            )
+        );
+
+    devCars.textContent=
+        usersCache.reduce(
+            (sum,u)=>sum+(u.cars||[]).length,
+            0
+        );
+
+    developerPlayers.innerHTML=usersCache.map(u=>`
+        <div class="panel" style="margin-top:10px">
+
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <b>${escapeHTML(u.username||"Oyuncu")}</b>
+                    <div style="color:var(--muted);font-size:12px">
+                        ${u.role||"player"} · ${u.id}
+                    </div>
+                </div>
+
+                <button class="secondary"
+                    onclick="editPlayer('${u.id}')">
+                    Yönet
+                </button>
+            </div>
+
+        </div>
+    `).join("");
+}
+
+window.editPlayer=async(uid)=>{
+
+    const u=usersCache.find(x=>x.id===uid);
+
+    if(!u)return;
+
+    modalTitle.textContent="Oyuncu Yönetimi";
+
+    modalContent.innerHTML=`
+
+        <h3>${escapeHTML(u.username)}</h3>
+
+        <br>
+
+        <label>Para</label>
+        <input id="editMoney"
+            class="input"
+            type="number"
+            value="${u.money||0}">
+
+        <label>Elmas</label>
+        <input id="editDiamonds"
+            class="input"
+            type="number"
+            value="${u.diamonds||0}">
+
+        <label>Seviye</label>
+        <input id="editLevel"
+            class="input"
+            type="number"
+            value="${u.level||1}">
+
+        <label>XP</label>
+        <input id="editXP"
+            class="input"
+            type="number"
+            value="${u.xp||0}">
+
+        <label>Rol</label>
+        <select id="editRole" class="input">
+            <option value="player" ${u.role==="player"?"selected":""}>Oyuncu</option>
+            <option value="admin" ${u.role==="admin"?"selected":""}>Yönetici</option>
+            <option value="developer" ${u.role==="developer"?"selected":""}>Yapımcı</option>
+        </select>
+
+        <button class="primary"
+            onclick="savePlayer('${uid}')">
+            Değişiklikleri Kaydet
+        </button>
+    `;
+
+    modal.classList.remove("hidden");
+};
+
+window.savePlayer=async(uid)=>{
+
+    const ref=doc(db,"users",uid);
+
+    await updateDoc(ref,{
+        money:Number(editMoney.value)||0,
+        diamonds:Number(editDiamonds.value)||0,
+        level:Number(editLevel.value)||1,
+        xp:Number(editXP.value)||0,
+        role:editRole.value
+    });
+
+    closeModal();
+
+    toast("Oyuncu güncellendi.");
 };
 
 
-/* OYUNCU LİSTESİ */
+/* HELPERS */
 
-window.loadDeveloperUsers=async function(){
+function format(n){
+    return Number(n||0).toLocaleString("tr-TR");
+}
 
- if(!isDeveloper())return;
+function escapeHTML(str){
+    return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
 
- const snap=
- await getDocs(
-  collection(db,"users")
- );
+function firebaseError(e){
 
- const rows=[];
+    const code=e.code||"";
 
- snap.forEach(d=>{
+    const errors={
+        "auth/invalid-credential":"E-posta veya şifre yanlış.",
+        "auth/email-already-in-use":"Bu e-posta zaten kullanılıyor.",
+        "auth/weak-password":"Şifre çok zayıf.",
+        "auth/invalid-email":"Geçersiz e-posta.",
+        "auth/network-request-failed":"İnternet bağlantısını kontrol et."
+    };
 
-  const u=d.data();
+    return errors[code]||"İşlem sırasında hata oluştu.";
+}
 
-  rows.push(`
+function toast(text){
 
-  <tr>
+    const t=document.getElementById("toast");
 
-  <td>
-  ${esc(u.username)}
-  </td>
+    t.textContent=text;
+    t.classList.remove("hidden");
 
-  <td>
-  ${u.role||"player"}
-  </td>
+    clearTimeout(window.toastTimer);
 
-  <td>
-  ${money(u.money)}
-  </td>
+    window.toastTimer=setTimeout(()=>{
+        t.classList.add("hidden");
+    },3000);
+}
 
-  <td>
-  ${u.diamonds||0}
-  </td>
 
-  <td>
-  Lv.${u.level||1}
-  </td>
+/* GLOBAL DOM */
 
-  <td>
-  ${u.banned?"🚫 BANLI":"🟢 Aktif"}
-  </td>
-
-  </tr>
-
-  `);
-
- });
-
- document.getElementById("developerUsers")
- .innerHTML=`
-
- <table>
-
- <tr>
- <th>Oyuncu</th>
- <th>Rol</th>
- <th>Para</th>
- <th>Elmas</th>
- <th>Seviye</th>
- <th>Durum</th>
- </tr>
-
- ${rows.join("")}
-
- </table>
-
- `;
-
-};
-
-
-/* ÇEKİLİŞ */
-
-window.raffle=async function(){
-
- if(!isDeveloper())return;
-
- const snap=
- await getDocs(
-  collection(db,"users")
- );
-
- const players=[];
-
- snap.forEach(d=>{
-
-  const u=d.data();
-
-  if(!u.banned)
-  players.push({
-   ref:d.ref,
-   data:u
-  });
-
- });
-
- if(!players.length){
-
-  alert("Oyuncu yok.");
-
-  return;
-
- }
-
- const winner=
- players[
-  Math.floor(
-   Math.random()*players.length
-  )
- ];
-
- const prize=10000;
-
- await updateDoc(
-  winner.ref,
-  {
-   money:
-   (winner.data.money||0)+prize
-  }
- );
-
- document.getElementById("raffleResult")
- .innerHTML=
- `
- 🎉 Kazanan:
- <b>${esc(winner.data.username)}</b>
- <br>
- 💰 Ödül:
- ${money(prize)}
- `;
-
- loadDeveloperUsers();
-
-};
-
-
-/* SAAT */
-
-setInterval(async()=>{
-
- if(!currentUser)return;
-
- gameMinutes+=5;
-
- /*
-  08:00 = 480
-  17:30 = 1050
-  20:30 = 1230
- */
-
- if(gameMinutes>1050){
-
-  /*
-   Fazla mesai çalışan başına
-   küçük bir maliyet
-  */
-
-  userData.money=
-  Math.max(
-   0,
-   userData.money-
-   employees.length*20
-  );
-
- }
-
- if(gameMinutes>=1230){
-
-  gameMinutes=480;
-
-  userData.day=
-  (userData.day||1)+1;
-
-  generateOrders();
-
- }
-
- renderDashboard();
-
- updateStats();
-
-},1500);
-
-
-/* OTOMATİK KAYIT */
-
-setInterval(()=>{
-
- if(currentUser)
- saveGame();
-
-},15000);
+const authDiv=document.getElementById("auth");
+const appDiv=document.getElementById("app");
 
 </script>
 
