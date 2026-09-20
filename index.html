@@ -6,1039 +6,1076 @@
 <title>Warehouse Tycoon</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
- --bg:#06080b;
- --panel:#0c1015;
- --panel2:#111720;
- --border:#222b35;
- --text:#f4f6f8;
- --muted:#8994a3;
- --green:#31d158;
- --red:#ff453a;
- --yellow:#ffd60a;
- --blue:#0a84ff;
- --purple:#a855f7;
-}
+*{box-sizing:border-box}
 body{
- background:var(--bg);
- color:var(--text);
- font-family:Arial,Helvetica,sans-serif;
- min-height:100vh
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#080b10;
+color:#eee;
+overflow-x:hidden
 }
-button,input,select{font:inherit}
+button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 
-#authScreen{
- min-height:100vh;
- display:flex;
- align-items:center;
- justify-content:center;
- background:radial-gradient(circle at 50% 20%,#182230 0,#06080b 58%)
+:root{
+--panel:#11161d;
+--panel2:#171e27;
+--border:#293340;
+--accent:#3ba9ff;
+--green:#35d07f;
+--red:#ff5364;
+--yellow:#ffc857;
+--text:#f4f6f8;
+--muted:#8e9aaa;
 }
-.authBox{
- width:440px;
- max-width:92%;
- background:#0c1015;
- border:1px solid #29333f;
- border-radius:18px;
- padding:38px;
- box-shadow:0 25px 80px #000
+
+.hidden{display:none!important}
+
+#auth{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:
+radial-gradient(circle at 50% 0,#173451 0,#080b10 48%);
 }
-.logo{font-size:31px;font-weight:900}
-.logo span,.brand span{color:var(--green)}
-.tagline{color:var(--muted);margin:8px 0 28px}
-.authTabs{
- display:flex;
- background:#070a0e;
- padding:4px;
- border-radius:9px;
- margin-bottom:18px
+
+.authbox{
+width:420px;
+max-width:100%;
+background:rgba(17,22,29,.96);
+border:1px solid #263443;
+border-radius:20px;
+padding:30px;
+box-shadow:0 20px 80px #000
 }
-.authTabs button{
- flex:1;
- padding:11px;
- border:0;
- color:#8d98a6;
- background:transparent;
- border-radius:7px
+
+.logo{
+font-size:27px;
+font-weight:900;
+letter-spacing:2px;
+text-align:center;
+margin-bottom:7px
 }
-.authTabs button.active{
- background:#1a222c;
- color:#fff
+
+.logo span{color:var(--accent)}
+.subtitle{
+text-align:center;
+color:var(--muted);
+font-size:13px;
+margin-bottom:25px
 }
+
 .input{
- width:100%;
- padding:13px;
- border-radius:9px;
- border:1px solid #293440;
- background:#080b0f;
- color:white;
- outline:none;
- margin-bottom:11px
+width:100%;
+padding:13px 14px;
+background:#0b1016;
+border:1px solid #2b3744;
+border-radius:10px;
+color:white;
+outline:none;
+margin-bottom:10px
 }
-.input:focus{border-color:#3b82f6}
-.mainButton{
- width:100%;
- padding:13px;
- border:0;
- border-radius:9px;
- background:var(--green);
- color:#061008;
- font-weight:bold
+.input:focus{border-color:var(--accent)}
+
+.btn{
+border:0;
+border-radius:9px;
+padding:10px 14px;
+background:var(--accent);
+color:white;
+font-weight:700;
+transition:.15s
 }
-.authError{
- min-height:20px;
- color:var(--red);
- font-size:13px;
- margin:5px 0
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.btn.green{background:#159957}
+.btn.red{background:#c93445}
+.btn.yellow{background:#a97900}
+.btn.gray{background:#303944}
+.btn.small{padding:7px 10px;font-size:12px}
+
+.authbuttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:8px
 }
 
-#app{display:none}
+#app{display:none;min-height:100vh}
 
-.topbar{
- height:74px;
- border-bottom:1px solid var(--border);
- background:#090c10;
- display:flex;
- align-items:center;
- gap:20px;
- padding:0 20px;
- position:sticky;
- top:0;
- z-index:30
+header{
+height:68px;
+position:sticky;
+top:0;
+z-index:50;
+background:rgba(8,11,16,.94);
+backdrop-filter:blur(15px);
+border-bottom:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 22px
 }
-.brand{font-size:21px;font-weight:900}
-.company{color:var(--muted);font-size:11px;margin-top:4px}
-.accountBox{
- margin-left:auto;
- display:flex;
- gap:8px;
- align-items:center;
- flex-wrap:wrap
+
+.brand{
+font-size:20px;
+font-weight:900;
+letter-spacing:1px
 }
-.accountPill{
- background:#111720;
- border:1px solid #27313b;
- padding:8px 12px;
- border-radius:9px
+.brand span{color:var(--accent)}
+
+.headerRight{
+display:flex;
+align-items:center;
+gap:10px
 }
-.accountPill small{
- display:block;
- color:#7f8997;
- font-size:9px;
- margin-bottom:3px
+
+.avatarMini{
+width:38px;
+height:38px;
+border-radius:50%;
+background:#263342;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+font-weight:bold
 }
-.accountPill b{font-size:13px}
-.money{font-size:17px;font-weight:bold;color:#6ce687}
-.diamond{font-size:15px;color:#c084fc;font-weight:bold}
-.timeBox{text-align:center}
-.gameTime{font-weight:bold;font-size:17px}
-.day{color:var(--muted);font-size:10px}
-#logoutBtn{
- background:#121820;
- color:#ddd;
- border:1px solid #2c3743;
- padding:8px 12px;
- border-radius:8px
-}
+.avatarMini img{width:100%;height:100%;object-fit:cover}
 
 .layout{
- display:flex;
- min-height:calc(100vh - 74px)
+display:flex;
+min-height:calc(100vh - 68px)
 }
-.sidebar{
- width:235px;
- background:#090c10;
- border-right:1px solid var(--border);
- padding:13px 10px;
- flex-shrink:0;
- overflow:auto
-}
-.navBtn{
- width:100%;
- text-align:left;
- border:0;
- background:transparent;
- color:#929dac;
- padding:11px 12px;
- margin-bottom:3px;
- border-radius:8px
-}
-.navBtn:hover{
- background:#121820;
- color:white
-}
-.navBtn.active{
- background:#162019;
- color:#64e37d
-}
-.adminNav{color:#f87171!important}
 
-.content{
- flex:1;
- max-width:1600px;
- padding:24px
+aside{
+width:240px;
+flex-shrink:0;
+background:#0d1218;
+border-right:1px solid var(--border);
+padding:15px 10px;
+overflow-y:auto
 }
+
+.navTitle{
+font-size:10px;
+color:#667281;
+font-weight:bold;
+padding:12px 10px 6px;
+text-transform:uppercase
+}
+
+.nav{
+width:100%;
+background:transparent;
+border:0;
+color:#b8c2ce;
+text-align:left;
+padding:11px 12px;
+border-radius:8px;
+margin:2px 0;
+font-weight:600
+}
+.nav:hover,.nav.active{
+background:#18222d;
+color:white
+}
+.nav.active{box-shadow:inset 3px 0 var(--accent)}
+
+main{
+flex:1;
+padding:22px;
+min-width:0
+}
+
 .page{display:none}
 .page.active{display:block}
+
 .pageTitle{
- font-size:27px;
- font-weight:800;
- margin-bottom:5px
+font-size:25px;
+font-weight:900;
+margin-bottom:5px
 }
-.pageSubtitle{
- color:var(--muted);
- margin-bottom:22px
+.pageSub{
+color:var(--muted);
+font-size:13px;
+margin-bottom:20px
 }
+
 .stats{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:14px;
- margin-bottom:18px
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-bottom:18px
 }
+
+.stat{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:13px;
+padding:16px
+}
+.statLabel{color:var(--muted);font-size:12px}
+.statValue{font-size:21px;font-weight:900;margin-top:7px}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:14px
+}
+
 .card{
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:12px;
- padding:17px
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:14px;
+padding:15px;
+box-shadow:0 8px 25px rgba(0,0,0,.13)
 }
-.cardLabel{
- color:#7f8997;
- font-size:11px;
- margin-bottom:8px
+
+.cardTitle{
+font-weight:900;
+font-size:16px;
+margin-bottom:7px
 }
-.cardValue{
- font-size:24px;
- font-weight:bold
-}
+
+.muted{color:var(--muted)}
 .green{color:var(--green)}
 .red{color:var(--red)}
 .yellow{color:var(--yellow)}
-.blue{color:#58aaff}
-.purple{color:#c084fc}
-.grid2{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:16px
-}
-.grid3{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:14px
-}
-.grid4{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:14px
-}
-table{
- width:100%;
- border-collapse:collapse
-}
-.tableWrap{overflow-x:auto}
-th,td{
- padding:12px;
- border-bottom:1px solid #1c232c;
- text-align:left;
- font-size:13px
-}
-th{
- color:#788493;
- font-size:10px;
- text-transform:uppercase
-}
-td{color:#dfe4ea}
-.status{
- display:inline-block;
- padding:5px 8px;
- border-radius:5px;
- font-size:10px;
- font-weight:bold
-}
-.status.green{background:#11331b;color:#64e77e}
-.status.red{background:#361412;color:#ff766e}
-.status.yellow{background:#342e0b;color:#ffe05c}
-.status.blue{background:#102d4d;color:#62b5ff}
+.blue{color:var(--accent)}
 
-.btn{
- border:0;
- border-radius:7px;
- padding:8px 12px;
- font-size:11px;
- font-weight:bold;
- cursor:pointer
-}
-.btnGreen{background:var(--green);color:#061008}
-.btnRed{background:var(--red);color:white}
-.btnBlue{background:var(--blue);color:white}
-.btnDark{background:#171e27;color:#e4e8ed;border:1px solid #2a333e}
-.btnPurple{background:var(--purple);color:white}
-.btnYellow{background:var(--yellow);color:#111}
-
-.extraWork{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:15px;
- background:linear-gradient(90deg,#17130a,#10151b);
- border:1px solid #5b4610;
- border-radius:12px;
- padding:15px;
- margin-bottom:16px
-}
-.extraWork b{color:#ffd60a}
-.extraWork p{
- font-size:12px;
- color:#8994a3;
- margin-top:4px
+.row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px
 }
 
-.progress{
- height:8px;
- background:#202731;
- border-radius:5px;
- overflow:hidden;
- margin-top:10px
-}
-.progress div{
- height:100%;
- background:var(--green);
- width:0%
+.rowWrap{
+display:flex;
+align-items:center;
+gap:8px;
+flex-wrap:wrap
 }
 
-.workerStats{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:10px;
- margin-top:14px
-}
-.workerStat{
- background:#111720;
- border:1px solid #202a34;
- padding:13px;
- border-radius:9px
-}
-.workerStat small{
- color:#7f8997;
- display:block;
- margin-bottom:5px
-}
-.workerStat b{font-size:20px}
-
-.rentGrid,.storeGrid,.vehicleGrid,.supplierGrid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:14px
-}
-.rentCard,.vehicleCard{
- background:#0c1015;
- border:1px solid #222b35;
- border-radius:12px;
- padding:17px
-}
-.storeIcon{font-size:30px}
-.truckIcon{font-size:35px}
-.rentPrice{
- font-size:19px;
- font-weight:bold;
- color:#ffd60a;
- margin:14px 0
+hr{
+border:0;
+border-top:1px solid var(--border);
+margin:14px 0
 }
 
+.badge{
+display:inline-block;
+font-size:10px;
+padding:4px 7px;
+border-radius:20px;
+background:#26313c;
+color:#c5ced8
+}
+
+.badge.green{background:#113d2b}
+.badge.red{background:#431b22}
+.badge.blue{background:#123450}
+.badge.yellow{background:#45360f}
+
+.productIcon{
+width:52px;
+height:52px;
+border-radius:12px;
+background:#202934;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+flex-shrink:0
+}
+
+.productTop{
+display:flex;
+align-items:center;
+gap:11px;
+margin-bottom:12px
+}
+
+.qtyInput{
+width:80px;
+padding:8px;
+background:#0b1016;
+color:white;
+border:1px solid #303b47;
+border-radius:8px
+}
+
+.actionRow{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+margin-top:12px
+}
+
+/* warehouse */
+.warehouse{
+height:400px;
+position:relative;
+overflow:hidden;
+border-radius:17px;
+border:1px solid #303a45;
+background:
+linear-gradient(#161e27 0 55%,#303840 55% 56%,#171b20 56%);
+margin-bottom:18px
+}
+
+.warehouse:after{
+content:"";
+position:absolute;
+left:0;
+right:0;
+bottom:0;
+height:44%;
+background:
+repeating-linear-gradient(
+90deg,
+transparent 0 90px,
+rgba(255,255,255,.035) 91px 92px
+);
+pointer-events:none
+}
+
+.ceiling{
+position:absolute;
+top:0;
+left:0;
+right:0;
+height:45px;
+background:#0d1218;
+border-bottom:2px solid #303945
+}
+
+.lamp{
+position:absolute;
+top:17px;
+width:55px;
+height:5px;
+background:#cbd8e5;
+box-shadow:0 0 18px #d6e5f2;
+border-radius:5px
+}
+
+.l1{left:12%}.l2{left:42%}.l3{left:72%}
+
+.rack{
+position:absolute;
+top:80px;
+width:250px;
+height:190px;
+border-left:8px solid #606b75;
+border-right:8px solid #606b75
+}
+
+.rack:before,.rack:after{
+content:"";
+position:absolute;
+left:0;
+right:0;
+height:7px;
+background:#67737d;
+box-shadow:0 58px #67737d,0 116px #67737d
+}
+
+.rack:before{top:0}.rack:after{top:58px}
+
+.rack1{left:4%}.rack2{left:35%}.rack3{left:66%}
+
+.pallet{
+position:absolute;
+width:35px;
+height:27px;
+background:#87633b;
+border-radius:3px;
+bottom:7px;
+box-shadow:
+48px 0 #87633b,
+96px 0 #87633b,
+144px 0 #87633b
+}
+
+.boxes{
+position:absolute;
+left:8px;
+right:8px;
+height:42px;
+display:flex;
+gap:7px;
+align-items:flex-end
+}
+
+.boxes b{
+width:35px;
+height:28px;
+background:#c08747;
+border:2px solid #7b532e;
+display:block
+}
+
+.b1{top:25px}.b2{top:84px}.b3{top:142px}
+
+.worker{
+position:absolute;
+bottom:67px;
+font-size:31px;
+z-index:10;
+animation:workerMove 16s linear infinite
+}
+
+.worker2{animation-delay:7s;font-size:27px}
+
+@keyframes workerMove{
+0%{left:-5%;transform:scaleX(1)}
+45%{left:50%;transform:scaleX(1)}
+50%{left:50%;transform:scaleX(-1)}
+95%{left:105%;transform:scaleX(-1)}
+100%{left:-5%;transform:scaleX(1)}
+}
+
+.forklift{
+position:absolute;
+bottom:48px;
+font-size:43px;
+z-index:12;
+animation:forkMove 20s linear infinite
+}
+
+.forklift2{
+animation-delay:9s;
+animation-duration:24s
+}
+
+@keyframes forkMove{
+0%{left:-8%}
+48%{left:45%}
+55%{left:60%}
+100%{left:108%}
+}
+
+.truckArea{
+position:absolute;
+right:-5px;
+bottom:34px;
+width:240px;
+height:100px;
+border:2px dashed #65717c;
+border-radius:8px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#75808b;
+font-size:11px
+}
+
+.actros{
+position:absolute;
+bottom:45px;
+left:-300px;
+z-index:20;
+animation:truckMove 25s linear infinite
+}
+
+@keyframes truckMove{
+0%{left:-300px}
+38%{left:35%}
+50%{left:45%}
+62%{left:55%}
+100%{left:110%}
+}
+
+.truck{
+display:flex;
+align-items:end;
+filter:drop-shadow(0 7px 8px #000)
+}
+
+.trailer{
+width:150px;
+height:60px;
+background:linear-gradient(#e6e9ec,#9ba5ad);
+border-radius:5px 2px 2px 5px;
+border:2px solid #59636b;
+position:relative
+}
+
+.trailer:after{
+content:"LOGISTICS";
+position:absolute;
+top:22px;
+left:34px;
+font-size:10px;
+font-weight:900;
+color:#303942
+}
+
+.cab{
+width:58px;
+height:48px;
+background:#26313b;
+border:2px solid #5e6a75;
+border-radius:5px 9px 3px 3px;
+position:relative
+}
+
+.window{
+position:absolute;
+top:7px;
+left:8px;
+width:36px;
+height:17px;
+background:#8db5d1;
+border-radius:3px
+}
+
+.wheel{
+position:absolute;
+bottom:-10px;
+width:21px;
+height:21px;
+border-radius:50%;
+background:#0a0c0f;
+border:5px solid #4e565d
+}
+.w1{left:15px}.w2{left:127px}.w3{right:8px}
+
+.dashboard{
+background:#10161d;
+border:1px solid var(--border);
+border-radius:13px;
+padding:13px;
+margin-bottom:15px
+}
+
+/* chat */
 .chatBox{
- background:#0c1015;
- border:1px solid #222b35;
- border-radius:12px;
- height:500px;
- display:flex;
- flex-direction:column
-}
-.chatMessages{
- flex:1;
- overflow:auto;
- padding:15px
+height:440px;
+overflow-y:auto;
+background:#0b1016;
+border:1px solid var(--border);
+border-radius:12px;
+padding:12px
 }
 .chatMessage{
- padding:10px;
- margin-bottom:8px;
- background:#111720;
- border-radius:8px
+padding:9px 11px;
+background:#151d26;
+border-radius:9px;
+margin-bottom:7px
 }
-.chatMessage b{color:#62b5ff}
-.chatMessage small{
- color:#6d7885;
- margin-left:8px
-}
-.chatInputArea{
- display:flex;
- gap:8px;
- padding:12px;
- border-top:1px solid #222b35
-}
-.chatInputArea input{margin:0}
+.chatMessage strong{color:var(--accent)}
+.chatTime{font-size:10px;color:#667281;margin-left:7px}
 
-.modal{
- display:none;
- position:fixed;
- inset:0;
- background:#000b;
- align-items:center;
- justify-content:center;
- z-index:100
+.chatInput{
+display:flex;
+gap:8px;
+margin-top:10px
 }
-.modalBox{
- width:500px;
- max-width:92%;
- background:#0c1015;
- border:1px solid #2a3540;
- border-radius:14px;
- padding:20px;
- box-shadow:0 20px 70px #000
+.chatInput input{margin:0}
+
+/* profile */
+.profileHead{
+display:flex;
+gap:18px;
+align-items:center
 }
-.modalHead{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:18px
+.profilePhoto{
+width:110px;
+height:110px;
+border-radius:50%;
+background:#202a34;
+border:2px solid #344454;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:42px;
+overflow:hidden
 }
-.modalClose{
- border:0;
- background:#171e27;
- color:white;
- width:32px;
- height:32px;
- border-radius:7px;
- cursor:pointer
-}
-.modalActions{
- display:flex;
- justify-content:flex-end;
- gap:8px;
- margin-top:16px
+.profilePhoto img{width:100%;height:100%;object-fit:cover}
+
+/* depot */
+.depotCard{
+padding:12px;
+border-radius:11px;
+background:#111820;
+border:1px solid #283441
 }
 
-.toast{
- display:none;
- position:fixed;
- right:20px;
- bottom:20px;
- z-index:200;
- background:#151b22;
- border:1px solid #303b47;
- padding:13px 16px;
- border-radius:9px;
- box-shadow:0 10px 30px #000;
- max-width:350px
+.depotLogo{
+font-size:27px
 }
 
-.profileAvatar{
- width:70px;
- height:70px;
- border-radius:50%;
- background:#162019;
- border:1px solid #31d158;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:28px;
- font-weight:bold;
- color:#64e37d
+/* responsive */
+@media(max-width:900px){
+aside{width:200px}
+.stats{grid-template-columns:repeat(2,1fr)}
 }
 
-@media(max-width:1000px){
- .stats,.grid4{grid-template-columns:repeat(2,1fr)}
- .grid3,.rentGrid,.storeGrid,.vehicleGrid,.supplierGrid{grid-template-columns:1fr 1fr}
+@media(max-width:650px){
+header{padding:0 10px}
+.layout{display:block}
+aside{
+width:100%;
+height:auto;
+display:flex;
+overflow-x:auto;
+border-right:0;
+border-bottom:1px solid var(--border)
 }
-@media(max-width:700px){
- .topbar{height:auto;padding:12px;flex-wrap:wrap}
- .accountBox{margin-left:0}
- .sidebar{width:190px}
- .content{padding:15px}
- .stats,.grid2,.grid3,.grid4,.rentGrid,.storeGrid,.vehicleGrid,.supplierGrid{grid-template-columns:1fr}
+.navTitle{display:none}
+.nav{white-space:nowrap;width:auto}
+main{padding:12px}
+.stats{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 
 <body>
 
-<!-- GİRİŞ -->
-<div id="authScreen">
-<div class="authBox">
-
+<!-- AUTH -->
+<section id="auth">
+<div class="authbox">
 <div class="logo">WAREHOUSE <span>TYCOON</span></div>
-<div class="tagline">Gelin ve kendi deponuzu yönetin.</div>
+<div class="subtitle">Online Depo & Lojistik Yönetim Sistemi</div>
 
-<div class="authTabs">
-<button id="loginTab" class="active">Giriş Yap</button>
-<button id="registerTab">Kayıt Ol</button>
-</div>
-
-<input id="username" class="input" placeholder="Hesap adı">
-<input id="password" class="input" type="password" placeholder="Şifre">
-
-<input id="depotNameInput" class="input" placeholder="Depo adı" style="display:none">
-
-<div id="authError" class="authError"></div>
-
-<button id="authButton" class="mainButton">GİRİŞ YAP</button>
-
-<div style="color:#66717e;font-size:11px;margin-top:15px;text-align:center">
-Hesaplar Firebase ile kaydedilir.
-</div>
-
+<div id="loginForm">
+<input id="loginEmail" class="input" type="email" placeholder="E-posta">
+<input id="loginPassword" class="input" type="password" placeholder="Şifre">
+<div class="authbuttons">
+<button class="btn" onclick="login()">Giriş Yap</button>
+<button class="btn gray" onclick="showRegister()">Kayıt Ol</button>
 </div>
 </div>
 
-<!-- OYUN -->
+<div id="registerForm" class="hidden">
+<input id="registerUsername" class="input" placeholder="Kullanıcı adı">
+<input id="registerEmail" class="input" type="email" placeholder="E-posta">
+<input id="registerPassword" class="input" type="password" placeholder="Şifre">
+<div class="authbuttons">
+<button class="btn green" onclick="register()">Hesap Oluştur</button>
+<button class="btn gray" onclick="showLogin()">Girişe Dön</button>
+</div>
+</div>
+
+<div id="authMessage" style="margin-top:14px;text-align:center;font-size:13px"></div>
+</div>
+</section>
+
+<!-- APP -->
 <div id="app">
 
-<div class="topbar">
-
-<div>
+<header>
 <div class="brand">WAREHOUSE <span>TYCOON</span></div>
-<div class="company" id="companyName">Şirket</div>
+
+<div class="headerRight">
+<div>
+<div style="font-size:11px;color:#7e8b99">Hesap</div>
+<div id="headerUsername" style="font-weight:bold">-</div>
 </div>
-
-<div class="timeBox">
-<div class="gameTime" id="gameClock">08:00</div>
-<div class="day" id="dayText">1. Gün</div>
+<div id="headerAvatar" class="avatarMini">👤</div>
+<button class="btn gray small" onclick="logout()">Çıkış</button>
 </div>
-
-<div class="accountBox">
-
-<div class="accountPill">
-<small>HESAP</small>
-<b id="accountName">-</b>
-</div>
-
-<div class="accountPill">
-<small>SEVİYE</small>
-<b id="levelText">1</b>
-</div>
-
-<div class="accountPill">
-<small>ÇALIŞAN</small>
-<b id="workerCount">0</b>
-</div>
-
-<div class="money" id="money">$10,000,000</div>
-<div class="diamond" id="diamonds">💎 0</div>
-
-<button id="logoutBtn">Çıkış</button>
-
-</div>
-</div>
+</header>
 
 <div class="layout">
 
-<aside class="sidebar">
+<aside>
 
-<button class="navBtn active" data-page="management">🏢 Yönetim Merkezi</button>
-<button class="navBtn" data-page="profile">👤 Profilim</button>
-<button class="navBtn" data-page="shipments">🚛 Gelen Sevkiyatlar</button>
-<button class="navBtn" data-page="inventory">📦 Depo Stokları</button>
-<button class="navBtn" data-page="rentals">🏪 Kiralık Dükkanlar</button>
-<button class="navBtn" data-page="stores">🏬 Mağazalar</button>
-<button class="navBtn" data-page="orders">🛒 Mağaza Siparişleri</button>
-<button class="navBtn" data-page="vehicles">🚚 Genel Sevkiyatlar</button>
-<button class="navBtn" data-page="suppliers">🌎 Tedarikçiler</button>
-<button class="navBtn" data-page="employees">👷 Çalışanlar</button>
-<button class="navBtn" data-page="depot">🏭 Depo Yönetimi</button>
-<button class="navBtn" data-page="chat">💬 Genel Sohbet</button>
-<button class="navBtn" data-page="depots">🌐 Depolar</button>
-<button class="navBtn adminNav" id="adminNav" data-page="admin" style="display:none">⚙️ Yönetici Merkezi</button>
+<div class="navTitle">Ana Menü</div>
+
+<button class="nav active" onclick="showPage('dashboard',this)">🏭 Yönetim Merkezi</button>
+<button class="nav" onclick="showPage('profile',this)">👤 Profilim</button>
+<button class="nav" onclick="showPage('incoming',this)">🚛 Gelen Sevkiyatlar</button>
+<button class="nav" onclick="showPage('inventory',this)">📦 Depo Stokları</button>
+<button class="nav" onclick="showPage('rentals',this)">🏪 Kiralık Dükkanlar</button>
+<button class="nav" onclick="showPage('stores',this)">🏬 Mağazalar</button>
+<button class="nav" onclick="showPage('orders',this)">📝 Mağaza Siparişleri</button>
+<button class="nav" onclick="showPage('shipments',this)">🚚 Genel Sevkiyatlar</button>
+<button class="nav" onclick="showPage('suppliers',this)">🌍 Tedarikçiler</button>
+<button class="nav" onclick="showPage('employees',this)">👷 Çalışanlar</button>
+
+<div class="navTitle">Depo</div>
+
+<button class="nav" onclick="showPage('depotManagement',this)">⚙️ Depo Yönetimi</button>
+<button class="nav" onclick="showPage('depots',this)">🏢 Depolar</button>
+<button class="nav" onclick="showPage('chat',this)">💬 Genel Sohbet</button>
+
+<div id="developerNav" class="hidden">
+<div class="navTitle">Yapımcı</div>
+<button class="nav" onclick="showPage('developer',this)">🛠️ Yapımcı Merkezi</button>
+</div>
 
 </aside>
 
-<main class="content">
+<main>
 
-<!-- YÖNETİM -->
-<section id="management" class="page active">
+<!-- DASHBOARD -->
+<section id="page-dashboard" class="page active">
 
 <div class="pageTitle">Yönetim Merkezi</div>
-<div class="pageSubtitle">Şirketinizin genel durumunu buradan yönetin.</div>
-
-<div class="extraWork">
-
-<div>
-<b id="overtimeStatus">Normal mesai</b>
-<p>Normal çalışma 08:00 — 17:30. Mesai ile 20:30'a kadar çalışabilirsiniz.</p>
-</div>
-
-<button id="overtimeBtn" class="btn btnYellow">BUGÜN MESAİYE KAL</button>
-
-</div>
+<div class="pageSub">Deponun günlük operasyonlarını buradan takip et.</div>
 
 <div class="stats">
-
-<div class="card">
-<div class="cardLabel">ŞİRKET BAKİYESİ</div>
-<div class="cardValue green" id="statMoney">$10,000,000</div>
+<div class="stat">
+<div class="statLabel">PARA</div>
+<div id="statMoney" class="statValue green">$0</div>
 </div>
-
-<div class="card">
-<div class="cardLabel">DEPO STOKU</div>
-<div class="cardValue" id="statStock">0</div>
+<div class="stat">
+<div class="statLabel">ELMAS</div>
+<div id="statDiamonds" class="statValue blue">💎 0</div>
 </div>
-
-<div class="card">
-<div class="cardLabel">MAĞAZALAR</div>
-<div class="cardValue" id="statStores">0</div>
+<div class="stat">
+<div class="statLabel">SEVİYE</div>
+<div id="statLevel" class="statValue">Lv. 1</div>
 </div>
-
-<div class="card">
-<div class="cardLabel">DEPO</div>
-<div class="cardValue blue" id="depotNameDisplay">Ana Depo</div>
-</div>
-
-</div>
-
-<div class="grid2">
-
-<div class="card">
-<h3>📊 Bugünkü Finans</h3>
-
-<div style="margin-top:15px;display:grid;gap:10px">
-
-<div style="display:flex;justify-content:space-between">
-<span class="cardLabel">Mağaza cirosu</span>
-<b class="green" id="todayRevenue">+$0</b>
-</div>
-
-<div style="display:flex;justify-content:space-between">
-<span class="cardLabel">Satın almalar</span>
-<b class="red" id="todayPurchases">-$0</b>
-</div>
-
-<div style="display:flex;justify-content:space-between">
-<span class="cardLabel">Kiralar</span>
-<b class="red" id="todayRent">-$0</b>
-</div>
-
-<div style="display:flex;justify-content:space-between">
-<span class="cardLabel">Mesai</span>
-<b class="red" id="todayOvertime">-$0</b>
-</div>
-
-<hr style="border-color:#222b35">
-
-<div style="display:flex;justify-content:space-between">
-<b>Net</b>
-<b class="green" id="todayNet">$0</b>
-</div>
-
+<div class="stat">
+<div class="statLabel">ÇALIŞAN</div>
+<div id="statEmployees" class="statValue">0</div>
 </div>
 </div>
 
-<div class="card">
+<div class="warehouse">
 
-<h3>👷 Çalışan Performansı</h3>
+<div class="ceiling"></div>
+<div class="lamp l1"></div>
+<div class="lamp l2"></div>
+<div class="lamp l3"></div>
 
-<div class="workerStats">
-
-<div class="workerStat">
-<small>Aktif</small>
-<b id="activeWorkers">0</b>
+<div class="rack rack1">
+<div class="boxes b1"><b></b><b></b><b></b><b></b></div>
+<div class="boxes b2"><b></b><b></b><b></b></div>
+<div class="boxes b3"><b></b><b></b><b></b><b></b></div>
 </div>
 
-<div class="workerStat">
-<small>Toplama</small>
-<b id="pickerWork">0 dk</b>
+<div class="rack rack2">
+<div class="boxes b1"><b></b><b></b><b></b><b></b></div>
+<div class="boxes b2"><b></b><b></b><b></b></div>
+<div class="boxes b3"><b></b><b></b><b></b><b></b></div>
 </div>
 
-<div class="workerStat">
-<small>Toplanan</small>
-<b id="pickedItems">0</b>
+<div class="rack rack3">
+<div class="boxes b1"><b></b><b></b><b></b><b></b></div>
+<div class="boxes b2"><b></b><b></b><b></b></div>
+<div class="boxes b3"><b></b><b></b><b></b><b></b></div>
 </div>
 
-<div class="workerStat">
-<small>Çalışma</small>
-<b id="workerHours">0 saat</b>
-</div>
+<div class="worker">👷</div>
+<div class="worker worker2">🧑‍🔧</div>
 
-</div>
+<div class="forklift">🏗️</div>
+<div class="forklift forklift2">🏗️</div>
 
-<div style="margin-top:20px">
-<div style="display:flex;justify-content:space-between">
-<span class="cardLabel">Mesai ilerlemesi</span>
-<span id="workHoursText" class="cardLabel">08:00 — 17:30</span>
+<div class="truckArea">SEVKİYAT RAMPASI</div>
+
+<div class="actros">
+<div class="truck">
+<div class="trailer">
+<div class="wheel w1"></div>
+<div class="wheel w2"></div>
 </div>
-<div class="progress">
-<div id="dayProgress"></div>
+<div class="cab">
+<div class="window"></div>
+<div class="wheel w3"></div>
+</div>
 </div>
 </div>
 
 </div>
 
+<div class="dashboard">
+<div class="row">
+<div>
+<strong>Depo Özeti</strong>
+<div class="muted" style="font-size:12px;margin-top:4px">
+Depo: <span id="dashboardDepot">-</span>
+</div>
+</div>
+<div id="dashboardRole" class="badge blue">Oyuncu</div>
+</div>
+<hr>
+<div class="rowWrap">
+<span class="badge">📦 Stok: <b id="dashStock">0</b></span>
+<span class="badge">🏬 Mağaza: <b id="dashStores">0</b></span>
+<span class="badge">🚛 Bekleyen: <b id="dashShipments">0</b></span>
+<span class="badge">📝 Sipariş: <b id="dashOrders">0</b></span>
+</div>
 </div>
 
 </section>
 
-<!-- PROFİL -->
-<section id="profile" class="page">
-
+<!-- PROFILE -->
+<section id="page-profile" class="page">
 <div class="pageTitle">Profilim</div>
-<div class="pageSubtitle">Oyuncu ve şirket bilgileriniz.</div>
+<div class="pageSub">Hesabını ve mağazalarını yönet.</div>
 
 <div class="card">
-
-<div style="display:flex;gap:18px;align-items:center">
-
-<div class="profileAvatar" id="profileAvatar">?</div>
+<div class="profileHead">
+<div id="profilePhoto" class="profilePhoto">👤</div>
 
 <div>
-<h2 id="profileUsername">-</h2>
-<p style="color:#8994a3;margin-top:5px" id="profileCompany">-</p>
+<div id="profileUsername" style="font-size:25px;font-weight:900">-</div>
+<div id="profileCompany" class="muted">-</div>
+<div id="profileRole" class="badge blue" style="margin-top:7px">Oyuncu</div>
+</div>
 </div>
 
-</div>
+<hr>
 
-<div class="grid4" style="margin-top:25px">
+<div class="grid">
 
 <div>
-<div class="cardLabel">DEPO</div>
-<b id="profileDepot">-</b>
-</div>
-
-<div>
-<div class="cardLabel">ÇALIŞAN</div>
-<b id="profileWorkers">0</b>
+<div class="muted" style="font-size:12px">PROFİL FOTOĞRAFI</div>
+<input id="photoURL" class="input" style="margin-top:7px" placeholder="Fotoğraf URL'si">
+<button class="btn" onclick="savePhoto()">Fotoğrafı Kaydet</button>
 </div>
 
 <div>
-<div class="cardLabel">MAĞAZA</div>
-<b id="profileStores">0</b>
+<div class="muted" style="font-size:12px">İSTATİSTİK</div>
+<div style="font-size:20px;font-weight:bold;margin-top:7px">
+🏬 <span id="profileStoreCount">0</span> mağaza
 </div>
-
-<div>
-<div class="cardLabel">SEVKIYAT</div>
-<b id="profileShipments">0</b>
+<div class="muted" style="margin-top:5px">
+Seviye <span id="profileLevel">1</span> · XP <span id="profileXP">0</span>
 </div>
-
-</div>
-
-<div class="grid2" style="margin-top:20px">
-
-<div class="card">
-<div class="cardLabel">PARA</div>
-<div class="cardValue green" id="profileMoney">$0</div>
-</div>
-
-<div class="card">
-<div class="cardLabel">ELMAS</div>
-<div class="cardValue purple" id="profileDiamonds">💎 0</div>
 </div>
 
 </div>
+</div>
 
+<div class="card" style="margin-top:14px">
+<div class="cardTitle">Mağazalarım</div>
+<div id="profileStores"></div>
 </div>
 
 </section>
 
-<!-- SEVKİYATLAR -->
-<section id="shipments" class="page">
-
+<!-- INCOMING -->
+<section id="page-incoming" class="page">
 <div class="pageTitle">Gelen Sevkiyatlar</div>
-<div class="pageSubtitle">Depoya gelen ürünleri kontrol edin.</div>
+<div class="pageSub">Gelen ürünleri kabul veya reddet.</div>
 
-<div id="shipmentsList"></div>
+<div id="incomingList" class="grid"></div>
 
+<div class="card" style="margin-top:15px">
+<div class="cardTitle">Sonuçlanan Sevkiyatlar</div>
+<div id="shipmentHistory"></div>
+</div>
 </section>
 
-<!-- STOK -->
-<section id="inventory" class="page">
-
+<!-- INVENTORY -->
+<section id="page-inventory" class="page">
 <div class="pageTitle">Depo Stokları</div>
-<div class="pageSubtitle">Depodaki ürünler.</div>
-
-<div class="stats">
-
-<div class="card">
-<div class="cardLabel">TOPLAM ÜRÜN</div>
-<div class="cardValue" id="inventoryTotal">0</div>
-</div>
-
-<div class="card">
-<div class="cardLabel">DOLULUK</div>
-<div class="cardValue blue" id="inventoryPercent">0%</div>
-</div>
-
-<div class="card">
-<div class="cardLabel">ÜRÜN TÜRÜ</div>
-<div class="cardValue" id="productTypes">0</div>
-</div>
-
-</div>
-
-<div class="card tableWrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Ürün</th>
-<th>Kategori</th>
-<th>Miktar</th>
-<th>Raf</th>
-<th>Durum</th>
-</tr>
-</thead>
-
-<tbody id="inventoryTable"></tbody>
-
-</table>
-
-</div>
-
+<div class="pageSub">Son kullanma tarihlerini ve ürün miktarlarını takip et.</div>
+<div id="inventoryList" class="grid"></div>
 </section>
 
-<!-- KİRALIK -->
-<section id="rentals" class="page">
-
+<!-- RENTALS -->
+<section id="page-rentals" class="page">
 <div class="pageTitle">Kiralık Dükkanlar</div>
-<div class="pageSubtitle">İstanbul ve çevresinden mağaza kiralayın.</div>
-
-<div id="rentalsGrid" class="rentGrid"></div>
-
+<div class="pageSub">Tüm mağazalar kiralık olarak açılır. Kirayı öde, mağazayı al.</div>
+<div id="rentalList" class="grid"></div>
 </section>
 
-<!-- MAĞAZALAR -->
-<section id="stores" class="page">
-
-<div class="pageTitle">Mağazalar</div>
-<div class="pageSubtitle">Kiralanmış mağazalarınız.</div>
-
-<div id="storesGrid" class="storeGrid"></div>
-
-<div id="noStores" class="card" style="display:none">
-Henüz mağazanız yok. Kiralık Dükkanlar bölümünden mağaza kiralayabilirsiniz.
-</div>
-
+<!-- STORES -->
+<section id="page-stores" class="page">
+<div class="pageTitle">Mağazalarım</div>
+<div class="pageSub">Aktif mağazaların.</div>
+<div id="storesList" class="grid"></div>
 </section>
 
-<!-- SİPARİŞLER -->
-<section id="orders" class="page">
-
+<!-- ORDERS -->
+<section id="page-orders" class="page">
 <div class="pageTitle">Mağaza Siparişleri</div>
-<div class="pageSubtitle">Mağazalarınızın siparişlerini yönetin.</div>
-
-<div id="ordersGrid" class="grid3"></div>
-
+<div class="pageSub">Her mağazanın bütün ürünleri tek sipariş içerisinde gösterilir.</div>
+<div id="ordersList" class="grid"></div>
 </section>
 
-<!-- ARAÇLAR -->
-<section id="vehicles" class="page">
-
+<!-- SHIPMENTS -->
+<section id="page-shipments" class="page">
 <div class="pageTitle">Genel Sevkiyatlar</div>
-<div class="pageSubtitle">Depo araçları ve sevkiyatlar.</div>
-
-<div id="vehiclesGrid" class="vehicleGrid"></div>
-
-</section>
-
-<!-- TEDARİK -->
-<section id="suppliers" class="page">
-
-<div class="pageTitle">Tedarikçiler</div>
-<div class="pageSubtitle">Uluslararası tedarikçilerden ürün sipariş edin.</div>
-
-<div class="card" style="margin-bottom:15px">
-Satın alma yöneticisi:
-<b id="purchaseManagerName" class="green">Atanmadı</b>
-<button id="managerBtn" class="btn btnBlue" style="margin-left:10px">YÖNETİCİ ATA</button>
-</div>
-
-<div id="suppliersGrid" class="supplierGrid"></div>
-
-</section>
-
-<!-- ÇALIŞANLAR -->
-<section id="employees" class="page">
-
-<div class="pageTitle">Çalışanlar</div>
-<div class="pageSubtitle">Personellerinizi yönetin.</div>
-
-<div class="stats">
+<div class="pageSub">Mercedes Actros araçlarıyla mağazalara ürün gönder.</div>
 
 <div class="card">
-<div class="cardLabel">TOPLAM</div>
-<div class="cardValue" id="employeeTotal">0</div>
-</div>
-
-<div class="card">
-<div class="cardLabel">FORKLİFT</div>
-<div class="cardValue" id="forkliftCount">0</div>
-</div>
-
-<div class="card">
-<div class="cardLabel">TOPLAYICI</div>
-<div class="cardValue" id="pickerCount">0</div>
-</div>
-
-<div class="card">
-<div class="cardLabel">SEVKİYAT</div>
-<div class="cardValue" id="shipWorkerCount">0</div>
-</div>
-
-</div>
-
-<div class="grid2">
-
-<div class="card">
-
-<h3>Yeni Başvurular</h3>
-
-<div id="applications" style="margin-top:15px"></div>
-
-</div>
-
-<div class="card tableWrap">
-
-<table>
-
-<thead>
-<tr>
-<th>İsim</th>
-<th>Görev</th>
-<th>Maaş</th>
-<th>Durum</th>
-<th>İşlem</th>
-</tr>
-</thead>
-
-<tbody id="employeesTable"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- DEPO -->
-<section id="depot" class="page">
-
-<div class="pageTitle">Depo Yönetimi</div>
-<div class="pageSubtitle">Depo bilgilerinizi yönetin.</div>
-
-<div class="card">
-
-<div class="cardLabel">DEPO ADI</div>
-
-<input id="depotNameEdit" class="input" style="margin-top:7px">
-
-<button id="changeDepotBtn" class="btn btnGreen">DEPO ADINI DEĞİŞTİR</button>
-
-<p id="nameChangeInfo" style="color:#8994a3;font-size:12px;margin-top:10px"></p>
-
+<div class="cardTitle">🚚 Mercedes Actros Filosu</div>
+<div id="vehicleList" class="grid"></div>
 </div>
 
 <div class="card" style="margin-top:15px">
+<div class="cardTitle">💰 Para Toplama Birimi</div>
+<div class="muted" style="font-size:12px;margin-bottom:12px">
+Çalışanı mağazaya gönder. Yol süresi mağazanın uzaklığına göre hesaplanır.
+</div>
+<div id="cashCollectionList" class="grid"></div>
+</div>
+</section>
 
-<h3>Depo Kapasitesi</h3>
+<!-- SUPPLIERS -->
+<section id="page-suppliers" class="page">
+<div class="pageTitle">Uluslararası Tedarikçiler</div>
+<div class="pageSub">Ürün seç, miktar belirle ve sipariş ver.</div>
+<div id="supplierList"></div>
+</section>
 
-<div style="font-size:28px;font-weight:bold;margin-top:12px">
-100,000
+<!-- EMPLOYEES -->
+<section id="page-employees" class="page">
+<div class="pageTitle">Çalışanlar</div>
+<div class="pageSub">Depo çalışanlarını yönet.</div>
+<div id="employeesList" class="grid"></div>
+</section>
+
+<!-- DEPOT MANAGEMENT -->
+<section id="page-depotManagement" class="page">
+<div class="pageTitle">Depo Yönetimi</div>
+<div class="pageSub">Depo bilgilerini ve yöneticisini yönet.</div>
+
+<div class="card">
+<div class="row">
+<div>
+<div class="muted" style="font-size:11px">DEPO</div>
+<div id="managementDepotName" style="font-size:22px;font-weight:900">-</div>
+</div>
+<div class="badge blue" id="managementLevel">Lv. 1</div>
 </div>
 
-<p style="color:#8994a3;margin-top:5px">maksimum ürün</p>
+<hr>
 
+<div>
+<div class="muted" style="font-size:12px">DEPO SAHİBİ</div>
+<div id="depotOwner" style="font-weight:bold;margin-top:5px">-</div>
 </div>
 
+<div style="margin-top:15px">
+<div class="muted" style="font-size:12px">MEVCUT YÖNETİCİ</div>
+<div id="currentManager" style="font-weight:bold;margin-top:5px">-</div>
+</div>
+
+<hr>
+
+<div class="rowWrap">
+<input id="newDepotName" class="input" style="max-width:330px;margin:0" placeholder="Yeni depo adı">
+<button class="btn" onclick="renameDepot()">Depoyu Yeniden Adlandır</button>
+</div>
+
+<div class="muted" style="font-size:11px;margin-top:7px">
+İlk isim değişikliği ücretsizdir. İkinci ve sonraki değişiklikler 500 💎.
+</div>
+
+<hr>
+
+<div class="cardTitle">Yönetici Değiştir</div>
+<div class="muted" style="font-size:12px;margin-bottom:8px">
+Depo yönetimini başka bir oyuncuya devredebilirsin.
+</div>
+
+<select id="managerSelect" class="input"></select>
+<button class="btn yellow" onclick="transferManager()">Yönetimi Devret</button>
+
+</div>
+</section>
+
+<!-- DEPOTS -->
+<section id="page-depots" class="page">
+<div class="pageTitle">Depolar</div>
+<div class="pageSub">Diğer oyuncuların depoları ve iş başvuruları.</div>
+<div id="depotsList" class="grid"></div>
 </section>
 
 <!-- CHAT -->
-<section id="chat" class="page">
-
+<section id="page-chat" class="page">
 <div class="pageTitle">Genel Sohbet</div>
-<div class="pageSubtitle">Tüm oyuncularla gerçek zamanlı sohbet edin.</div>
+<div class="pageSub">Oyuncularla gerçek zamanlı konuş.</div>
 
-<div class="chatBox">
+<div id="chatBox" class="chatBox"></div>
 
-<div id="chatMessages" class="chatMessages"></div>
-
-<div class="chatInputArea">
-
-<input id="chatInput" class="input" placeholder="Mesaj yaz..." autocomplete="off">
-
-<button id="chatSendBtn" class="btn btnGreen">GÖNDER</button>
-
+<div class="chatInput">
+<input id="chatInput" class="input" placeholder="Mesaj yaz..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="btn" onclick="sendChat()">Gönder</button>
 </div>
-
-</div>
-
 </section>
 
-<!-- DEPOLAR -->
-<section id="depots" class="page">
+<!-- DEVELOPER -->
+<section id="page-developer" class="page">
 
-<div class="pageTitle">Depolar</div>
-<div class="pageSubtitle">Diğer oyuncuların depoları.</div>
-
-<div id="depotsList" class="grid3"></div>
-
-</section>
-
-<!-- ADMIN -->
-<section id="admin" class="page">
-
-<div class="pageTitle">Yönetici Merkezi</div>
-<div class="pageSubtitle">Yönetici işlemleri.</div>
-
-<div class="grid2">
+<div class="pageTitle">Yapımcı Merkezi</div>
+<div class="pageSub">Sunucu ve oyuncu yönetim merkezi.</div>
 
 <div class="card">
+<div class="cardTitle">Oyuncu İşlemleri</div>
 
-<h3>Para Ekle</h3>
+<select id="developerUserSelect" class="input"></select>
 
-<input id="adminMoney" class="input" type="number" placeholder="Miktar">
+<div class="grid">
 
-<button id="adminMoneyBtn" class="btn btnGreen">PARA EKLE</button>
+<div>
+<div class="muted" style="font-size:11px">PARA</div>
+<div class="rowWrap" style="margin-top:5px">
+<input id="devMoney" class="qtyInput" type="number" value="1000">
+<button class="btn small green" onclick="devMoneyChange(1)">+ Para</button>
+<button class="btn small red" onclick="devMoneyChange(-1)">- Para</button>
+</div>
+</div>
+
+<div>
+<div class="muted" style="font-size:11px">ELMAS</div>
+<div class="rowWrap" style="margin-top:5px">
+<input id="devDiamonds" class="qtyInput" type="number" value="100">
+<button class="btn small green" onclick="devDiamondChange(1)">+ Elmas</button>
+<button class="btn small red" onclick="devDiamondChange(-1)">- Elmas</button>
+</div>
+</div>
+
+<div>
+<div class="muted" style="font-size:11px">XP</div>
+<div class="rowWrap" style="margin-top:5px">
+<input id="devXP" class="qtyInput" type="number" value="100">
+<button class="btn small green" onclick="devXPChange(1)">+ XP</button>
+<button class="btn small red" onclick="devXPChange(-1)">- XP</button>
+</div>
+</div>
+
+<div>
+<div class="muted" style="font-size:11px">SEVİYE</div>
+<div class="rowWrap" style="margin-top:5px">
+<input id="devLevel" class="qtyInput" type="number" value="1">
+<button class="btn small" onclick="devSetLevel()">Seviyeyi Ayarla</button>
+</div>
+</div>
 
 </div>
 
-<div class="card">
+<hr>
 
-<h3>Elmas Ekle</h3>
+<div class="rowWrap">
+<select id="devRole" class="input" style="width:180px;margin:0">
+<option value="player">Oyuncu</option>
+<option value="moderator">Moderatör</option>
+<option value="admin">Yönetici</option>
+<option value="developer">Yapımcı</option>
+</select>
 
-<input id="adminDiamond" class="input" type="number" placeholder="Miktar">
-
-<button id="adminDiamondBtn" class="btn btnPurple">ELMAS EKLE</button>
-
+<button class="btn" onclick="devSetRole()">Rolü Değiştir</button>
+<button class="btn gray" onclick="devGift()">🎁 Hediye Ver</button>
+<button class="btn red" onclick="devBan(true)">⛔ Banla</button>
+<button class="btn green" onclick="devBan(false)">Banı Aç</button>
+<button class="btn yellow" onclick="devMute(true)">🔇 Sohbet Sustur</button>
+<button class="btn green" onclick="devMute(false)">🔊 Susturmayı Aç</button>
 </div>
 
 </div>
 
 <div class="card" style="margin-top:15px">
-
-<h3>Oyuncuya Hediye</h3>
-
-<input id="giftUser" class="input" placeholder="Hesap adı" style="margin-top:12px">
-<input id="giftMoney" class="input" type="number" placeholder="Para">
-<input id="giftDiamond" class="input" type="number" placeholder="Elmas">
-
-<button id="giftBtn" class="btn btnGreen">HEDİYE GÖNDER</button>
-
+<div class="cardTitle">📢 Genel Duyuru</div>
+<textarea id="announcementText" class="input" rows="3" placeholder="Oyunculara duyuru..."></textarea>
+<button class="btn" onclick="makeAnnouncement()">Duyuru Yayınla</button>
 </div>
 
 <div class="card" style="margin-top:15px">
-
-<h3>Oyuncu Banla</h3>
-
-<input id="banUser" class="input" placeholder="Hesap adı" style="margin-top:12px">
-
-<button id="banBtn" class="btn btnRed">BANLA</button>
-
-</div>
-
-<div class="card" style="margin-top:15px">
-
-<h3>Kayıtlı Oyuncular</h3>
-
-<div id="adminUsers" style="margin-top:15px"></div>
-
+<div class="cardTitle">👥 Oyuncu Listesi</div>
+<div id="developerPlayers"></div>
 </div>
 
 </section>
@@ -1047,3356 +1084,1420 @@ Satın alma yöneticisi:
 </div>
 </div>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
-
-<div class="modalBox">
-
-<div class="modalHead">
-
-<h3 id="modalTitle">İşlem</h3>
-
-<button id="modalClose" class="modalClose">×</button>
-
-</div>
-
-<div id="modalContent"></div>
-
-<div class="modalActions">
-
-<button id="modalCancel" class="btn btnDark">İPTAL</button>
-<button id="modalConfirm" class="btn btnGreen">ONAYLA</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="toast" class="toast"></div>
-
-<!-- FIREBASE + OYUN KODU -->
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
- getAuth,
- createUserWithEmailAndPassword,
- signInWithEmailAndPassword,
- signOut,
- onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
- getFirestore,
- doc,
- setDoc,
- getDoc,
- collection,
- addDoc,
- updateDoc,
- onSnapshot,
- query,
- orderBy,
- limit,
- serverTimestamp,
- getDocs
-}
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+getFirestore,
+doc,
+setDoc,
+getDoc,
+updateDoc,
+collection,
+addDoc,
+getDocs,
+onSnapshot,
+query,
+orderBy,
+limit,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-
-/* =========================
-   FIREBASE
-========================= */
-
-const firebaseConfig = {
- apiKey:"AIzaSyD0SiZhSgAaUfKfXn35ZSEyN8Mt1n9kw0c",
- authDomain:"warehouse-c7e7a.firebaseapp.com",
- projectId:"warehouse-c7e7a",
- storageBucket:"warehouse-c7e7a.firebasestorage.app",
- messagingSenderId:"413897703086",
- appId:"1:413897703086:web:5a1c68762751523ba5f73f",
- measurementId:"G-E1GLZ4VZVH"
+const firebaseConfig={
+apiKey:"AIzaSyD0SiZhSgAaUfKfXn35ZSEyN8Mt1n9kw0c",
+authDomain:"warehouse-c7e7a.firebaseapp.com",
+projectId:"warehouse-c7e7a",
+storageBucket:"warehouse-c7e7a.firebasestorage.app",
+messagingSenderId:"413897703086",
+appId:"1:413897703086:web:5a1c68762751523ba5f73f",
+measurementId:"G-E1GLZ4VZVH"
 };
 
-const firebaseApp=initializeApp(firebaseConfig);
-const auth=getAuth(firebaseApp);
-const db=getFirestore(firebaseApp);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-
-/* =========================
-   VERİLER
-========================= */
-
-const products=[
- {id:1,name:"Makarna",category:"Gıda",supplier:"Anadolu Food",price:4.5,icon:"🍝"},
- {id:2,name:"Su 1.5L",category:"İçecek",supplier:"Aqua Global",price:2,icon:"💧"},
- {id:3,name:"Kola 330ml",category:"İçecek",supplier:"Global Drinks",price:3,icon:"🥤"},
- {id:4,name:"Deterjan",category:"Temizlik",supplier:"Euro Distribution",price:8,icon:"🧴"},
- {id:5,name:"Şampuan",category:"Kişisel Bakım",supplier:"Anatolia Care",price:7,icon:"🧴"},
- {id:6,name:"Pirinç 1kg",category:"Gıda",supplier:"Asia Foods",price:6,icon:"🍚"},
- {id:7,name:"Bisküvi",category:"Gıda",supplier:"Anadolu Food",price:3.5,icon:"🍪"},
- {id:8,name:"Meyve Suyu",category:"İçecek",supplier:"Global Drinks",price:4,icon:"🧃"},
- {id:9,name:"Çamaşır Suyu",category:"Temizlik",supplier:"Euro Distribution",price:9,icon:"🧼"},
- {id:10,name:"Peçete",category:"Temizlik",supplier:"Euro Distribution",price:2.5,icon:"🧻"}
-];
-
-const shops=[
- ["Kadıköy Merkez","İstanbul",28000],
- ["Ataşehir Bulvar","İstanbul",32000],
- ["Kartal Sahil","İstanbul",24000],
- ["Ümraniye Meydan","İstanbul",30000],
- ["Pendik Çarşı","İstanbul",26000],
- ["Maltepe Park","İstanbul",31000],
- ["Sancaktepe Merkez","İstanbul",22000],
- ["Çekmeköy Meydan","İstanbul",23000],
- ["Üsküdar Sahil","İstanbul",36000],
- ["Bakırköy Cadde","İstanbul",39000],
- ["Beşiktaş Merkez","İstanbul",45000],
- ["Beylikdüzü AVM","İstanbul",34000],
- ["Avcılar Merkez","İstanbul",27000],
- ["Başakşehir Kayaşehir","İstanbul",30000],
- ["Esenyurt Meydan","İstanbul",21000],
- ["Kağıthane Merkez","İstanbul",33000],
- ["Sarıyer Merkez","İstanbul",48000],
- ["Tuzla Marina","İstanbul",29000],
- ["Gebze Merkez","Kocaeli",20000],
- ["Kurtköy Pendik","İstanbul",28000],
- ["Bakırköy Sahil","İstanbul",42000],
- ["Levent Merkez","İstanbul",50000],
- ["Maslak","İstanbul",52000],
- ["Bostancı","İstanbul",35000],
- ["Göztepe","İstanbul",34000],
- ["Erenköy","İstanbul",37000],
- ["Acıbadem","İstanbul",33000],
- ["Kozyatağı","İstanbul",38000],
- ["Küçükyalı","İstanbul",30000],
- ["Florya","İstanbul",41000]
-].map((x,i)=>({
- id:i,
- name:x[0],
- city:x[1],
- rent:x[2]
-}));
-
-const suppliers=[
- ["Anadolu Food","Türkiye","Gıda",1],
- ["Euro Distribution","Almanya","Temizlik",1.35],
- ["Asia Foods","Çin","Gıda",.8],
- ["Global Drinks","Hollanda","İçecek",1.15],
- ["Aqua Global","İtalya","İçecek",1.1],
- ["Anatolia Care","Türkiye","Kişisel Bakım",1],
- ["Bosphorus Trade","Türkiye","Gıda",1.05],
- ["Nordic Supply","İsveç","Temizlik",1.3],
- ["Mediterranean Goods","İspanya","Gıda",1.12],
- ["Black Sea Foods","Türkiye","Gıda",.95],
- ["Global Hygiene","Fransa","Temizlik",1.28],
- ["Pacific Imports","Japonya","Kişisel Bakım",1.4],
- ["Danube Logistics","Avusturya","Gıda",1.18],
- ["Balkan Distribution","Bulgaristan","İçecek",1.02],
- ["Central Europe Supply","Polonya","Temizlik",1.14]
-].map(x=>({
- name:x[0],
- country:x[1],
- products:x[2],
- factor:x[3]
-}));
-
-const defaultEmployees=[
- {id:1,name:"Ahmet Y.",job:"Forklift",salary:32000,status:"Çalışıyor"},
- {id:2,name:"Mehmet K.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
- {id:3,name:"Burak T.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
- {id:4,name:"Emre A.",job:"Sevkiyat",salary:30000,status:"Sahada"},
- {id:5,name:"Can D.",job:"Forklift",salary:32000,status:"Çalışıyor"},
- {id:6,name:"Hakan P.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"}
-];
-
-let currentUser=null;
+let firebaseUser=null;
 let userData=null;
-
-let money=10000000;
-let diamonds=0;
-let day=1;
-let level=1;
-let xp=0;
-let minutes=480;
-
-let depotName="Ana Depo";
-let inventory=[];
-let stores=[];
-let orders=[];
-let shipments=[];
-let applications=[];
-let employees=[];
-
-let purchaseManager="";
-let nameChanged=false;
-
-let overtime=false;
-let lastRevenue=0;
-let lastPurchases=0;
-let lastRent=0;
-let lastOvertimeCost=0;
-
-let pickedItemsToday=0;
-let pickerMinutesToday=0;
-let workerMinutesToday=0;
-
 let unsubscribeChat=null;
 let unsubscribeUsers=null;
 
-
-/* =========================
-   AUTH
-========================= */
-
-let registerMode=false;
-
-document.getElementById("loginTab").addEventListener("click",()=>{
- registerMode=false;
-
- document.getElementById("loginTab").classList.add("active");
- document.getElementById("registerTab").classList.remove("active");
-
- document.getElementById("authButton").textContent="GİRİŞ YAP";
- document.getElementById("depotNameInput").style.display="none";
-});
-
-document.getElementById("registerTab").addEventListener("click",()=>{
- registerMode=true;
-
- document.getElementById("registerTab").classList.add("active");
- document.getElementById("loginTab").classList.remove("active");
-
- document.getElementById("authButton").textContent="ŞİRKETİ KUR";
- document.getElementById("depotNameInput").style.display="block";
-});
-
-
-function usernameToEmail(username){
-
- const clean=username
-  .toLowerCase()
-  .replace(/[^a-z0-9._-]/g,"");
-
- return clean+"@warehouse.local";
-}
-
-
-document.getElementById("authButton").addEventListener("click",async()=>{
-
- const username=document.getElementById("username").value.trim();
- const password=document.getElementById("password").value;
- const depot=document.getElementById("depotNameInput").value.trim();
-
- const error=document.getElementById("authError");
-
- error.style.color="#ff453a";
- error.textContent="";
-
- if(username.length<3){
-  error.textContent="Hesap adı en az 3 karakter olmalı.";
-  return;
- }
-
- if(password.length<6){
-  error.textContent="Şifre en az 6 karakter olmalı.";
-  return;
- }
-
- const email=usernameToEmail(username);
-
- try{
-
-  if(registerMode){
-
-   const result=await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-   );
-
-   const uid=result.user.uid;
-
-   await setDoc(doc(db,"users",uid),{
-    uid,
-    username,
-    company:username+" Logistics",
-    depot:depot||username+" Ana Deposu",
-
-    money:10000000,
-    diamonds:0,
-
-    level:1,
-    xp:0,
-    day:1,
-
-    inventory:[],
-    stores:[],
-    orders:[],
-    shipments:[],
-
-    applications:[],
-    employees:JSON.parse(JSON.stringify(defaultEmployees)),
-
-    purchaseManager:"",
-    nameChanged:false,
-
-    banned:false,
-    role:"player",
-
-    createdAt:serverTimestamp()
-   });
-
-   error.style.color="#31d158";
-   error.textContent="Şirket oluşturuldu! Oyuna giriş yapılıyor.";
-
-  }else{
-
-   await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-   );
-
-  }
-
- }catch(err){
-
-  console.error(err);
-
-  if(err.code==="auth/email-already-in-use"){
-   error.textContent="Bu hesap adı zaten kullanılıyor.";
-  }else if(err.code==="auth/invalid-credential"){
-   error.textContent="Hesap adı veya şifre yanlış.";
-  }else if(err.code==="auth/weak-password"){
-   error.textContent="Şifre en az 6 karakter olmalı.";
-  }else{
-   error.textContent="Firebase hatası: "+err.message;
-  }
-
- }
-});
-
-
-onAuthStateChanged(auth,async(user)=>{
-
- if(!user){
-  return;
- }
-
- try{
-
-  const snap=await getDoc(doc(db,"users",user.uid));
-
-  if(!snap.exists()){
-   showAuthError("Oyuncu bilgileri bulunamadı.");
-   return;
-  }
-
-  const data=snap.data();
-
-  if(data.banned){
-   await signOut(auth);
-   showAuthError("Bu hesap yönetici tarafından banlanmış.");
-   return;
-  }
-
-  currentUser={
-   uid:user.uid,
-   username:data.username
-  };
-
-  userData=data;
-
-  loadUserData(data);
-
-  showApp();
-
- }catch(err){
-
-  console.error(err);
-
-  showAuthError("Oyuncu bilgileri alınamadı.");
-
- }
-
-});
-
-
-function showAuthError(text){
-
- const e=document.getElementById("authError");
- e.style.color="#ff453a";
- e.textContent=text;
-
-}
-
-
-function loadUserData(u){
-
- money=u.money??10000000;
- diamonds=u.diamonds??0;
-
- day=u.day??1;
- level=u.level??1;
- xp=u.xp??0;
-
- depotName=u.depot||"Ana Depo";
-
- inventory=u.inventory||[];
- stores=u.stores||[];
- orders=u.orders||[];
- shipments=u.shipments||[];
-
- applications=u.applications||[];
- employees=u.employees||JSON.parse(JSON.stringify(defaultEmployees));
-
- purchaseManager=u.purchaseManager||"";
- nameChanged=u.nameChanged||false;
-
- if(!shipments.length){
-  createShipment();
- }
-
-}
-
-
-/* =========================
-   FIRESTORE KAYDET
-========================= */
-
-let saveTimer=null;
-
-function saveGame(){
-
- if(!currentUser)return;
-
- clearTimeout(saveTimer);
-
- saveTimer=setTimeout(async()=>{
-
-  try{
-
-   await updateDoc(
-    doc(db,"users",currentUser.uid),
-    {
-     money,
-     diamonds,
-     day,
-     level,
-     xp,
-     depot:depotName,
-     inventory,
-     stores,
-     orders,
-     shipments,
-     applications,
-     employees,
-     purchaseManager,
-     nameChanged,
-     updatedAt:serverTimestamp()
-    }
-   );
-
-  }catch(err){
-
-   console.error("Kaydetme hatası:",err);
-
-  }
-
- },300);
-
-}
-
-
-/* =========================
-   OYUN
-========================= */
-
-function showApp(){
-
- document.getElementById("authScreen").style.display="none";
- document.getElementById("app").style.display="block";
-
- document.getElementById("companyName").textContent=
-  userData.company||currentUser.username+" Logistics";
-
- document.getElementById("accountName").textContent=
-  currentUser.username;
-
- document.getElementById("depotNameDisplay").textContent=depotName;
- document.getElementById("depotNameEdit").value=depotName;
-
- updateAll();
- startClock();
- startChat();
-
-}
-
-
-document.getElementById("logoutBtn").addEventListener("click",async()=>{
-
- saveGame();
-
- if(unsubscribeChat){
-  unsubscribeChat();
-  unsubscribeChat=null;
- }
-
- await signOut(auth);
-
- location.reload();
-
-});
-
-
-/* =========================
-   NAVİGASYON
-========================= */
-
-document.querySelectorAll(".navBtn").forEach(btn=>{
-
- btn.addEventListener("click",()=>{
-
-  goPage(btn.dataset.page);
-
- });
-
-});
-
-
-function goPage(page){
-
- document.querySelectorAll(".navBtn")
-  .forEach(x=>x.classList.remove("active"));
-
- document.querySelectorAll(".page")
-  .forEach(x=>x.classList.remove("active"));
-
- const nav=document.querySelector(
-  `.navBtn[data-page="${page}"]`
- );
-
- if(nav)nav.classList.add("active");
-
- const el=document.getElementById(page);
-
- if(el)el.classList.add("active");
-
- updateAll();
-
-}
-
-
-/* =========================
-   SAAT
-========================= */
-
-function workEnd(){
-
- return overtime?1230:1050;
-
-}
-
-
-function startClock(){
-
- setInterval(()=>{
-
-  if(!currentUser)return;
-
-  if(minutes>=workEnd()){
-
-   if(overtime){
-
-    overtime=false;
-
-    showToast("Mesai sona erdi.");
-
-   }
-
-   nextDay();
-
-   return;
-
-  }
-
-  minutes+=5;
-
-  workerMinutesToday+=employees.length*5;
-
-  if(overtime){
-
-   const cost=employees.length*150;
-
-   lastOvertimeCost+=cost;
-
-   money-=cost;
-
-  }
-
-  renderClock();
-  updateWorkerStats();
-
- },1500);
-
-}
-
-
-function renderClock(){
-
- const h=Math.floor(minutes/60);
- const m=minutes%60;
-
- document.getElementById("gameClock").textContent=
-  String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
-
- document.getElementById("dayText").textContent=
-  day+". Gün";
-
- const progress=
-  ((minutes-480)/(workEnd()-480))*100;
-
- document.getElementById("dayProgress").style.width=
-  Math.max(0,Math.min(100,progress))+"%";
-
- document.getElementById("workHoursText").textContent=
-  "08:00 — "+(overtime?"20:30":"17:30");
-
- document.getElementById("overtimeStatus").textContent=
-  overtime?"🔶 Bugün mesai aktif":"Normal mesai";
-
- document.getElementById("overtimeBtn").textContent=
-  overtime?"MESAIYİ BİTİR":"BUGÜN MESAİYE KAL";
-
-}
-
-
-document.getElementById("overtimeBtn").addEventListener(
- "click",
- toggleOvertime
-);
-
-
-function toggleOvertime(){
-
- overtime=!overtime;
-
- showToast(
-  overtime
-   ?"Bugün mesai aktif. Çalışma 20:30'a kadar sürecek."
-   :"Bugünkü mesai kapatıldı."
- );
-
- renderClock();
-
-}
-
-
-/* =========================
-   GÜN
-========================= */
-
-function nextDay(){
-
- minutes=480;
- day++;
-
- let revenue=0;
-
- stores.forEach(store=>{
-
-  const amount=
-   12000+
-   Math.floor(Math.random()*28000);
-
-  store.revenue=amount;
-
-  money+=amount;
-  revenue+=amount;
-
- });
-
- const rent=stores.reduce(
-  (sum,x)=>sum+x.rent,
-  0
- );
-
- money-=rent;
-
- lastRevenue=revenue;
- lastRent=rent;
-
- pickedItemsToday=0;
- pickerMinutesToday=0;
- workerMinutesToday=0;
-
- lastPurchases=0;
- lastOvertimeCost=0;
-
- createDailyOrders();
- createShipment();
-
- if(Math.random()<.65){
-  createApplication();
- }
-
- addXP(100);
-
- showToast(
-  "Yeni gün başladı. Ciro: $"+
-  revenue.toLocaleString()
- );
-
- saveGame();
- updateAll();
-
-}
-
-
-/* =========================
-   XP
-========================= */
-
-function addXP(amount){
-
- xp+=amount;
-
- const need=level*1000;
-
- if(xp>=need){
-
-  xp-=need;
-  level++;
-
-  showToast("🎉 Seviye atladınız! Yeni seviye: "+level);
-
- }
-
-}
-
-
-/* =========================
-   SEVKİYAT
-========================= */
-
-function createShipment(){
-
- const product=
-  products[Math.floor(Math.random()*products.length)];
-
- const expected=
-  200+Math.floor(Math.random()*800);
-
- const correct=Math.random()>.3;
-
- const actual=correct
-  ?expected
-  :Math.max(
-    1,
-    expected-Math.floor(Math.random()*80)
-  );
-
- shipments.unshift({
-
-  id:Date.now(),
-
-  supplier:product.supplier,
-  product:product.name,
-
-  expected,
-  actual,
-
-  plate:"34 WT "+String(
-   Math.floor(Math.random()*999)
-  ).padStart(3,"0"),
-
-  driver:"Gelen Şoför",
-  phone:"0532 000 00 00",
-
-  status:"Bekliyor"
-
- });
-
-}
-
-
-function renderShipments(){
-
- const el=document.getElementById("shipmentsList");
-
- if(!shipments.length){
-
-  el.innerHTML=
-   '<div class="card">Bekleyen sevkiyat yok.</div>';
-
-  return;
-
- }
-
- el.innerHTML=shipments.map(s=>{
-
-  const correct=s.expected===s.actual;
-
-  return `
-  <div class="card" style="margin-bottom:12px">
-
-   <div style="display:flex;justify-content:space-between">
-
-    <div>
-
-     <b>🚛 ${s.supplier}</b>
-
-     <div style="color:#8994a3;font-size:12px;margin-top:5px">
-      Ürün: ${s.product}
-     </div>
-
-     <div style="color:#8994a3;font-size:11px;margin-top:5px">
-      ${s.plate} · ${s.driver} · ${s.phone}
-     </div>
-
-    </div>
-
-    <span class="status ${
-     s.status==="Bekliyor"
-      ?"yellow"
-      :s.status==="Kabul Edildi"
-      ?"green"
-      :"red"
-    }">${s.status}</span>
-
-   </div>
-
-   <div style="
-    background:#151b22;
-    border:1px dashed #36404c;
-    padding:12px;
-    border-radius:8px;
-    margin:12px 0
-   ">
-
-    <b>SEVKİYAT EVRAKI</b><br><br>
-
-    Evrak miktarı:
-    <b>${s.expected}</b><br>
-
-    Sayılan miktar:
-    <b>${s.actual}</b><br><br>
-
-    ${
-     correct
-      ?'<span class="green">✓ Miktar doğru</span>'
-      :'<span class="red">✕ Miktar uyuşmuyor</span>'
-    }
-
-   </div>
-
-   ${
-    s.status==="Bekliyor"
-     ?`
-      <button
-       class="btn btnGreen shipmentAccept"
-       data-id="${s.id}">
-       ✓ KABUL ET
-      </button>
-
-      <button
-       class="btn btnRed shipmentReject"
-       data-id="${s.id}">
-       ✕ REDDET
-      </button>
-     `
-     :""
-   }
-
-  </div>
-  `;
-
- }).join("");
-
- document.querySelectorAll(".shipmentAccept")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    acceptShipment(Number(b.dataset.id));
-   });
-  });
-
- document.querySelectorAll(".shipmentReject")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    rejectShipment(Number(b.dataset.id));
-   });
-  });
-
-}
-
-
-function acceptShipment(id){
-
- const s=shipments.find(x=>x.id===id);
-
- if(!s)return;
-
- if(s.expected!==s.actual){
-
-  showToast(
-   "Miktar uyuşmuyor. Sevkiyat reddedilmeli."
-  );
-
-  return;
-
- }
-
- const product=
-  products.find(p=>p.name===s.product);
-
- let item=
-  inventory.find(i=>i.product===s.product);
-
- if(!item){
-
-  item={
-   product:s.product,
-   category:product.category,
-   quantity:0,
-   shelf:"A-"+(inventory.length+1)
-  };
-
-  inventory.push(item);
-
- }
-
- item.quantity+=s.actual;
-
- s.status="Kabul Edildi";
-
- addXP(25);
-
- showToast(
-  s.actual+" adet "+s.product+
-  " depoya alındı."
- );
-
- saveGame();
- updateAll();
-
-}
-
-
-function rejectShipment(id){
-
- const s=shipments.find(x=>x.id===id);
-
- if(!s)return;
-
- if(s.expected===s.actual){
-
-  showToast(
-   "Miktar doğru. Bu sevkiyat reddedilemez."
-  );
-
-  return;
-
- }
-
- s.status="Reddedildi";
-
- showToast(
-  "Sevkiyat reddedildi."
- );
-
- saveGame();
- updateAll();
-
-}
-
-
-/* =========================
-   STOK
-========================= */
-
-function renderInventory(){
-
- const el=document.getElementById("inventoryTable");
-
- if(!inventory.length){
-
-  el.innerHTML=
-   '<tr><td colspan="5">Depoda henüz ürün bulunmuyor.</td></tr>';
-
- }else{
-
-  el.innerHTML=inventory.map(i=>{
-
-   const p=products.find(x=>x.name===i.product);
-
-   let status=i.quantity>300
-    ?'<span class="status green">YETERLİ</span>'
-    :i.quantity>0
-    ?'<span class="status yellow">AZALIYOR</span>'
-    :'<span class="status red">YOK</span>';
-
-   return `
-   <tr>
-
-    <td>
-     ${p?p.icon:"📦"}
-     <b>${i.product}</b>
-    </td>
-
-    <td>${i.category}</td>
-
-    <td><b>${i.quantity.toLocaleString()}</b></td>
-
-    <td>${i.shelf}</td>
-
-    <td>${status}</td>
-
-   </tr>
-   `;
-
-  }).join("");
-
- }
-
- const total=
-  inventory.reduce((a,b)=>a+b.quantity,0);
-
- document.getElementById("statStock")
-  .textContent=total.toLocaleString();
-
- document.getElementById("inventoryTotal")
-  .textContent=total.toLocaleString();
-
- document.getElementById("inventoryPercent")
-  .textContent=Math.round(total/100000*100)+"%";
-
- document.getElementById("productTypes")
-  .textContent=inventory.length;
-
-}
-
-
-/* =========================
-   MAĞAZALAR
-========================= */
-
-function renderRentals(){
-
- const el=document.getElementById("rentalsGrid");
-
- el.innerHTML=shops.map(s=>{
-
-  const rented=
-   stores.some(x=>x.shopId===s.id);
-
-  return `
-  <div class="rentCard">
-
-   <div class="storeIcon">🏪</div>
-
-   <h3 style="margin-top:12px">
-    ${s.name}
-   </h3>
-
-   <p style="
-    color:#8994a3;
-    font-size:12px;
-    margin-top:4px
-   ">
-    ${s.city}
-   </p>
-
-   <div class="rentPrice">
-    $${s.rent.toLocaleString()} / ay
-   </div>
-
-   ${
-    rented
-     ?'<span class="status green">KİRALANDI</span>'
-     :`
-      <button
-       class="btn btnGreen rentButton"
-       data-id="${s.id}">
-       MAĞAZAYI KİRALA
-      </button>
-     `
-   }
-
-  </div>
-  `;
-
- }).join("");
-
- document.querySelectorAll(".rentButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    rentStore(Number(b.dataset.id));
-   });
-  });
-
-}
-
-
-function rentStore(index){
-
- const shop=shops[index];
-
- if(!shop)return;
-
- if(stores.some(x=>x.shopId===index)){
-
-  showToast("Bu mağaza zaten kiralanmış.");
-
-  return;
-
- }
-
- if(money<shop.rent){
-
-  showToast(
-   "İlk kira bedelini ödemek için yeterli paranız yok."
-  );
-
-  return;
-
- }
-
- money-=shop.rent;
-
- stores.push({
-
-  id:Date.now(),
-  shopId:index,
-
-  name:"Warehouse Market "+shop.name,
-  city:shop.city,
-
-  rent:shop.rent,
-  revenue:0
-
- });
-
- addXP(50);
-
- showToast(
-  shop.name+" mağazası kiralandı."
- );
-
- saveGame();
- updateAll();
-
-}
-
-
-function renderStores(){
-
- const el=document.getElementById("storesGrid");
- const empty=document.getElementById("noStores");
-
- if(!stores.length){
-
-  el.innerHTML="";
-  empty.style.display="block";
-
-  return;
-
- }
-
- empty.style.display="none";
-
- el.innerHTML=stores.map(s=>`
-
-  <div class="card">
-
-   <div style="
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:14px
-   ">
-
-    <div class="storeIcon">🏪</div>
-
-    <div>
-     <b>${s.name}</b>
-
-     <div style="
-      color:#7f8997;
-      font-size:10px;
-      margin-top:3px
-     ">
-      ${s.city}
-     </div>
-    </div>
-
-   </div>
-
-   <div class="cardLabel">
-    AYLIK KİRA
-   </div>
-
-   <div class="yellow"
-    style="font-size:17px;font-weight:bold">
-    $${s.rent.toLocaleString()}
-   </div>
-
-   <div class="cardLabel"
-    style="margin-top:12px">
-    BUGÜNKÜ CİRO
-   </div>
-
-   <div class="green"
-    style="font-size:21px;font-weight:bold">
-    $${s.revenue.toLocaleString()}
-   </div>
-
-  </div>
-
- `).join("");
-
-}
-
-
-/* =========================
-   SİPARİŞ
-========================= */
-
-function createDailyOrders(){
-
- stores.forEach((store,index)=>{
-
-  if(
-   orders.some(
-    o=>o.storeId===store.id &&
-    o.status!=="Teslim Edildi"
-   )
-  )return;
-
-  const product=
-   products[Math.floor(Math.random()*products.length)];
-
-  orders.push({
-
-   id:Date.now()+index,
-
-   storeId:store.id,
-   store:store.name,
-
-   product:product.name,
-
-   quantity:
-    40+Math.floor(Math.random()*180),
-
-   status:"Bekliyor",
-
-   remaining:0
-
-  });
-
- });
-
-}
-
-
-function renderOrders(){
-
- const el=document.getElementById("ordersGrid");
-
- if(!stores.length){
-
-  el.innerHTML=`
-   <div class="card">
-    Önce Kiralık Dükkanlar bölümünden mağaza kiralayın.
-   </div>
-  `;
-
-  return;
-
- }
-
- el.innerHTML=stores.map(store=>{
-
-  const o=orders.find(
-   x=>x.storeId===store.id &&
-   x.status!=="Teslim Edildi"
-  );
-
-  if(!o){
-
-   return `
-   <div class="card">
-
-    <h3>🏪 ${store.name}</h3>
-
-    <p style="
-     color:#8994a3;
-     margin-top:10px
-    ">
-     Bekleyen sipariş yok.
-    </p>
-
-   </div>
-   `;
-
-  }
-
-  const icon=
-   products.find(p=>p.name===o.product)?.icon||"📦";
-
-  return `
-  <div class="card">
-
-   <h3>🏪 ${store.name}</h3>
-
-   <p style="
-    color:#8994a3;
-    font-size:11px;
-    margin-top:4px
-   ">
-    ${store.city}
-   </p>
-
-   <div style="
-    margin-top:16px;
-    padding:12px;
-    background:#111820;
-    border-radius:8px
-   ">
-
-    <div class="cardLabel">SİPARİŞ</div>
-
-    <div style="
-     font-size:18px;
-     font-weight:bold
-    ">
-     ${icon} ${o.product}
-    </div>
-
-    <p style="
-     color:#8994a3;
-     margin-top:5px
-    ">
-     ${o.quantity} adet
-    </p>
-
-   </div>
-
-   <div style="margin-top:12px">
-
-    <span class="status ${
-     o.status==="Bekliyor"
-      ?"yellow"
-      :o.status==="Toplanıyor"
-      ?"blue"
-      :"green"
-    }">
-     ${o.status}
-    </span>
-
-   </div>
-
-   <div style="margin-top:12px">
-
-    ${
-     o.status==="Bekliyor"
-      ?`
-       <button
-        class="btn btnBlue prepareButton"
-        data-id="${o.id}">
-        TOPLAMAYA BAŞLA
-       </button>
-      `
-      :o.status==="Toplanıyor"
-      ?`
-       <span style="
-        color:#8994a3;
-        font-size:12px
-       ">
-        ⏱ ${Math.ceil(o.remaining/60)} dakika kaldı
-       </span>
-      `
-      :o.status==="Hazır"
-      ?`
-       <button
-        class="btn btnGreen dispatchButton"
-        data-id="${o.id}">
-        SEVKİYATA GÖNDER
-       </button>
-      `
-      :`
-       <span class="status blue">
-        SEVKİYATTA
-       </span>
-      `
-    }
-
-   </div>
-
-  </div>
-  `;
-
- }).join("");
-
- document.querySelectorAll(".prepareButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    prepareOrder(Number(b.dataset.id));
-   });
-  });
-
- document.querySelectorAll(".dispatchButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    dispatchOrder(Number(b.dataset.id));
-   });
-  });
-
-}
-
-
-function prepareOrder(id){
-
- const o=orders.find(x=>x.id===id);
-
- if(!o)return;
-
- const item=
-  inventory.find(x=>x.product===o.product);
-
- if(!item || item.quantity<o.quantity){
-
-  showToast(
-   "Yeterli stok yok."
-  );
-
-  return;
-
- }
-
- o.status="Toplanıyor";
-
- o.remaining=
-  10*60+
-  Math.floor(Math.random()*6*60);
-
- showToast(
-  o.product+" toplama alanına gönderildi."
- );
-
- saveGame();
- updateAll();
-
-}
-
-
-setInterval(()=>{
-
- orders.forEach(o=>{
-
-  if(o.status==="Toplanıyor"){
-
-   o.remaining-=5;
-
-   pickerMinutesToday+=5;
-
-   if(o.remaining<=0){
-
-    const item=
-     inventory.find(
-      x=>x.product===o.product
-     );
-
-    if(item){
-     item.quantity-=o.quantity;
-    }
-
-    pickedItemsToday+=o.quantity;
-
-    o.status="Hazır";
-    o.remaining=0;
-
-    showToast(
-     "📦 "+o.store+
-     " paleti hazırlandı."
-    );
-
-   }
-
-  }
-
- });
-
- updateAll();
-
-},1500);
-
-
-/* =========================
-   ARAÇLAR
-========================= */
-
-const vehicles=[
- {id:1,plate:"34 WT 001",driver:"Ahmet Yılmaz",phone:"0532 410 22 01",capacity:2000,status:"Hazır",target:"—",remaining:0},
- {id:2,plate:"34 WT 002",driver:"Mehmet Kaya",phone:"0533 214 45 72",capacity:2200,status:"Hazır",target:"—",remaining:0},
- {id:3,plate:"34 WT 003",driver:"Burak Demir",phone:"0541 332 18 44",capacity:2400,status:"Hazır",target:"—",remaining:0},
- {id:4,plate:"34 WT 004",driver:"Emre Şahin",phone:"0551 190 37 62",capacity:2200,status:"Hazır",target:"—",remaining:0}
+const products=[
+{id:"p1",name:"Makarna",category:"Gıda",supplier:"Anadolu Food",price:4.5,icon:"🍝"},
+{id:"p2",name:"Su 1.5L",category:"İçecek",supplier:"Aqua Global",price:2,icon:"💧"},
+{id:"p3",name:"Kola 330ml",category:"İçecek",supplier:"Global Drinks",price:3,icon:"🥤"},
+{id:"p4",name:"Deterjan",category:"Temizlik",supplier:"Euro Distribution",price:8,icon:"🧴"},
+{id:"p5",name:"Şampuan",category:"Kişisel Bakım",supplier:"Anatolia Care",price:7,icon:"🧴"},
+{id:"p6",name:"Pirinç 1kg",category:"Gıda",supplier:"Asia Foods",price:6,icon:"🍚"},
+{id:"p7",name:"Bisküvi",category:"Gıda",supplier:"Anadolu Food",price:3.5,icon:"🍪"},
+{id:"p8",name:"Meyve Suyu",category:"İçecek",supplier:"Global Drinks",price:4,icon:"🧃"},
+{id:"p9",name:"Çamaşır Suyu",category:"Temizlik",supplier:"Euro Distribution",price:9,icon:"🧪"},
+{id:"p10",name:"Peçete",category:"Temizlik",supplier:"Euro Distribution",price:2.5,icon:"🧻"}
 ];
 
+const employeesDefault=[
+{name:"Ahmet Y.",job:"Forklift",salary:32000,icon:"🏗️"},
+{name:"Mehmet K.",job:"Toplayıcı",salary:28000,icon:"📦"},
+{name:"Burak T.",job:"Toplayıcı",salary:28000,icon:"📦"},
+{name:"Emre A.",job:"Sevkiyat",salary:30000,icon:"🚚"},
+{name:"Can D.",job:"Forklift",salary:32000,icon:"🏗️"},
+{name:"Hakan P.",job:"Toplayıcı",salary:28000,icon:"📦"}
+];
 
-function renderVehicles(){
+const cities=[
+["İstanbul",8],["Gebze",25],["Kartal",14],["Pendik",12],
+["Maltepe",16],["Tuzla",22],["Çayırova",28],["İzmit",55],
+["Beykoz",30],["Üsküdar",25],["Kadıköy",23],["Bakırköy",35],
+["Avcılar",40],["Beylikdüzü",48],["Çatalca",65],["Silivri",72]
+];
 
- const el=document.getElementById("vehiclesGrid");
+const vehicles=[
+{id:"34 WT 001",model:"Mercedes Actros",driver:"Mehmet Ş.",phone:"0532 000 00 01",status:"Hazır"},
+{id:"34 WT 002",model:"Mercedes Actros",driver:"Ali K.",phone:"0532 000 00 02",status:"Hazır"},
+{id:"34 WT 003",model:"Mercedes Actros",driver:"Hasan D.",phone:"0532 000 00 03",status:"Hazır"},
+{id:"34 WT 004",model:"Mercedes Actros",driver:"Murat T.",phone:"0532 000 00 04",status:"Hazır"}
+];
 
- el.innerHTML=vehicles.map(v=>`
+const moneyFmt=n=>"$"+Number(n||0).toLocaleString("tr-TR",{maximumFractionDigits:2});
 
-  <div class="vehicleCard">
-
-   <div class="truckIcon">🚛</div>
-
-   <h3 style="margin-top:10px">
-    Mercedes Actros
-   </h3>
-
-   <div style="margin-top:10px">
-    <span class="cardLabel">PLAKA</span>
-    <b style="display:block">${v.plate}</b>
-   </div>
-
-   <div style="margin-top:10px">
-    <span class="cardLabel">ŞOFÖR</span>
-    <b style="display:block">${v.driver}</b>
-   </div>
-
-   <div style="margin-top:10px">
-    <span class="cardLabel">TELEFON</span>
-    <b style="display:block">${v.phone}</b>
-   </div>
-
-   <div style="margin-top:10px">
-    <span class="cardLabel">KAPASİTE</span>
-    <b>${v.capacity.toLocaleString()} adet</b>
-   </div>
-
-   <div style="margin-top:12px">
-
-    <span class="status ${
-     v.status==="Hazır"
-      ?"green"
-      :"blue"
-    }">
-     ${v.status}
-    </span>
-
-   </div>
-
-   ${
-    v.status==="Hazır"
-     ?`
-      <button
-       class="btn btnBlue vehicleButton"
-       data-id="${v.id}"
-       style="margin-top:12px">
-       MAĞAZAYA GÖNDER
-      </button>
-     `
-     :`
-      <p style="
-       color:#8994a3;
-       font-size:11px;
-       margin-top:10px
-      ">
-       ${v.target} →
-       ${Math.ceil(v.remaining/60)} dk
-      </p>
-     `
-   }
-
-  </div>
-
- `).join("");
-
- document.querySelectorAll(".vehicleButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    chooseVehicle(Number(b.dataset.id));
-   });
-  });
-
+function esc(x){
+return String(x??"")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;");
 }
 
-
-function dispatchOrder(id){
-
- const order=orders.find(x=>x.id===id);
-
- if(!order || order.status!=="Hazır"){
-
-  showToast("Sipariş henüz hazır değil.");
-
-  return;
-
- }
-
- const vehicle=
-  vehicles.find(v=>v.status==="Hazır");
-
- if(!vehicle){
-
-  showToast("Boş araç yok.");
-
-  return;
-
- }
-
- chooseVehicle(vehicle.id,order);
-
+function routeMinutes(distance){
+distance=Number(distance||0);
+if(distance<=10)return 5;
+if(distance<=20)return 10;
+if(distance<=40)return 20;
+if(distance<=60)return 30;
+return 60;
 }
 
-
-function chooseVehicle(vehicleId,order=null){
-
- const vehicle=
-  vehicles.find(v=>v.id===vehicleId);
-
- if(!vehicle)return;
-
- const options=stores.map(s=>`
-  <option value="${s.name}">
-   ${s.name}
-  </option>
- `).join("");
-
- openModal(
-  "Mercedes Actros — Sevkiyat",
-
-  `
-  <div style="
-   background:#111820;
-   padding:12px;
-   border-radius:8px;
-   margin-bottom:12px
-  ">
-
-   🚛 <b>${vehicle.plate}</b>
-
-   <br>
-
-   <span style="
-    color:#8994a3;
-    font-size:12px
-   ">
-    ${vehicle.driver} · ${vehicle.phone}
-   </span>
-
-  </div>
-
-  <label style="
-   font-size:11px;
-   color:#8994a3
-  ">
-   MAĞAZA
-  </label>
-
-  <select id="vehicleStore"
-   class="input"
-   style="margin-top:6px">
-
-   ${options}
-
-  </select>
-
-  <p style="
-   color:#8994a3;
-   font-size:12px
-  ">
-   Sevkiyat süresi 30 dakikadır.
-  </p>
-  `,
-
-  ()=>{
-
-   const target=
-    document.getElementById("vehicleStore").value;
-
-   vehicle.status="Yolda";
-   vehicle.target=target;
-   vehicle.remaining=30*60;
-
-   if(order){
-    order.status="Sevkiyatta";
-   }
-
-   showToast(
-    "🚛 "+vehicle.plate+
-    " "+target+" mağazasına gönderildi."
-   );
-
-   saveGame();
-   updateAll();
-
-  }
-
- );
-
+function todayPlus(days){
+const d=new Date();
+d.setDate(d.getDate()+days);
+return d.toISOString().slice(0,10);
 }
 
-
-setInterval(()=>{
-
- vehicles.forEach(v=>{
-
-  if(v.status==="Yolda"){
-
-   v.remaining-=5;
-
-   if(v.remaining<=0){
-
-    v.status="Hazır";
-    v.target="—";
-    v.remaining=0;
-
-    const order=
-     orders.find(
-      o=>o.status==="Sevkiyatta"
-     );
-
-    if(order){
-     order.status="Teslim Edildi";
-    }
-
-    addXP(50);
-
-    showToast(
-     "🚛 "+v.plate+
-     " sevkiyatı tamamladı."
-    );
-
-    saveGame();
-
-   }
-
-  }
-
- });
-
- updateAll();
-
-},1500);
-
-
-/* =========================
-   TEDARİKÇİ
-========================= */
-
-function renderSuppliers(){
-
- const el=document.getElementById("suppliersGrid");
-
- el.innerHTML=suppliers.map(s=>`
-
-  <div class="card">
-
-   <div style="
-    font-size:28px;
-    margin-bottom:10px
-   ">
-    🌎
-   </div>
-
-   <h3>${s.name}</h3>
-
-   <p style="
-    color:#8994a3;
-    font-size:12px;
-    margin-top:5px
-   ">
-    ${s.country}
-   </p>
-
-   <p style="
-    color:#8994a3;
-    font-size:12px;
-    margin-top:3px
-   ">
-    ${s.products}
-   </p>
-
-   <button
-    class="btn btnGreen supplierButton"
-    data-name="${s.name}"
-    style="margin-top:15px">
-    ÜRÜN SİPARİŞ ET
-   </button>
-
-  </div>
-
- `).join("");
-
- document.getElementById("purchaseManagerName")
-  .textContent=purchaseManager||"Atanmadı";
-
- document.querySelectorAll(".supplierButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    buyFromSupplier(b.dataset.name);
-   });
-  });
-
+function defaultInventory(){
+return products.map(p=>({
+productId:p.id,
+name:p.name,
+category:p.category,
+supplier:p.supplier,
+price:p.price,
+icon:p.icon,
+qty:0,
+expiry:todayPlus(30+Math.floor(Math.random()*60))
+}));
 }
 
-
-function buyFromSupplier(name){
-
- if(!purchaseManager){
-
-  showToast(
-   "Önce bir satın alma yöneticisi atayın."
-  );
-
-  return;
-
- }
-
- const supplier=
-  suppliers.find(s=>s.name===name);
-
- const available=
-  products.filter(
-   p=>
-    p.supplier===name ||
-    p.category===supplier.products
-  );
-
- const options=available.map(p=>`
-
-  <option value="${p.id}">
-   ${p.icon} ${p.name} — $${p.price}
-  </option>
-
- `).join("");
-
- openModal(
-  "Satın Alma — "+supplier.name,
-
-  `
-  <p style="
-   color:#8994a3;
-   font-size:12px;
-   margin-bottom:10px
-  ">
-   Satın alma yöneticisi:
-   <b style="color:white">${purchaseManager}</b>
-  </p>
-
-  <select id="buyProduct"
-   class="input">
-   ${options}
-  </select>
-
-  <input
-   id="buyQuantity"
-   class="input"
-   type="number"
-   min="1"
-   value="100"
-   placeholder="Miktar">
-  `,
-
-  ()=>{
-
-   const pid=
-    Number(
-     document.getElementById("buyProduct").value
-    );
-
-   const quantity=
-    Number(
-     document.getElementById("buyQuantity").value
-    );
-
-   const product=
-    products.find(p=>p.id===pid);
-
-   if(!quantity || quantity<=0){
-
-    showToast(
-     "Geçerli miktar girin."
-    );
-
-    return;
-
-   }
-
-   const price=
-    product.price*
-    supplier.factor*
-    quantity;
-
-   if(money<price){
-
-    showToast(
-     "Yeterli bütçe yok."
-    );
-
-    return;
-
-   }
-
-   money-=price;
-   lastPurchases+=price;
-
-   shipments.unshift({
-
-    id:Date.now(),
-
-    supplier:supplier.name,
-    product:product.name,
-
-    expected:quantity,
-    actual:quantity,
-
-    plate:"34 WT "+Math.floor(Math.random()*999),
-
-    driver:"Tedarikçi Şoförü",
-    phone:"0532 000 00 00",
-
-    status:"Bekliyor"
-
-   });
-
-   showToast(
-    "$"+price.toLocaleString()+
-    " satın alma emri oluşturuldu."
-   );
-
-   saveGame();
-   updateAll();
-
-  }
- );
-
+function normalizeData(data){
+data.money=Number(data.money??10000000);
+data.diamonds=Number(data.diamonds??0);
+data.level=Number(data.level??1);
+data.xp=Number(data.xp??0);
+data.day=Number(data.day??1);
+data.company=data.company||"FedEx Global";
+data.depot=data.depot||"FedEx Global";
+data.role=data.role||"player";
+data.photoURL=data.photoURL||"";
+data.banned=!!data.banned;
+data.chatBanned=!!data.chatBanned;
+data.managerUid=data.managerUid||firebaseUser?.uid;
+data.managerName=data.managerName||data.username;
+data.nameChangeCount=Number(data.nameChangeCount??0);
+data.inventory=Array.isArray(data.inventory)?data.inventory:[];
+data.stores=Array.isArray(data.stores)?data.stores:[];
+data.orders=Array.isArray(data.orders)?data.orders:[];
+data.shipments=Array.isArray(data.shipments)?data.shipments:[];
+data.employees=Array.isArray(data.employees)?data.employees:employeesDefault.map(x=>({...x}));
+data.cashCollections=Array.isArray(data.cashCollections)?data.cashCollections:[];
+return data;
 }
 
+async function save(){
+if(!firebaseUser||!userData)return;
 
-document.getElementById("managerBtn")
- .addEventListener(
-  "click",
-  choosePurchaseManager
- );
-
-
-function choosePurchaseManager(){
-
- openModal(
-  "Satın Alma Yöneticisi Ata",
-
-  `
-  <input
-   id="managerName"
-   class="input"
-   placeholder="Çalışan adı">
-
-  <p style="
-   color:#8994a3;
-   font-size:12px
-  ">
-   Bu çalışan satın alma yöneticiniz olur.
-  </p>
-  `,
-
-  ()=>{
-
-   const name=
-    document.getElementById("managerName")
-    .value.trim();
-
-   if(!name){
-
-    showToast("Bir isim girin.");
-
-    return;
-
-   }
-
-   purchaseManager=name;
-
-   showToast(
-    name+" satın alma yöneticisi oldu."
-   );
-
-   saveGame();
-   updateAll();
-
-  }
- );
-
+await updateDoc(
+doc(db,"users",firebaseUser.uid),
+{
+username:userData.username,
+company:userData.company,
+depot:userData.depot,
+money:userData.money,
+diamonds:userData.diamonds,
+level:userData.level,
+xp:userData.xp,
+day:userData.day,
+photoURL:userData.photoURL||"",
+managerUid:userData.managerUid,
+managerName:userData.managerName,
+nameChangeCount:userData.nameChangeCount,
+inventory:userData.inventory,
+stores:userData.stores,
+orders:userData.orders,
+shipments:userData.shipments,
+employees:userData.employees,
+cashCollections:userData.cashCollections,
+updatedAt:serverTimestamp()
+}
+);
 }
 
-
-/* =========================
-   ÇALIŞANLAR
-========================= */
-
-function createApplication(){
-
- const names=[
-  "Ali Demir",
-  "Mert Kaya",
-  "Emir Yılmaz",
-  "Kerem Arslan",
-  "Burak Çelik",
-  "Onur Şahin",
-  "Eren Koç"
- ];
-
- const jobs=[
-  "Toplayıcı",
-  "Forklift Operatörü",
-  "Sevkiyat Personeli"
- ];
-
- applications.unshift({
-
-  id:Date.now(),
-
-  name:
-   names[
-    Math.floor(Math.random()*names.length)
-   ],
-
-  job:
-   jobs[
-    Math.floor(Math.random()*jobs.length)
-   ],
-
-  experience:
-   Math.floor(Math.random()*6)+1
-
- });
-
+function showLogin(){
+document.getElementById("loginForm").classList.remove("hidden");
+document.getElementById("registerForm").classList.add("hidden");
 }
 
-
-function renderApplications(){
-
- const el=
-  document.getElementById("applications");
-
- if(!applications.length){
-
-  el.innerHTML=`
-   <p style="
-    color:#8994a3;
-    font-size:12px
-   ">
-    Şu anda yeni iş başvurusu yok.
-   </p>
-  `;
-
-  return;
-
- }
-
- el.innerHTML=applications.map(a=>`
-
-  <div style="
-   background:#111720;
-   border:1px solid #26313d;
-   padding:14px;
-   border-radius:10px;
-   margin-bottom:10px
-  ">
-
-   <b>${a.name}</b>
-
-   <div style="
-    color:#8994a3;
-    font-size:11px;
-    margin:5px 0 10px
-   ">
-    ${a.job} · ${a.experience} yıl deneyim
-   </div>
-
-   <button
-    class="btn btnGreen hireButton"
-    data-id="${a.id}">
-    İŞE AL
-   </button>
-
-   <button
-    class="btn btnRed rejectButton"
-    data-id="${a.id}">
-    REDDET
-   </button>
-
-  </div>
-
- `).join("");
-
- document.querySelectorAll(".hireButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    hireApplicant(Number(b.dataset.id));
-   });
-  });
-
- document.querySelectorAll(".rejectButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    rejectApplicant(Number(b.dataset.id));
-   });
-  });
-
+function showRegister(){
+document.getElementById("loginForm").classList.add("hidden");
+document.getElementById("registerForm").classList.remove("hidden");
 }
 
+window.showLogin=showLogin;
+window.showRegister=showRegister;
 
-function hireApplicant(id){
+window.register=async()=>{
+const username=document.getElementById("registerUsername").value.trim();
+const email=document.getElementById("registerEmail").value.trim();
+const password=document.getElementById("registerPassword").value;
 
- const index=
-  applications.findIndex(x=>x.id===id);
-
- if(index<0)return;
-
- const a=applications[index];
-
- employees.push({
-
-  id:Date.now(),
-
-  name:a.name,
-
-  job:a.job
-   .replace(" Operatörü","")
-   .replace(" Personeli",""),
-
-  salary:
-   a.job.includes("Forklift")
-    ?32000
-    :a.job.includes("Toplayıcı")
-    ?28000
-    :30000,
-
-  status:"Çalışıyor"
-
- });
-
- applications.splice(index,1);
-
- showToast(
-  a.name+" işe alındı."
- );
-
- saveGame();
- updateAll();
-
+if(!username||!email||!password){
+authMessage("Bütün alanları doldur.","red");
+return;
 }
 
+try{
+const cred=await createUserWithEmailAndPassword(auth,email,password);
 
-function rejectApplicant(id){
+let role=username.toLowerCase()==="zentrix"?"developer":"player";
 
- applications=
-  applications.filter(x=>x.id!==id);
+const data={
+uid:cred.user.uid,
+username,
+company:"FedEx Global",
+depot:"FedEx Global",
+money:10000000,
+diamonds:0,
+level:1,
+xp:0,
+day:1,
+role,
+banned:false,
+chatBanned:false,
+photoURL:"",
+managerUid:cred.user.uid,
+managerName:username,
+nameChangeCount:0,
+inventory:defaultInventory(),
+stores:[],
+orders:[],
+shipments:[],
+employees:employeesDefault.map(x=>({...x})),
+cashCollections:[],
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
+};
 
- saveGame();
- updateAll();
+await setDoc(doc(db,"users",cred.user.uid),data);
 
+authMessage("Hesap oluşturuldu.","green");
+}catch(e){
+authMessage(e.message,"red");
+}
+};
+
+window.login=async()=>{
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
+
+try{
+await signInWithEmailAndPassword(auth,email,password);
+}catch(e){
+authMessage("Giriş başarısız: "+e.message,"red");
+}
+};
+
+window.logout=()=>signOut(auth);
+
+function authMessage(msg,color){
+const el=document.getElementById("authMessage");
+el.textContent=msg;
+el.style.color=color==="green"?varGreen():color==="red"?"#ff5364":"white";
 }
 
+function varGreen(){return "#35d07f"}
 
-function renderEmployees(){
-
- document.getElementById("employeeTotal")
-  .textContent=employees.length;
-
- document.getElementById("forkliftCount")
-  .textContent=
-   employees.filter(
-    x=>x.job==="Forklift"
-   ).length;
-
- document.getElementById("pickerCount")
-  .textContent=
-   employees.filter(
-    x=>x.job==="Toplayıcı"
-   ).length;
-
- document.getElementById("shipWorkerCount")
-  .textContent=
-   employees.filter(
-    x=>x.job==="Sevkiyat"
-   ).length;
-
- document.getElementById("workerCount")
-  .textContent=employees.length;
-
- const el=
-  document.getElementById("employeesTable");
-
- el.innerHTML=employees.map(e=>`
-
-  <tr>
-
-   <td><b>${e.name}</b></td>
-
-   <td>${e.job}</td>
-
-   <td>$${e.salary.toLocaleString()}</td>
-
-   <td>
-    <span class="status green">
-     ${e.status}
-    </span>
-   </td>
-
-   <td>
-
-    <button
-     class="btn btnBlue jobButton"
-     data-id="${e.id}">
-     GÖREV
-    </button>
-
-    <button
-     class="btn btnYellow raiseButton"
-     data-id="${e.id}">
-     ZAM
-    </button>
-
-    <button
-     class="btn btnRed fireButton"
-     data-id="${e.id}">
-     KOV
-    </button>
-
-   </td>
-
-  </tr>
-
- `).join("");
-
- document.querySelectorAll(".jobButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    changeJob(Number(b.dataset.id));
-   });
-  });
-
- document.querySelectorAll(".raiseButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    raiseSalary(Number(b.dataset.id));
-   });
-  });
-
- document.querySelectorAll(".fireButton")
-  .forEach(b=>{
-   b.addEventListener("click",()=>{
-    fireEmployee(Number(b.dataset.id));
-   });
-  });
-
+onAuthStateChanged(auth,async user=>{
+if(!user){
+firebaseUser=null;
+document.getElementById("auth").style.display="flex";
+document.getElementById("app").style.display="none";
+return;
 }
 
+firebaseUser=user;
 
-function changeJob(id){
+const snap=await getDoc(doc(db,"users",user.uid));
 
- const e=employees.find(x=>x.id===id);
-
- if(!e)return;
-
- openModal(
-  "Görev Değiştir — "+e.name,
-
-  `
-  <select id="newJob" class="input">
-
-   <option>Toplayıcı</option>
-   <option>Forklift</option>
-   <option>Sevkiyat</option>
-   <option>Satın Alma</option>
-
-  </select>
-  `,
-
-  ()=>{
-
-   e.job=
-    document.getElementById("newJob").value;
-
-   if(e.job==="Toplayıcı")
-    e.salary=28000;
-
-   if(e.job==="Forklift")
-    e.salary=32000;
-
-   if(e.job==="Sevkiyat")
-    e.salary=30000;
-
-   if(e.job==="Satın Alma")
-    e.salary=35000;
-
-   showToast(
-    e.name+" artık "+e.job+" olarak çalışıyor."
-   );
-
-   saveGame();
-   updateAll();
-
-  }
- );
-
+if(!snap.exists()){
+await setDoc(doc(db,"users",user.uid),{
+uid:user.uid,
+username:user.email.split("@")[0],
+company:"FedEx Global",
+depot:"FedEx Global",
+money:10000000,
+diamonds:0,
+level:1,
+xp:0,
+day:1,
+role:"player",
+banned:false,
+chatBanned:false,
+photoURL:"",
+managerUid:user.uid,
+managerName:user.email.split("@")[0],
+nameChangeCount:0,
+inventory:defaultInventory(),
+stores:[],
+orders:[],
+shipments:[],
+employees:employeesDefault,
+cashCollections:[],
+createdAt:serverTimestamp()
+});
 }
 
+const latest=await getDoc(doc(db,"users",user.uid));
+userData=normalizeData(latest.data());
 
-function raiseSalary(id){
-
- const e=employees.find(x=>x.id===id);
-
- if(!e)return;
-
- const old=e.salary;
-
- openModal(
-  "Maaş Zammı — "+e.name,
-
-  `
-  <p style="
-   color:#8994a3;
-   margin-bottom:10px
-  ">
-   Mevcut maaş:
-   <b style="color:white">
-    $${old.toLocaleString()}
-   </b>
-  </p>
-
-  <input
-   id="newSalary"
-   class="input"
-   type="number"
-   value="${old+2000}">
-  `,
-
-  ()=>{
-
-   const value=
-    Number(
-     document.getElementById("newSalary").value
-    );
-
-   if(value<=e.salary){
-
-    showToast(
-     "Yeni maaş daha yüksek olmalı."
-    );
-
-    return;
-
-   }
-
-   e.salary=value;
-
-   showToast(
-    e.name+" maaşı $"+
-    value.toLocaleString()+
-    " oldu."
-   );
-
-   saveGame();
-   updateAll();
-
-  }
- );
-
+/* Zentrix hesabı otomatik yapımcı */
+if((userData.username||"").toLowerCase()==="zentrix" && userData.role!=="developer"){
+userData.role="developer";
+await updateDoc(doc(db,"users",user.uid),{role:"developer"});
 }
 
-
-function fireEmployee(id){
-
- const e=employees.find(x=>x.id===id);
-
- if(!e)return;
-
- if(!confirm(
-  e.name+
-  " isimli çalışanı işten çıkarmak istiyor musunuz?"
- ))return;
-
- employees=
-  employees.filter(x=>x.id!==id);
-
- showToast(
-  e.name+" işten çıkarıldı."
- );
-
- saveGame();
- updateAll();
-
+if(userData.banned){
+alert("Bu hesap sunucudan yasaklandı.");
+await signOut(auth);
+return;
 }
 
+document.getElementById("auth").style.display="none";
+document.getElementById("app").style.display="block";
 
-/* =========================
-   DEPO ADI
-========================= */
+ensureInventory();
+renderAll();
+startChat();
+startUsers();
+});
 
-document.getElementById("changeDepotBtn")
- .addEventListener(
-  "click",
-  changeDepotName
- );
+function ensureInventory(){
+const old=userData.inventory||[];
 
+products.forEach(p=>{
+if(!old.some(x=>x.productId===p.id)){
+old.push({
+productId:p.id,
+name:p.name,
+category:p.category,
+supplier:p.supplier,
+price:p.price,
+icon:p.icon,
+qty:0,
+expiry:todayPlus(45)
+});
+}
+});
 
-function changeDepotName(){
-
- const name=
-  document.getElementById("depotNameEdit")
-  .value.trim();
-
- if(!name){
-
-  showToast(
-   "Depo adı boş bırakılamaz."
-  );
-
-  return;
-
- }
-
- if(name===depotName){
-
-  showToast(
-   "Yeni bir isim girin."
-  );
-
-  return;
-
- }
-
- if(nameChanged){
-
-  if(diamonds<500){
-
-   showToast(
-    "Tekrar değiştirmek için 500 💎 gerekiyor."
-   );
-
-   return;
-
-  }
-
-  diamonds-=500;
-
-  showToast("500 💎 kullanıldı.");
-
- }
-
- depotName=name;
- nameChanged=true;
-
- showToast(
-  "Depo adı değiştirildi."
- );
-
- saveGame();
- updateAll();
-
+userData.inventory=old;
 }
 
-
-function updateNameInfo(){
-
- document.getElementById("nameChangeInfo")
-  .textContent=
-   nameChanged
-    ?"Sonraki depo adı değişikliği: 500 💎"
-    :"İlk depo adı değişikliği ücretsiz.";
-
+function renderAll(){
+renderHeader();
+renderDashboard();
+renderProfile();
+renderIncoming();
+renderInventory();
+renderRentals();
+renderStores();
+renderOrders();
+renderVehicles();
+renderSuppliers();
+renderEmployees();
+renderDepotManagement();
+renderDepots();
+renderDeveloper();
 }
 
+function renderHeader(){
+document.getElementById("headerUsername").textContent=userData.username;
 
-/* =========================
-   GERÇEK ZAMANLI CHAT
-========================= */
+const av=document.getElementById("headerAvatar");
+if(userData.photoURL){
+av.innerHTML=`<img src="${esc(userData.photoURL)}">`;
+}else av.textContent=(userData.username||"?").charAt(0).toUpperCase();
 
-function startChat(){
-
- if(unsubscribeChat){
-  unsubscribeChat();
- }
-
- const q=query(
-  collection(db,"messages"),
-  orderBy("createdAt","desc"),
-  limit(100)
- );
-
- unsubscribeChat=onSnapshot(
-  q,
-  snapshot=>{
-
-   const messages=[];
-
-   snapshot.forEach(d=>{
-    messages.push({
-     id:d.id,
-     ...d.data()
-    });
-   });
-
-   messages.reverse();
-
-   renderChat(messages);
-
-  },
-  err=>{
-   console.error("Chat:",err);
-  }
- );
-
+const dev=userData.role==="developer"||userData.role==="admin";
+document.getElementById("developerNav").classList.toggle("hidden",!dev);
 }
 
+function renderDashboard(){
+document.getElementById("statMoney").textContent=moneyFmt(userData.money);
+document.getElementById("statDiamonds").textContent="💎 "+Number(userData.diamonds).toLocaleString("tr-TR");
+document.getElementById("statLevel").textContent="Lv. "+userData.level;
+document.getElementById("statEmployees").textContent=userData.employees.length;
 
-function renderChat(messages=[]){
-
- const el=
-  document.getElementById("chatMessages");
-
- if(!messages.length){
-
-  el.innerHTML=`
-   <div style="
-    color:#697583;
-    text-align:center;
-    padding:30px
-   ">
-    Henüz mesaj yok.
-   </div>
-  `;
-
-  return;
-
- }
-
- el.innerHTML=messages.map(m=>`
-
-  <div class="chatMessage">
-
-   <b>${escapeHtml(m.username||"Oyuncu")}</b>
-
-   <small>
-    ${
-     m.createdAt?.toDate
-      ?m.createdAt.toDate().toLocaleTimeString(
-       "tr-TR",
-       {hour:"2-digit",minute:"2-digit"}
-      )
-      :""
-    }
-   </small>
-
-   <div style="margin-top:4px">
-    ${escapeHtml(m.text||"")}
-   </div>
-
-  </div>
-
- `).join("");
-
- el.scrollTop=el.scrollHeight;
-
+document.getElementById("dashboardDepot").textContent=userData.depot;
+document.getElementById("dashboardRole").textContent=userData.role;
+document.getElementById("dashStock").textContent=userData.inventory.reduce((a,b)=>a+Number(b.qty||0),0);
+document.getElementById("dashStores").textContent=userData.stores.length;
+document.getElementById("dashShipments").textContent=userData.shipments.filter(x=>x.status==="Bekliyor").length;
+document.getElementById("dashOrders").textContent=userData.orders.filter(x=>x.status!=="Teslim Edildi").length;
 }
-
-
-async function sendChat(){
-
- const input=
-  document.getElementById("chatInput");
-
- const text=input.value.trim();
-
- if(!text)return;
-
- if(!currentUser)return;
-
- try{
-
-  await addDoc(
-   collection(db,"messages"),
-   {
-    uid:currentUser.uid,
-    username:currentUser.username,
-    text,
-    createdAt:serverTimestamp()
-   }
-  );
-
-  input.value="";
-
- }catch(err){
-
-  console.error(err);
-
-  showToast(
-   "Mesaj gönderilemedi."
-  );
-
- }
-
-}
-
-
-document.getElementById("chatSendBtn")
- .addEventListener(
-  "click",
-  sendChat
- );
-
-document.getElementById("chatInput")
- .addEventListener(
-  "keydown",
-  e=>{
-   if(e.key==="Enter"){
-    sendChat();
-   }
-  }
- );
-
-
-function escapeHtml(text){
-
- return String(text)
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-
-}
-
-
-/* =========================
-   DİĞER DEPOLAR
-========================= */
-
-async function renderDepots(){
-
- const el=
-  document.getElementById("depotsList");
-
- el.innerHTML=
-  '<div class="card">Yükleniyor...</div>';
-
- try{
-
-  const snap=
-   await getDocs(
-    collection(db,"users")
-   );
-
-  const list=[];
-
-  snap.forEach(d=>{
-
-   const x=d.data();
-
-   if(x.banned)return;
-
-   list.push(x);
-
-  });
-
-  if(!list.length){
-
-   el.innerHTML=
-    '<div class="card">Henüz başka oyuncu yok.</div>';
-
-   return;
-
-  }
-
-  el.innerHTML=list.map(x=>`
-
-   <div class="card">
-
-    <div style="font-size:30px">
-     🏭
-    </div>
-
-    <h3 style="margin-top:10px">
-     ${escapeHtml(x.depot||"Ana Depo")}
-    </h3>
-
-    <p style="
-     color:#8994a3;
-     font-size:12px;
-     margin-top:4px
-    ">
-     ${escapeHtml(x.username||"Oyuncu")}
-    </p>
-
-    <div class="grid2"
-     style="margin-top:15px">
-
-     <div>
-      <div class="cardLabel">SEVİYE</div>
-      <b>${x.level||1}</b>
-     </div>
-
-     <div>
-      <div class="cardLabel">ÇALIŞAN</div>
-      <b>${(x.employees||[]).length}</b>
-     </div>
-
-    </div>
-
-   </div>
-
-  `).join("");
-
- }catch(err){
-
-  console.error(err);
-
-  el.innerHTML=
-   '<div class="card red">Depolar yüklenemedi.</div>';
-
- }
-
-}
-
-
-/* =========================
-   PROFİL
-========================= */
 
 function renderProfile(){
+const photo=document.getElementById("profilePhoto");
 
- document.getElementById("profileUsername")
-  .textContent=currentUser.username;
-
- document.getElementById("profileCompany")
-  .textContent=
-   userData.company||
-   currentUser.username+" Logistics";
-
- document.getElementById("profileAvatar")
-  .textContent=
-   currentUser.username
-    .charAt(0)
-    .toUpperCase();
-
- document.getElementById("profileDepot")
-  .textContent=depotName;
-
- document.getElementById("profileWorkers")
-  .textContent=employees.length;
-
- document.getElementById("profileStores")
-  .textContent=stores.length;
-
- document.getElementById("profileShipments")
-  .textContent=
-   vehicles.filter(
-    v=>v.status==="Yolda"
-   ).length;
-
- document.getElementById("profileMoney")
-  .textContent="$"+money.toLocaleString();
-
- document.getElementById("profileDiamonds")
-  .textContent=
-   "💎 "+diamonds.toLocaleString();
-
+if(userData.photoURL){
+photo.innerHTML=`<img src="${esc(userData.photoURL)}">`;
+}else{
+photo.textContent=(userData.username||"?").charAt(0).toUpperCase();
 }
 
+document.getElementById("profileUsername").textContent=userData.username;
+document.getElementById("profileCompany").textContent=userData.company+" · "+userData.depot;
+document.getElementById("profileRole").textContent=userData.role;
+document.getElementById("profileStoreCount").textContent=userData.stores.length;
+document.getElementById("profileLevel").textContent=userData.level;
+document.getElementById("profileXP").textContent=userData.xp;
+document.getElementById("photoURL").value=userData.photoURL||"";
 
-/* =========================
-   ADMIN
-========================= */
+const list=document.getElementById("profileStores");
 
-function isAdmin(){
-
- return currentUser &&
-  (
-   currentUser.username.toLowerCase()==="admin"
-   ||
-   userData.role==="admin"
-  );
-
+if(!userData.stores.length){
+list.innerHTML='<div class="muted">Henüz mağazan yok.</div>';
+return;
 }
 
-
-function renderAdmin(){
-
- if(!isAdmin()){
-
-  document.getElementById("adminNav")
-   .style.display="none";
-
-  return;
-
- }
-
- document.getElementById("adminNav")
-  .style.display="block";
-
- renderAdminUsers();
-
+list.innerHTML=userData.stores.map(s=>`
+<div class="row" style="padding:10px 0;border-bottom:1px solid #252e38">
+<div>
+<strong>${esc(s.name)}</strong>
+<div class="muted" style="font-size:11px">${esc(s.city)} · ${s.distance} km</div>
+</div>
+<div class="badge green">${moneyFmt(s.rent)}/ay</div>
+</div>
+`).join("");
 }
 
+window.savePhoto=async()=>{
+const url=document.getElementById("photoURL").value.trim();
 
-async function renderAdminUsers(){
-
- if(!isAdmin())return;
-
- const el=
-  document.getElementById("adminUsers");
-
- try{
-
-  const snap=
-   await getDocs(
-    collection(db,"users")
-   );
-
-  const list=[];
-
-  snap.forEach(d=>{
-   list.push(d.data());
-  });
-
-  if(!list.length){
-
-   el.innerHTML=
-    '<p style="color:#8994a3">Oyuncu yok.</p>';
-
-   return;
-
-  }
-
-  el.innerHTML=list.map(x=>`
-
-   <div style="
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px;
-    border-bottom:1px solid #202832
-   ">
-
-    <div>
-
-     <b>${escapeHtml(x.username||"")}</b>
-
-     <div style="
-      color:#8994a3;
-      font-size:10px
-     ">
-
-      ${escapeHtml(x.company||"Şirket")}
-      ·
-      $${(x.money||0).toLocaleString()}
-      ·
-      💎${x.diamonds||0}
-
-     </div>
-
-    </div>
-
-    <span class="status ${
-     x.banned?"red":"green"
-    }">
-
-     ${x.banned?"BANLI":"AKTİF"}
-
-    </span>
-
-   </div>
-
-  `).join("");
-
- }catch(err){
-
-  console.error(err);
-
- }
-
+if(url && !/^https?:\/\//i.test(url)){
+alert("Geçerli bir fotoğraf URL'si gir.");
+return;
 }
 
+userData.photoURL=url;
+await save();
+renderAll();
+alert("Profil fotoğrafı kaydedildi.");
+};
 
-document.getElementById("adminMoneyBtn")
- .addEventListener(
-  "click",
-  adminAddMoney
- );
+function renderIncoming(){
+const active=userData.shipments.filter(x=>x.status==="Bekliyor");
+const list=document.getElementById("incomingList");
 
-document.getElementById("adminDiamondBtn")
- .addEventListener(
-  "click",
-  adminAddDiamond
- );
+if(!active.length){
+list.innerHTML='<div class="card"><div class="muted">Bekleyen sevkiyat yok.</div></div>';
+}else{
+list.innerHTML=active.map(s=>`
+<div class="card">
+<div class="productTop">
+<div class="productIcon">🚛</div>
+<div>
+<div class="cardTitle">${esc(s.supplier)}</div>
+<div class="muted">${esc(s.productName)} · ${s.actual} adet</div>
+</div>
+</div>
 
-document.getElementById("giftBtn")
- .addEventListener(
-  "click",
-  adminGift
- );
+<div class="rowWrap">
+<span class="badge blue">Beklenen: ${s.expected}</span>
+<span class="badge yellow">Gelen: ${s.actual}</span>
+<span class="badge">${esc(s.vehicle||"Mercedes Actros")}</span>
+</div>
 
-document.getElementById("banBtn")
- .addEventListener(
-  "click",
-  adminBan
- );
+<div class="muted" style="margin-top:10px;font-size:12px">
+Not: Miktar doğru veya yanlış olsa bile kabul ya da red kararı verebilirsin.
+</div>
 
-
-function adminAddMoney(){
-
- if(!isAdmin())return;
-
- const amount=
-  Number(
-   document.getElementById("adminMoney").value
-  );
-
- if(!amount || amount<=0){
-
-  showToast(
-   "Geçerli miktar girin."
-  );
-
-  return;
-
- }
-
- money+=amount;
-
- document.getElementById("adminMoney")
-  .value="";
-
- showToast(
-  "$"+amount.toLocaleString()+
-  " eklendi."
- );
-
- saveGame();
- updateAll();
-
+<div class="actionRow">
+<button class="btn green" onclick="decideShipment('${s.id}','Kabul')">✓ KABUL ET</button>
+<button class="btn red" onclick="decideShipment('${s.id}','Red')">✕ REDDET</button>
+</div>
+</div>
+`).join("");
 }
 
-
-function adminAddDiamond(){
-
- if(!isAdmin())return;
-
- const amount=
-  Number(
-   document.getElementById("adminDiamond").value
-  );
-
- if(!amount || amount<=0){
-
-  showToast(
-   "Geçerli miktar girin."
-  );
-
-  return;
-
- }
-
- diamonds+=amount;
-
- document.getElementById("adminDiamond")
-  .value="";
-
- showToast(
-  amount+" 💎 eklendi."
- );
-
- saveGame();
- updateAll();
-
+const history=userData.shipments.filter(x=>x.status!=="Bekliyor").slice(-10).reverse();
+document.getElementById("shipmentHistory").innerHTML=history.length?
+history.map(s=>`
+<div class="row" style="padding:8px 0;border-bottom:1px solid #252e38">
+<div>
+<strong>${esc(s.productName)}</strong>
+<div class="muted">${esc(s.supplier)} · ${s.actual} adet</div>
+</div>
+<span class="badge ${s.status==="Kabul"?"green":"red"}">${s.status}</span>
+</div>
+`).join("")
+:'<div class="muted">Henüz sonuçlanan sevkiyat yok.</div>';
 }
 
+window.decideShipment=async(id,result)=>{
+const s=userData.shipments.find(x=>x.id===id);
+if(!s)return;
 
-async function adminGift(){
+if(result==="Kabul"){
+const inv=userData.inventory.find(x=>x.productId===s.productId);
 
- if(!isAdmin())return;
-
- const username=
-  document.getElementById("giftUser")
-  .value.trim();
-
- const giftMoney=
-  Number(
-   document.getElementById("giftMoney").value
-  )||0;
-
- const giftDiamond=
-  Number(
-   document.getElementById("giftDiamond").value
-  )||0;
-
- if(!username){
-
-  showToast(
-   "Hesap adı girin."
-  );
-
-  return;
-
- }
-
- try{
-
-  const snap=
-   await getDocs(
-    collection(db,"users")
-   );
-
-  let targetDoc=null;
-  let targetData=null;
-
-  snap.forEach(d=>{
-
-   const x=d.data();
-
-   if(
-    x.username?.toLowerCase()===
-    username.toLowerCase()
-   ){
-
-    targetDoc=d;
-    targetData=x;
-
-   }
-
-  });
-
-  if(!targetDoc){
-
-   showToast(
-    "Bu hesap bulunamadı."
-   );
-
-   return;
-
-  }
-
-  await updateDoc(
-   doc(db,"users",targetDoc.id),
-   {
-    money:
-     (targetData.money||0)+giftMoney,
-
-    diamonds:
-     (targetData.diamonds||0)+giftDiamond
-   }
-  );
-
-  showToast(
-   username+" hesabına hediye gönderildi."
-  );
-
-  document.getElementById("giftUser").value="";
-  document.getElementById("giftMoney").value="";
-  document.getElementById("giftDiamond").value="";
-
-  renderAdminUsers();
-
- }catch(err){
-
-  console.error(err);
-
-  showToast(
-   "Hediye gönderilemedi."
-  );
-
- }
-
+if(inv){
+inv.qty+=Number(s.actual||0);
+}else{
+const p=products.find(x=>x.id===s.productId);
+userData.inventory.push({
+productId:s.productId,
+name:s.productName,
+category:p?.category||"Genel",
+supplier:s.supplier,
+price:p?.price||0,
+icon:p?.icon||"📦",
+qty:Number(s.actual||0),
+expiry:todayPlus(60)
+});
+}
 }
 
+s.status=result;
+s.decidedAt=new Date().toISOString();
 
-async function adminBan(){
+await save();
+renderAll();
+};
 
- if(!isAdmin())return;
+function renderInventory(){
+const list=document.getElementById("inventoryList");
+const now=new Date();
 
- const username=
-  document.getElementById("banUser")
-  .value.trim();
+list.innerHTML=userData.inventory.map((x,i)=>{
+const expired=new Date(x.expiry)<now && Number(x.qty)>0;
 
- if(!username)return;
+return `
+<div class="card">
+<div class="productTop">
+<div class="productIcon">${x.icon||"📦"}</div>
+<div>
+<div class="cardTitle">${esc(x.name)}</div>
+<div class="muted">${esc(x.category)}</div>
+</div>
+</div>
 
- try{
+<div class="row">
+<div>
+<div class="muted" style="font-size:11px">STOK</div>
+<strong>${Number(x.qty).toLocaleString("tr-TR")}</strong>
+</div>
+<div>
+<div class="muted" style="font-size:11px">SKT</div>
+<strong class="${expired?'red':''}">${esc(x.expiry)}</strong>
+</div>
+</div>
 
-  const snap=
-   await getDocs(
-    collection(db,"users")
-   );
+<div style="margin-top:10px">
+${expired?'<span class="badge red">SÜRESİ DOLMUŞ</span>':'<span class="badge green">KULLANILABİLİR</span>'}
+</div>
 
-  let target=null;
+${expired?`
+<div class="actionRow">
+<button class="btn red" onclick="discardExpired(${i})">🗑 İmha Et</button>
+</div>`:""}
 
-  snap.forEach(d=>{
-
-   if(
-    d.data().username?.toLowerCase()===
-    username.toLowerCase()
-   ){
-    target=d;
-   }
-
-  });
-
-  if(!target){
-
-   showToast(
-    "Bu hesap bulunamadı."
-   );
-
-   return;
-
-  }
-
-  await updateDoc(
-   doc(db,"users",target.id),
-   {banned:true}
-  );
-
-  showToast(
-   username+" hesabı banlandı."
-  );
-
-  document.getElementById("banUser").value="";
-
-  renderAdminUsers();
-
- }catch(err){
-
-  console.error(err);
-
-  showToast(
-   "Ban işlemi başarısız."
-  );
-
- }
-
+</div>`;
+}).join("");
 }
 
+window.discardExpired=async index=>{
+if(!confirm("Süresi geçmiş bu ürünleri imha etmek istiyor musun?"))return;
+userData.inventory.splice(index,1);
+await save();
+renderAll();
+};
 
-/* =========================
-   MODAL
-========================= */
+function renderRentals(){
+const list=document.getElementById("rentalList");
 
-let modalConfirmFunction=null;
+list.innerHTML=cities.map((c,i)=>{
+const existing=userData.stores.find(s=>s.rentalId===i);
 
-function openModal(title,content,confirm){
-
- document.getElementById("modalTitle")
-  .textContent=title;
-
- document.getElementById("modalContent")
-  .innerHTML=content;
-
- document.getElementById("modal")
-  .style.display="flex";
-
- modalConfirmFunction=confirm;
-
+if(existing){
+return `
+<div class="card">
+<div class="cardTitle">🏪 ${esc(existing.name)}</div>
+<div class="muted">${esc(existing.city)} · ${existing.distance} km</div>
+<div style="margin-top:10px">
+<span class="badge green">KİRADA</span>
+<span class="badge">${moneyFmt(existing.rent)}/ay</span>
+</div>
+<div class="actionRow">
+<button class="btn red" onclick="cancelRental('${existing.id}')">Kirayı İptal Et & Ücreti Geri Al</button>
+</div>
+</div>`;
 }
 
+const rent=30000+(i*2500);
 
-function closeModal(){
-
- document.getElementById("modal")
-  .style.display="none";
-
- modalConfirmFunction=null;
-
+return `
+<div class="card">
+<div class="cardTitle">🏪 ${esc(c[0])} Mağazası</div>
+<div class="muted">${c[1]} km uzaklıkta</div>
+<hr>
+<div class="row">
+<span class="muted">Aylık kira</span>
+<strong>${moneyFmt(rent)}</strong>
+</div>
+<div class="actionRow">
+<button class="btn" onclick="rentStore(${i},${rent})">Kirala</button>
+</div>
+</div>`;
+}).join("");
 }
 
-
-document.getElementById("modalClose")
- .addEventListener(
-  "click",
-  closeModal
- );
-
-document.getElementById("modalCancel")
- .addEventListener(
-  "click",
-  closeModal
- );
-
-document.getElementById("modalConfirm")
- .addEventListener(
-  "click",
-  ()=>{
-
-   const fn=modalConfirmFunction;
-
-   closeModal();
-
-   if(fn)fn();
-
-  }
- );
-
-
-/* =========================
-   TOAST
-========================= */
-
-let toastTimer;
-
-function showToast(message){
-
- const toast=
-  document.getElementById("toast");
-
- toast.textContent=message;
-
- toast.style.display="block";
-
- clearTimeout(toastTimer);
-
- toastTimer=setTimeout(()=>{
-
-  toast.style.display="none";
-
- },4000);
-
+window.rentStore=async(i,rent)=>{
+if(userData.money<rent){
+alert("Yeterli paran yok.");
+return;
 }
 
+const c=cities[i];
 
-/* =========================
-   ÇALIŞAN İSTATİSTİKLERİ
-========================= */
+const store={
+id:"store_"+Date.now()+"_"+Math.random().toString(36).slice(2),
+rentalId:i,
+name:c[0]+" "+(Math.floor(Math.random()*90)+10),
+city:c[0],
+distance:c[1],
+rent,
+revenue:Math.floor(Math.random()*50000),
+rentedAt:new Date().toISOString()
+};
 
-function updateWorkerStats(){
+userData.money-=rent;
+userData.stores.push(store);
 
- document.getElementById("activeWorkers")
-  .textContent=employees.length;
+await save();
+renderAll();
+};
 
- document.getElementById("pickerWork")
-  .textContent=pickerMinutesToday+" dk";
+window.cancelRental=async id=>{
+const store=userData.stores.find(x=>x.id===id);
+if(!store)return;
 
- document.getElementById("pickedItems")
-  .textContent=pickedItemsToday.toLocaleString();
+if(!confirm(`${store.name} kirasını iptal edip ${moneyFmt(store.rent)} geri almak istiyor musun?`))return;
 
- document.getElementById("workerHours")
-  .textContent=
-   (workerMinutesToday/60).toFixed(1)+
-   " saat";
+userData.money+=Number(store.rent||0);
+userData.stores=userData.stores.filter(x=>x.id!==id);
 
+await save();
+renderAll();
+};
+
+function renderStores(){
+const list=document.getElementById("storesList");
+
+if(!userData.stores.length){
+list.innerHTML='<div class="card"><div class="muted">Henüz mağazan yok.</div></div>';
+return;
 }
 
-
-/* =========================
-   HER ŞEYİ YENİLE
-========================= */
-
-function updateAll(){
-
- if(!currentUser)return;
-
- document.getElementById("money")
-  .textContent="$"+money.toLocaleString();
-
- document.getElementById("diamonds")
-  .textContent="💎 "+diamonds.toLocaleString();
-
- document.getElementById("levelText")
-  .textContent=level;
-
- document.getElementById("statMoney")
-  .textContent="$"+money.toLocaleString();
-
- document.getElementById("todayRevenue")
-  .textContent="+$"+lastRevenue.toLocaleString();
-
- document.getElementById("todayPurchases")
-  .textContent="-$"+lastPurchases.toLocaleString();
-
- document.getElementById("todayRent")
-  .textContent="-$"+lastRent.toLocaleString();
-
- document.getElementById("todayOvertime")
-  .textContent="-$"+lastOvertimeCost.toLocaleString();
-
- const net=
-  lastRevenue-
-  lastPurchases-
-  lastRent-
-  lastOvertimeCost;
-
- document.getElementById("todayNet")
-  .textContent="$"+net.toLocaleString();
-
- document.getElementById("statStores")
-  .textContent=stores.length;
-
- document.getElementById("depotNameDisplay")
-  .textContent=depotName;
-
- document.getElementById("depotNameEdit")
-  .value=depotName;
-
- renderClock();
- renderShipments();
- renderInventory();
- renderStores();
- renderRentals();
- renderOrders();
- renderVehicles();
- renderSuppliers();
- renderApplications();
- renderEmployees();
- renderProfile();
- updateWorkerStats();
- updateNameInfo();
- renderAdmin();
-
+list.innerHTML=userData.stores.map(s=>`
+<div class="card">
+<div class="row">
+<div>
+<div class="cardTitle">🏬 ${esc(s.name)}</div>
+<div class="muted">${esc(s.city)} · ${s.distance} km</div>
+</div>
+<span class="badge green">Aktif</span>
+</div>
+<hr>
+<div class="row">
+<span class="muted">Kasa</span>
+<strong class="green">${moneyFmt(s.revenue)}</strong>
+</div>
+<div class="row" style="margin-top:7px">
+<span class="muted">Aylık kira</span>
+<strong>${moneyFmt(s.rent)}</strong>
+</div>
+</div>
+`).join("");
 }
 
+function generateOrder(store){
+const items=products.map(p=>({
+productId:p.id,
+name:p.name,
+icon:p.icon,
+qty:10+Math.floor(Math.random()*70)
+}));
 
-/* =========================
-   SAYFA DEĞİŞİNCE DEPOLARI YÜKLE
-========================= */
+return {
+id:"order_"+Date.now()+"_"+Math.random().toString(36).slice(2),
+shopId:store.id,
+store:store.name,
+city:store.city,
+distance:store.distance,
+day:userData.day,
+status:"Bekliyor",
+items,
+totalUnits:items.reduce((a,b)=>a+b.qty,0),
+createdAt:new Date().toISOString()
+};
+}
 
-document.querySelector(
- '.navBtn[data-page="depots"]'
-).addEventListener(
- "click",
- renderDepots
+function renderOrders(){
+const list=document.getElementById("ordersList");
+
+if(!userData.stores.length){
+list.innerHTML='<div class="card"><div class="muted">Önce mağaza kiralamalısın.</div></div>';
+return;
+}
+
+/* mağazası olup aktif siparişi olmayan mağazalara sipariş oluştur */
+userData.stores.forEach(store=>{
+const has=userData.orders.some(o=>o.shopId===store.id && o.status!=="Teslim Edildi");
+if(!has){
+userData.orders.push(generateOrder(store));
+}
+});
+
+const active=userData.orders.filter(x=>x.status!=="Teslim Edildi");
+
+list.innerHTML=active.map(o=>`
+<div class="card">
+<div class="row">
+<div>
+<div class="cardTitle">📝 ${esc(o.store)}</div>
+<div class="muted">${esc(o.city)} · ${o.distance} km · ${o.totalUnits} ürün</div>
+</div>
+<span class="badge ${o.status==="Sevkiyatta"?"yellow":"blue"}">${o.status}</span>
+</div>
+
+<hr>
+
+<div style="max-height:240px;overflow:auto">
+${o.items.map(it=>`
+<div class="row" style="padding:6px 0;border-bottom:1px solid #202934">
+<span>${it.icon} ${esc(it.name)}</span>
+<strong>${it.qty}</strong>
+</div>
+`).join("")}
+</div>
+
+<div class="actionRow">
+${o.status==="Bekliyor"?`
+<button class="btn" onclick="dispatchOrder('${o.id}')">
+🚚 Mercedes Actros Gönder
+</button>`:""}
+
+${o.status==="Hazır"?`
+<button class="btn" onclick="dispatchOrder('${o.id}')">
+🚚 Sevkiyata Çıkar
+</button>`:""}
+</div>
+</div>
+`).join("");
+
+save().catch(()=>{});
+}
+
+window.dispatchOrder=async orderId=>{
+const order=userData.orders.find(x=>x.id===orderId);
+if(!order||order.status==="Teslim Edildi")return;
+
+const vehicle=vehicles.find(v=>v.status==="Hazır");
+
+if(!vehicle){
+alert("Şu anda bütün Mercedes Actros araçları görevde.");
+return;
+}
+
+for(const item of order.items){
+const inv=userData.inventory.find(x=>x.productId===item.productId);
+if(!inv || Number(inv.qty)<Number(item.qty)){
+alert(`${item.name} için yeterli stok yok.`);
+return;
+}
+}
+
+for(const item of order.items){
+const inv=userData.inventory.find(x=>x.productId===item.productId);
+inv.qty-=item.qty;
+}
+
+const mins=routeMinutes(order.distance);
+
+order.status="Sevkiyatta";
+order.vehicle=vehicle.id;
+order.routeMinutes=mins;
+order.remainingSeconds=mins*60;
+
+vehicle.status="Sevkiyatta";
+vehicle.destination=order.store;
+vehicle.remainingSeconds=mins*60;
+
+await save();
+renderAll();
+
+setTimeout(async()=>{
+const idx=userData.orders.findIndex(x=>x.id===order.id);
+if(idx<0)return;
+
+userData.orders[idx].status="Teslim Edildi";
+
+const store=userData.stores.find(x=>x.id===order.shopId);
+if(store)store.revenue+=Math.floor(order.totalUnits*2.5);
+
+vehicle.status="Hazır";
+vehicle.destination="";
+vehicle.remainingSeconds=0;
+
+userData.xp+=25;
+
+await save();
+renderAll();
+alert(`${order.store} siparişi teslim edildi.`);
+},mins*60*1000);
+};
+
+function renderVehicles(){
+const list=document.getElementById("vehicleList");
+
+list.innerHTML=vehicles.map(v=>`
+<div class="card">
+<div class="row">
+<div>
+<div class="cardTitle">🚛 ${v.model}</div>
+<div class="muted">${v.id}</div>
+</div>
+<span class="badge ${v.status==="Hazır"?"green":"yellow"}">${v.status}</span>
+</div>
+<hr>
+<div class="muted">Şoför: <strong>${esc(v.driver)}</strong></div>
+<div class="muted" style="margin-top:5px">Tel: ${esc(v.phone)}</div>
+${v.destination?`<div class="yellow" style="margin-top:7px">📍 ${esc(v.destination)}</div>`:""}
+</div>
+`).join("");
+}
+
+function renderSuppliers(){
+const list=document.getElementById("supplierList");
+
+const suppliers={};
+
+products.forEach(p=>{
+if(!suppliers[p.supplier])suppliers[p.supplier]=[];
+suppliers[p.supplier].push(p);
+});
+
+list.innerHTML=Object.entries(suppliers).map(([supplier,arr])=>`
+<div class="card" style="margin-bottom:15px">
+<div class="row">
+<div>
+<div class="cardTitle">🌍 ${esc(supplier)}</div>
+<div class="muted">Uluslararası tedarikçi</div>
+</div>
+<span class="badge blue">${arr.length} ürün</span>
+</div>
+
+<div class="grid" style="margin-top:14px">
+${arr.map(p=>`
+<div class="depotCard">
+<div class="productTop">
+<div class="productIcon">${p.icon}</div>
+<div>
+<strong>${esc(p.name)}</strong>
+<div class="muted">${esc(p.category)}</div>
+</div>
+</div>
+
+<div class="row">
+<span class="muted">Birim fiyat</span>
+<strong>${moneyFmt(p.price)}</strong>
+</div>
+
+<div class="actionRow">
+<input id="buy_${p.id}" class="qtyInput" type="number" min="1" value="10">
+<button class="btn small" onclick="buyProduct('${p.id}')">Satın Al</button>
+</div>
+</div>
+`).join("")}
+</div>
+</div>
+`).join("");
+}
+
+window.buyProduct=async productId=>{
+const p=products.find(x=>x.id===productId);
+if(!p)return;
+
+const qty=Math.max(1,Number(document.getElementById("buy_"+productId).value||1));
+const total=qty*p.price;
+
+if(userData.money<total){
+alert("Yeterli paran yok.");
+return;
+}
+
+userData.money-=total;
+
+const shipment={
+id:"ship_"+Date.now()+"_"+Math.random().toString(36).slice(2),
+supplier:p.supplier,
+productId:p.id,
+productName:p.name,
+expected:qty,
+actual:qty,
+vehicle:"Mercedes Actros",
+status:"Bekliyor",
+createdAt:new Date().toISOString()
+};
+
+userData.shipments.push(shipment);
+
+await save();
+renderAll();
+
+alert(`${qty} adet ${p.name} siparişi oluşturuldu. Gelen Sevkiyatlar bölümünden kabul etmelisin.`);
+};
+
+function renderEmployees(){
+const list=document.getElementById("employeesList");
+
+list.innerHTML=userData.employees.map((e,i)=>`
+<div class="card">
+<div class="productTop">
+<div class="productIcon">${e.icon||"👷"}</div>
+<div>
+<div class="cardTitle">${esc(e.name)}</div>
+<div class="muted">${esc(e.job)}</div>
+</div>
+</div>
+
+<div class="row">
+<span class="muted">Maaş</span>
+<strong>${moneyFmt(e.salary)}</strong>
+</div>
+</div>
+`).join("");
+}
+
+function renderDepotManagement(){
+document.getElementById("managementDepotName").textContent=userData.depot;
+document.getElementById("managementLevel").textContent="Lv. "+userData.level;
+document.getElementById("depotOwner").textContent=userData.username;
+document.getElementById("currentManager").textContent=userData.managerName||userData.username;
+
+getDocs(collection(db,"users")).then(snap=>{
+const select=document.getElementById("managerSelect");
+
+select.innerHTML=snap.docs.map(d=>{
+const u=d.data();
+return `<option value="${d.id}" ${d.id===userData.managerUid?"selected":""}>${esc(u.username||"Oyuncu")}</option>`;
+}).join("");
+}).catch(()=>{});
+}
+
+window.renameDepot=async()=>{
+const newName=document.getElementById("newDepotName").value.trim();
+
+if(!newName){
+alert("Yeni depo adını yaz.");
+return;
+}
+
+if(newName===userData.depot){
+alert("Yeni isim mevcut isimle aynı.");
+return;
+}
+
+if(userData.nameChangeCount>=1){
+if(userData.diamonds<500){
+alert("İkinci ve sonraki isim değişiklikleri 500 💎.");
+return;
+}
+userData.diamonds-=500;
+}
+
+userData.depot=newName;
+userData.nameChangeCount++;
+
+await save();
+renderAll();
+
+document.getElementById("newDepotName").value="";
+alert("Depo adı değiştirildi.");
+};
+
+window.transferManager=async()=>{
+const uid=document.getElementById("managerSelect").value;
+
+if(!uid){
+alert("Bir oyuncu seç.");
+return;
+}
+
+const target=await getDoc(doc(db,"users",uid));
+
+if(!target.exists()){
+alert("Oyuncu bulunamadı.");
+return;
+}
+
+const targetData=target.data();
+
+if(!confirm(`${targetData.username} oyuncusuna depo yönetimini devretmek istiyor musun?`))return;
+
+userData.managerUid=uid;
+userData.managerName=targetData.username;
+
+await save();
+renderAll();
+
+alert("Depo yönetimi devredildi.");
+};
+
+function renderDepots(){
+const list=document.getElementById("depotsList");
+
+if(unsubscribeUsers)unsubscribeUsers();
+
+unsubscribeUsers=onSnapshot(collection(db,"users"),snap=>{
+const arr=snap.docs.map(d=>d.data());
+
+list.innerHTML=arr.map(u=>`
+<div class="depotCard">
+<div class="row">
+<div class="rowWrap">
+<div class="depotLogo">🏢</div>
+<div>
+<strong>${esc(u.depot||"FedEx Global")}</strong>
+<div class="muted" style="font-size:11px">
+Sahip: ${esc(u.username||"-")}
+</div>
+</div>
+</div>
+
+<span class="badge blue">Lv.${Number(u.level||1)}</span>
+</div>
+
+<div class="row" style="margin-top:12px">
+<span class="muted">Yönetici</span>
+<strong style="font-size:12px">${esc(u.managerName||u.username||"-")}</strong>
+</div>
+
+<div class="row" style="margin-top:6px">
+<span class="muted">Çalışan</span>
+<strong>${Array.isArray(u.employees)?u.employees.length:0}</strong>
+</div>
+
+<div class="actionRow">
+${u.uid!==firebaseUser.uid?
+`<button class="btn small" onclick="applyJob('${u.uid}')">İşe Başvur</button>`:
+`<span class="badge green">Senin Depon</span>`}
+</div>
+</div>
+`).join("");
+});
+}
+
+window.applyJob=async uid=>{
+const target=await getDoc(doc(db,"users",uid));
+
+if(!target.exists()){
+alert("Depo bulunamadı.");
+return;
+}
+
+const u=target.data();
+
+await addDoc(collection(db,"applications"),{
+fromUid:firebaseUser.uid,
+fromUsername:userData.username,
+toUid:uid,
+toDepot:u.depot||"Depo",
+status:"Bekliyor",
+createdAt:serverTimestamp()
+});
+
+alert(`${u.depot} deposuna iş başvurun gönderildi.`);
+};
+
+function renderDeveloper(){
+const allowed=userData.role==="developer"||userData.role==="admin";
+
+if(!allowed)return;
+
+getDocs(collection(db,"users")).then(snap=>{
+const users=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+const select=document.getElementById("developerUserSelect");
+select.innerHTML=users.map(u=>
+`<option value="${u.id}">${esc(u.username||u.email||u.id)}</option>`
+).join("");
+
+document.getElementById("developerPlayers").innerHTML=users.map(u=>`
+<div class="row" style="padding:9px 0;border-bottom:1px solid #252e38">
+<div>
+<strong>${esc(u.username||"-")}</strong>
+<div class="muted" style="font-size:11px">
+Lv.${u.level||1} · ${esc(u.role||"player")} · ${esc(u.depot||"-")}
+</div>
+</div>
+<div class="rowWrap">
+<span class="badge">${moneyFmt(u.money)}</span>
+<span class="badge blue">💎 ${Number(u.diamonds||0)}</span>
+${u.banned?'<span class="badge red">BAN</span>':""}
+${u.chatBanned?'<span class="badge yellow">MUTE</span>':""}
+</div>
+</div>
+`).join("");
+});
+}
+
+async function selectedUser(){
+const uid=document.getElementById("developerUserSelect").value;
+
+if(!uid){
+alert("Oyuncu seç.");
+return null;
+}
+
+const snap=await getDoc(doc(db,"users",uid));
+
+if(!snap.exists()){
+alert("Oyuncu bulunamadı.");
+return null;
+}
+
+return {uid,data:snap.data()};
+}
+
+window.devMoneyChange=async dir=>{
+const x=await selectedUser();
+if(!x)return;
+
+const amount=Math.abs(Number(document.getElementById("devMoney").value||0));
+const money=Math.max(0,Number(x.data.money||0)+amount*dir);
+
+await updateDoc(doc(db,"users",x.uid),{money});
+renderDeveloper();
+};
+
+window.devDiamondChange=async dir=>{
+const x=await selectedUser();
+if(!x)return;
+
+const amount=Math.abs(Number(document.getElementById("devDiamonds").value||0));
+const diamonds=Math.max(0,Number(x.data.diamonds||0)+amount*dir);
+
+await updateDoc(doc(db,"users",x.uid),{diamonds});
+renderDeveloper();
+};
+
+window.devXPChange=async dir=>{
+const x=await selectedUser();
+if(!x)return;
+
+const amount=Math.abs(Number(document.getElementById("devXP").value||0));
+const xp=Math.max(0,Number(x.data.xp||0)+amount*dir);
+
+await updateDoc(doc(db,"users",x.uid),{xp});
+renderDeveloper();
+};
+
+window.devSetLevel=async()=>{
+const x=await selectedUser();
+if(!x)return;
+
+const level=Math.max(1,Number(document.getElementById("devLevel").value||1));
+
+await updateDoc(doc(db,"users",x.uid),{level});
+renderDeveloper();
+};
+
+window.devSetRole=async()=>{
+const x=await selectedUser();
+if(!x)return;
+
+const role=document.getElementById("devRole").value;
+
+if(!confirm(`${x.data.username} rolünü ${role} yapmak istiyor musun?`))return;
+
+await updateDoc(doc(db,"users",x.uid),{role});
+renderDeveloper();
+};
+
+window.devGift=async()=>{
+const x=await selectedUser();
+if(!x)return;
+
+const gifts=Array.isArray(x.data.gifts)?x.data.gifts:[];
+
+gifts.push({
+from:"Yapımcı",
+message:"Warehouse Tycoon hediyesi",
+money:100000,
+diamonds:100,
+date:new Date().toISOString()
+});
+
+await updateDoc(doc(db,"users",x.uid),{
+money:Number(x.data.money||0)+100000,
+diamonds:Number(x.data.diamonds||0)+100,
+gifts
+});
+
+renderDeveloper();
+alert("Oyuncuya hediye gönderildi.");
+};
+
+window.devBan=async value=>{
+const x=await selectedUser();
+if(!x)return;
+
+await updateDoc(doc(db,"users",x.uid),{banned:value});
+renderDeveloper();
+alert(value?"Oyuncu banlandı.":"Oyuncunun banı açıldı.");
+};
+
+window.devMute=async value=>{
+const x=await selectedUser();
+if(!x)return;
+
+await updateDoc(doc(db,"users",x.uid),{chatBanned:value});
+renderDeveloper();
+alert(value?"Oyuncunun sohbeti susturuldu.":"Oyuncunun sohbet susturması kaldırıldı.");
+};
+
+window.makeAnnouncement=async()=>{
+const text=document.getElementById("announcementText").value.trim();
+
+if(!text)return;
+
+await addDoc(collection(db,"announcements"),{
+text,
+from:userData.username,
+createdAt:serverTimestamp()
+});
+
+document.getElementById("announcementText").value="";
+alert("Duyuru yayınlandı.");
+};
+
+function startChat(){
+if(unsubscribeChat)unsubscribeChat();
+
+const q=query(
+collection(db,"messages"),
+orderBy("createdAt","desc"),
+limit(80)
 );
 
+unsubscribeChat=onSnapshot(q,snap=>{
+const messages=[];
 
-/* =========================
-   OTOMATİK KAYIT
-========================= */
+snap.docs.reverse().forEach(d=>{
+messages.push(d.data());
+});
 
-setInterval(()=>{
+const box=document.getElementById("chatBox");
 
- if(currentUser){
-  saveGame();
- }
+box.innerHTML=messages.map(m=>`
+<div class="chatMessage">
+<strong>${esc(m.username||"Oyuncu")}</strong>
+<span class="chatTime">${m.createdAt?.toDate?m.createdAt.toDate().toLocaleTimeString("tr-TR"):""}</span>
+<div style="margin-top:4px">${esc(m.text)}</div>
+</div>
+`).join("");
 
-},5000);
+box.scrollTop=box.scrollHeight;
+});
+}
 
+window.sendChat=async()=>{
+if(userData.chatBanned){
+alert("Sohbetten susturuldun.");
+return;
+}
 
-/* =========================
-   BAŞLANGIÇ
-========================= */
+const input=document.getElementById("chatInput");
+const text=input.value.trim();
 
-console.log(
- "Warehouse Tycoon Firebase başlatıldı."
-);
+if(!text)return;
+
+await addDoc(collection(db,"messages"),{
+uid:firebaseUser.uid,
+username:userData.username,
+text,
+createdAt:serverTimestamp()
+});
+
+input.value="";
+};
+
+function startUsers(){
+/* Oyuncular/depolar onSnapshot üzerinden takip ediliyor. */
+}
+
+window.showPage=(page,button)=>{
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+document.getElementById("page-"+page).classList.add("active");
+
+document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
+if(button)button.classList.add("active");
+};
+
+/* Basit operasyon zamanlayıcısı */
+setInterval(async()=>{
+if(!userData)return;
+
+let changed=false;
+
+userData.orders.forEach(o=>{
+if(o.status==="Sevkiyatta" && o.remainingSeconds>0){
+o.remainingSeconds--;
+changed=true;
+}
+});
+
+userData.cashCollections.forEach(c=>{
+if(c.status==="Yolda" && c.remainingSeconds>0){
+c.remainingSeconds--;
+changed=true;
+}
+});
+
+if(changed){
+await save().catch(()=>{});
+renderVehicles();
+}
+},1000);
+
+/* Para toplama */
+function renderCashCollection(){
+const list=document.getElementById("cashCollectionList");
+
+if(!userData.stores.length){
+list.innerHTML='<div class="muted">Para toplanacak mağaza yok.</div>';
+return;
+}
+
+list.innerHTML=userData.stores.map(s=>{
+const active=userData.cashCollections.find(c=>c.storeId===s.id&&c.status==="Yolda");
+
+return `
+<div class="card">
+<div class="cardTitle">💰 ${esc(s.name)}</div>
+<div class="muted">${esc(s.city)} · ${s.distance} km</div>
+
+<div style="margin-top:9px">
+Kasa: <strong class="green">${moneyFmt(s.revenue)}</strong>
+</div>
+
+${active?
+`<div class="yellow" style="margin-top:8px">
+🚗 Para toplama aracı yolda · ${Math.ceil(active.remainingSeconds/60)} dk
+</div>`:
+`<div class="actionRow">
+<button class="btn green" onclick="collectCash('${s.id}')">
+💰 Para Topla
+</button>
+</div>`}
+</div>
+`;
+}).join("");
+}
+
+window.collectCash=async storeId=>{
+const store=userData.stores.find(s=>s.id===storeId);
+
+if(!store||Number(store.revenue)<=0){
+alert("Bu mağazada toplanacak para yok.");
+return;
+}
+
+const existing=userData.cashCollections.find(c=>c.storeId===storeId&&c.status==="Yolda");
+
+if(existing){
+alert("Bu mağazadan para zaten toplanıyor.");
+return;
+}
+
+const mins=routeMinutes(store.distance)*2;
+
+const collection={
+id:"cash_"+Date.now(),
+storeId,
+storeName:store.name,
+amount:Number(store.revenue),
+status:"Yolda",
+remainingSeconds:mins*60,
+createdAt:new Date().toISOString()
+};
+
+store.revenue=0;
+userData.cashCollections.push(collection);
+
+await save();
+renderAll();
+
+setTimeout(async()=>{
+const c=userData.cashCollections.find(x=>x.id===collection.id);
+if(!c)return;
+
+userData.money+=Number(c.amount||0);
+c.status="Tamamlandı";
+c.remainingSeconds=0;
+
+await save();
+renderAll();
+
+alert(`${store.name} kasasından ${moneyFmt(c.amount)} toplandı.`);
+},mins*60*1000);
+};
+
+/* renderAll içinde para toplama alanı */
+const oldRenderAll=renderAll;
+renderAll=function(){
+oldRenderAll();
+renderCashCollection();
+};
 
 </script>
-
 </body>
 </html>
