@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Warehouse Tycoon</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+ --bg:#06080b;--panel:#0c1015;--panel2:#111720;--border:#222b35;
+ --text:#f4f6f8;--muted:#8994a3;--green:#31d158;--red:#ff453a;
+ --yellow:#ffd60a;--blue:#0a84ff;--orange:#ff9f0a;--purple:#a855f7
+}
+body{background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer}
+
+#authScreen{
+ min-height:100vh;display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 50% 20%,#182230 0,#06080b 58%)
+}
+.authBox{
+ width:440px;max-width:92%;background:#0c1015;border:1px solid #29333f;
+ border-radius:18px;padding:38px;box-shadow:0 25px 80px #000
+}
+.logo{font-size:31px;font-weight:900}.logo span,.brand span{color:var(--green)}
+.tagline{color:var(--muted);margin:8px 0 28px}
+.authTabs{display:flex;background:#070a0e;padding:4px;border-radius:9px;margin-bottom:18px}
+.authTabs button{flex:1;padding:11px;border:0;color:#8d98a6;background:transparent;border-radius:7px}
+.authTabs button.active{background:#1a222c;color:#fff}
+.input{
+ width:100%;padding:13px;border-radius:9px;border:1px solid #293440;
+ background:#080b0f;color:white;outline:none;margin-bottom:11px
+}
+.input:focus{border-color:#3b82f6}
+.mainButton{width:100%;padding:13px;border:0;border-radius:9px;background:var(--green);color:#061008;font-weight:bold}
+.authError{min-height:20px;color:var(--red);font-size:13px;margin:5px 0}
+
+#app{display:none}
+.topbar{
+ height:74px;border-bottom:1px solid var(--border);background:#090c10;
+ display:flex;align-items:center;gap:24px;padding:0 20px;position:sticky;top:0;z-index:30
+}
+.brand{font-size:21px;font-weight:900}.company{color:var(--muted);font-size:11px;margin-top:4px}
+.accountBox{margin-left:auto;display:flex;gap:10px;align-items:center}
+.accountPill{background:#111720;border:1px solid #27313b;padding:8px 12px;border-radius:9px}
+.accountPill small{display:block;color:#7f8997;font-size:9px;margin-bottom:3px}
+.accountPill b{font-size:13px}
+.money{font-size:19px;font-weight:bold;color:#6ce687}
+.diamond{font-size:17px;color:#c084fc;font-weight:bold}
+.timeBox{text-align:center}.gameTime{font-weight:bold;font-size:17px}.day{color:var(--muted);font-size:10px}
+#logoutBtn{background:#121820;color:#ddd;border:1px solid #2c3743;padding:8px 12px;border-radius:8px}
+
+.layout{display:flex;min-height:calc(100vh - 74px)}
+.sidebar{width:235px;background:#090c10;border-right:1px solid var(--border);padding:13px 10px;flex-shrink:0}
+.navBtn{
+ width:100%;text-align:left;border:0;background:transparent;color:#929dac;
+ padding:11px 12px;margin-bottom:3px;border-radius:8px
+}
+.navBtn:hover{background:#121820;color:white}.navBtn.active{background:#162019;color:#64e37d}
+.adminNav{color:#f87171!important}
+.content{flex:1;max-width:1600px;padding:24px}.page{display:none}.page.active{display:block}
+.pageTitle{font-size:27px;font-weight:800;margin-bottom:5px}
+.pageSubtitle{color:var(--muted);margin-bottom:22px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:17px}
+.cardLabel{color:#7f8997;font-size:11px;margin-bottom:8px}.cardValue{font-size:24px;font-weight:bold}
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}.blue{color:#58aaff}.purple{color:#c084fc}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+table{width:100%;border-collapse:collapse}.tableWrap{overflow-x:auto}
+th,td{padding:12px;border-bottom:1px solid #1c232c;text-align:left;font-size:13px}
+th{color:#788493;font-size:10px;text-transform:uppercase}td{color:#dfe4ea}
+.status{display:inline-block;padding:5px 8px;border-radius:5px;font-size:10px;font-weight:bold}
+.status.green{background:#11331b;color:#64e77e}.status.red{background:#361412;color:#ff766e}
+.status.yellow{background:#342e0b;color:#ffe05c}.status.blue{background:#102d4d;color:#62b5ff}
+.btn{border:0;border-radius:7px;padding:8px 12px;font-size:11px;font-weight:bold}
+.btnGreen{background:var(--green);color:#061008}.btnRed{background:var(--red);color:white}
+.btnBlue{background:var(--blue);color:white}.btnDark{background:#171e27;color:#e4e8ed;border:1px solid #2a333e}
+.btnOrange{background:var(--orange);color:#171000}.btnPurple{background:var(--purple);color:white}
+.progress{height:8px;background:#202731;border-radius:5px;overflow:hidden;margin-top:10px}
+.progress div{height:100%;background:var(--green);width:0%}
+.workerStats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.workerStat{background:#111720;border:1px solid #202a34;padding:13px;border-radius:9px}
+.workerStat small{color:#7f8997;display:block;margin-bottom:5px}.workerStat b{font-size:20px}
+
+.extraWork{
+ display:flex;align-items:center;justify-content:space-between;gap:15px;
+ background:linear-gradient(90deg,#17130a,#10151b);border:1px solid #5b4610;
+ border-radius:12px;padding:15px;margin-bottom:16px
+}
+.extraWork b{color:#ffd60a}.extraWork p{font-size:12px;color:#8994a3;margin-top:4px}
+
+/* DEPO */
+.warehouseVisual{
+ height:500px;position:relative;overflow:hidden;border:1px solid #2b3541;
+ border-radius:14px;background:linear-gradient(#111820 1px,transparent 1px),
+ linear-gradient(90deg,#111820 1px,transparent 1px);background-size:32px 32px;background-color:#070a0e
+}
+.zone{position:absolute;border:1px solid #303b47;background:#0d131a;border-radius:7px;overflow:hidden}
+.zoneTitle{position:absolute;top:7px;left:9px;z-index:3;color:#a8b2bf;font-size:10px;font-weight:bold}
+.food{left:2%;top:5%;width:29%;height:39%}.drinks{left:34%;top:5%;width:29%;height:39%}
+.clean{left:66%;top:5%;width:32%;height:39%}.pick{left:2%;top:49%;width:47%;height:47%}
+.ship{left:51%;top:49%;width:47%;height:47%}
+.rack{
+ position:absolute;top:32px;bottom:10px;width:15%;
+ background:repeating-linear-gradient(to bottom,#2b3540 0,#2b3540 4px,#141a21 4px,#141a21 21px);
+ border:1px solid #3b4652
+}
+.r1{left:9%}.r2{left:31%}.r3{left:53%}.r4{left:75%}
+.pallet{position:absolute;width:22px;height:15px;background:#8c5a2b;border:2px solid #b47a3e;border-radius:2px}
+.p1{left:15%;top:56px}.p2{left:37%;top:94px}.p3{left:59%;top:67px}.p4{left:81%;top:115px}
+.p5{left:15%;top:185px}.p6{left:37%;top:155px}.p7{left:59%;top:195px}.p8{left:81%;top:225px}
+
+/* TOPLAMA */
+.human{
+ position:absolute;width:13px;height:19px;background:#4da3ff;border-radius:6px 6px 3px 3px;
+ z-index:8;box-shadow:0 -6px 0 -1px #d4a373
+}
+.human:after{content:"";position:absolute;bottom:-5px;left:1px;width:11px;height:5px;background:#18202a;border-radius:2px}
+.cart{position:absolute;width:17px;height:11px;border:2px solid #d0d6dd;right:-16px;top:8px}
+.worker1{animation:workerRoute1 15s linear infinite}.worker2{animation:workerRoute2 19s linear infinite}
+@keyframes workerRoute1{
+ 0%{left:8%;top:73%}15%{left:25%;top:73%}25%{left:25%;top:55%}40%{left:40%;top:55%}
+ 52%{left:40%;top:75%}65%{left:65%;top:75%}80%{left:65%;top:55%}100%{left:8%;top:73%}
+}
+@keyframes workerRoute2{
+ 0%{left:74%;top:73%}20%{left:58%;top:73%}35%{left:58%;top:55%}50%{left:43%;top:55%}
+ 65%{left:43%;top:75%}80%{left:20%;top:75%}100%{left:74%;top:73%}
+}
+
+/* FORKLIFT */
+.forklift{position:absolute;width:31px;height:20px;background:#ffd60a;border-radius:3px;z-index:10}
+.forklift:before{content:"";position:absolute;left:-3px;bottom:-5px;width:7px;height:7px;background:#111;border-radius:50%;box-shadow:27px 0 #111}
+.forklift:after{content:"";position:absolute;right:-15px;top:5px;width:17px;height:4px;background:#e1e4e8}
+.fork1{animation:forkRoute1 22s linear infinite}.fork2{animation:forkRoute2 27s linear infinite}
+@keyframes forkRoute1{
+ 0%{left:4%;top:91%}15%{left:42%;top:91%}30%{left:42%;top:55%}45%{left:62%;top:55%}
+ 60%{left:62%;top:20%}75%{left:88%;top:20%}100%{left:4%;top:91%}
+}
+@keyframes forkRoute2{
+ 0%{left:91%;top:91%}20%{left:60%;top:91%}40%{left:60%;top:55%}55%{left:30%;top:55%}
+ 70%{left:30%;top:20%}85%{left:8%;top:20%}100%{left:91%;top:91%}
+}
+
+/* SEVKİYAT */
+.shipSlot{
+ position:absolute;width:78px;height:58px;border:2px dashed #53606d;background:#10171e;
+ border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center
+}
+.shipSlot span{font-size:9px;color:#7f8997}.shipSlot b{font-size:12px}
+.slot1{left:5%;top:20%}.slot2{left:27%;top:20%}.slot3{left:49%;top:20%}.slot4{left:71%;top:20%}
+.slot5{left:16%;top:68%}.slot6{left:40%;top:68%}.slot7{left:64%;top:68%}
+
+.shipWorker{
+ position:absolute;width:13px;height:19px;background:#31d158;border-radius:6px;left:88%;top:77%;
+ animation:shipWorker 12s linear infinite;z-index:10;box-shadow:0 -6px 0 -1px #d4a373
+}
+.shipWorker:after{content:"";position:absolute;right:-18px;top:8px;width:17px;height:11px;border:2px solid #b47a3e;background:#8c5a2b}
+@keyframes shipWorker{
+ 0%{left:88%;top:77%}20%{left:72%;top:77%}40%{left:55%;top:77%}60%{left:34%;top:77%}
+ 80%{left:55%;top:48%}100%{left:88%;top:77%}
+}
+
+/* MAĞAZA */
+.storeCard{transition:.15s}.storeCard:hover{transform:translateY(-2px);border-color:#334252}
+.storeIcon{width:48px;height:48px;border-radius:10px;background:#18202a;display:flex;align-items:center;justify-content:center;font-size:24px}
+.rentCard{border:1px solid #293642;background:#0e141b;border-radius:12px;padding:17px}
+.rentPrice{font-size:21px;font-weight:bold;color:#ffd60a;margin:9px 0}
+
+/* CHAT */
+.chatBox{height:460px;display:flex;flex-direction:column}
+.chatMessages{flex:1;overflow-y:auto;background:#080b0f;border:1px solid #222b35;border-radius:10px;padding:15px}
+.chatMessage{margin-bottom:12px}.chatMessage b{color:#63df7c}.chatMessage small{color:#697583;margin-left:7px}
+.chatInput{display:flex;gap:8px;margin-top:10px}.chatInput input{flex:1;margin:0}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:100}
+.modalBox{width:500px;max-width:92%;max-height:90vh;overflow:auto;background:#0e1319;border:1px solid #2a333e;border-radius:14px;padding:22px}
+.modalTitle{font-size:20px;font-weight:bold;margin-bottom:16px}
+.modalActions{display:flex;gap:8px;justify-content:flex-end;margin-top:17px}
+#toast{
+ position:fixed;right:20px;bottom:20px;z-index:200;background:#151b22;border:1px solid #35404d;
+ padding:13px 17px;border-radius:9px;display:none;box-shadow:0 10px 30px #000;max-width:420px
+}
+
+.profileHero{
+ display:flex;gap:15px;align-items:center;margin-bottom:20px
+}
+.avatar{
+ width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#31d158,#126b2b);
+ display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:bold
+}
+.adminCard{border-color:#713333;background:linear-gradient(135deg,#170d0d,#100f12)}
+.vehicleCard{border:1px solid #293642;background:#0d131a;border-radius:11px;padding:16px}
+.truckIcon{font-size:38px;margin-bottom:8px}
+
+@media(max-width:1050px){
+ .stats{grid-template-columns:repeat(2,1fr)}.grid3,.grid4{grid-template-columns:repeat(2,1fr)}
+ .workerStats{grid-template-columns:repeat(2,1fr)}.accountPill{display:none}
+}
+@media(max-width:750px){
+ .sidebar{width:65px}.navBtn{font-size:0;text-align:center}.content{padding:14px}
+ .grid2,.grid3,.grid4{grid-template-columns:1fr}.topbar{gap:8px;padding:0 9px}
+ .warehouseVisual{height:400px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="authScreen">
+<div class="authBox">
+<div class="logo">WAREHOUSE <span>TYCOON</span></div>
+<div class="tagline">Gelin ve kendi deponuzu yönetin.</div>
+
+<div class="authTabs">
+<button id="loginTab" class="active">Giriş Yap</button>
+<button id="registerTab">Kayıt Ol</button>
+</div>
+
+<input id="username" class="input" placeholder="Hesap adı">
+<input id="password" type="password" class="input" placeholder="Şifre">
+<input id="depotName" class="input" placeholder="Depo adı" style="display:none">
+
+<div id="authError" class="authError"></div>
+<button id="authButton" class="mainButton">GİRİŞ YAP</button>
+
+<p style="color:#626d7b;font-size:10px;margin-top:15px;text-align:center">
+Yönetici hesabı: admin / admin123
+</p>
+</div>
+</div>
+
+<div id="app">
+
+<div class="topbar">
+<div>
+<div class="brand">WAREHOUSE <span>TYCOON</span></div>
+<div class="company" id="companyName">Şirket</div>
+</div>
+
+<div class="accountBox">
+<div class="accountPill"><small>HESAP</small><b id="accountName">-</b></div>
+<div class="accountPill"><small>SEVİYE</small><b id="accountLevel">1</b></div>
+<div class="accountPill"><small>İŞÇİ</small><b id="workerCount">12</b></div>
+</div>
+
+<div class="timeBox">
+<div class="gameTime" id="gameClock">08:00</div>
+<div class="day" id="dayText">1. Gün</div>
+</div>
+
+<div class="money" id="money">$10,000,000</div>
+<div class="diamond" id="diamonds">💎 0</div>
+<button id="logoutBtn">Çıkış</button>
+</div>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<button class="navBtn active" data-page="dashboard">🏠 Yönetim Merkezi</button>
+<button class="navBtn" data-page="profile">👤 Profilim</button>
+<button class="navBtn" data-page="incoming">🚛 Gelen Sevkiyatlar</button>
+<button class="navBtn" data-page="inventory">📦 Depo Stokları</button>
+<button class="navBtn" data-page="stores">🏪 Mağazalar</button>
+<button class="navBtn" data-page="rentals">🏠 Kiralık Dükkanlar</button>
+<button class="navBtn" data-page="orders">🛒 Mağaza Siparişleri</button>
+<button class="navBtn" data-page="vehicles">🚚 Genel Sevkiyatlar</button>
+<button class="navBtn" data-page="suppliers">🌎 Tedarikçiler</button>
+<button class="navBtn" data-page="employees">👷 Çalışanlar</button>
+<button class="navBtn" data-page="warehouse">🏗️ Depo Yönetimi</button>
+<button class="navBtn" data-page="chat">💬 Genel Sohbet</button>
+
+<button id="adminNav" class="navBtn adminNav" data-page="admin" style="display:none">
+🔐 Yönetici Merkezi
+</button>
+
+</aside>
+
+<main class="content">
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="page active">
+
+<div class="pageTitle">Yönetim Merkezi</div>
+<div class="pageSubtitle">Deponuzun genel operasyon durumunu buradan takip edin.</div>
+
+<div id="overtimeBox" class="extraWork">
+<div>
+<b>⏱ MESAI SİSTEMİ</b>
+<p>Normal mesai 08:00 — 17:30. Gerektiğinde çalışanları mesaiye bırakabilirsiniz.</p>
+</div>
+<button id="overtimeBtn" class="btn btnOrange" onclick="toggleOvertime()">BUGÜN MESAİYE KAL</button>
+</div>
+
+<div class="stats">
+<div class="card"><div class="cardLabel">ŞİRKET BÜTÇESİ</div><div class="cardValue green" id="statMoney">$10,000,000</div></div>
+<div class="card"><div class="cardLabel">DEPO STOĞU</div><div class="cardValue" id="statStock">0</div></div>
+<div class="card"><div class="cardLabel">KİRALIK MAĞAZA</div><div class="cardValue blue" id="statStores">0</div></div>
+<div class="card"><div class="cardLabel">DEPO KAPASİTESİ</div><div class="cardValue">100,000</div></div>
+</div>
+
+<div class="grid2">
+
+<div class="card">
+<h3 style="margin-bottom:15px">Bugünkü Finans Durumu</h3>
+<table>
+<tr><td>Mağaza ciroları</td><td class="green" id="todayRevenue">+$0</td></tr>
+<tr><td>Ürün alımları</td><td class="red" id="todayPurchases">-$0</td></tr>
+<tr><td>Mağaza kiraları</td><td class="red" id="todayRent">-$0</td></tr>
+<tr><td>Mesai giderleri</td><td class="red" id="todayOvertime">-$0</td></tr>
+<tr><td><b>Net</b></td><td id="todayNet">$0</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3 style="margin-bottom:15px">İş Günü</h3>
+<div style="font-size:32px;font-weight:bold" id="workHoursText">08:00 — 17:30</div>
+<p style="color:#8994a3;margin-top:7px">Yemek molası: 12:00 — 13:30</p>
+<div class="progress"><div id="dayProgress"></div></div>
+<p id="overtimeStatus" style="color:#8994a3;font-size:11px;margin-top:9px">Normal mesai</p>
+</div>
+
+</div>
+
+<div class="card" style="margin-top:16px">
+<h3>Çalışan Performansı</h3>
+<p style="color:#8994a3;font-size:12px;margin-top:5px">Bugünkü çalışma ve toplama performansı</p>
+
+<div class="workerStats">
+<div class="workerStat"><small>ÇALIŞAN</small><b id="activeWorkers">12</b></div>
+<div class="workerStat"><small>TOPLAYICILARIN ÇALIŞMASI</small><b id="pickerWork">0 dk</b></div>
+<div class="workerStat"><small>TOPLANAN ÜRÜN</small><b id="pickedItems">0</b></div>
+<div class="workerStat"><small>ÇALIŞAN SAATİ</small><b id="workerHours">0 saat</b></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h3 style="margin-bottom:5px">Depo Durumu</h3>
+<p style="color:#8994a3;font-size:12px;margin-bottom:13px">
+<b id="depotNameDisplay">Ana Depo</b> — 100.000 ürün kapasitesi
+</p>
+
+<div class="warehouseVisual">
+
+<div class="zone food">
+<div class="zoneTitle">A BLOK — GIDA</div>
+<div class="rack r1"></div><div class="rack r2"></div><div class="rack r3"></div><div class="rack r4"></div>
+<div class="pallet p1"></div><div class="pallet p2"></div><div class="pallet p3"></div><div class="pallet p4"></div>
+<div class="pallet p5"></div><div class="pallet p6"></div><div class="pallet p7"></div><div class="pallet p8"></div>
+</div>
+
+<div class="zone drinks">
+<div class="zoneTitle">B BLOK — İÇECEK</div>
+<div class="rack r1"></div><div class="rack r2"></div><div class="rack r3"></div><div class="rack r4"></div>
+<div class="pallet p1"></div><div class="pallet p2"></div><div class="pallet p3"></div><div class="pallet p4"></div>
+<div class="pallet p5"></div><div class="pallet p6"></div><div class="pallet p7"></div><div class="pallet p8"></div>
+</div>
+
+<div class="zone clean">
+<div class="zoneTitle">C BLOK — TEMİZLİK</div>
+<div class="rack r1"></div><div class="rack r2"></div><div class="rack r3"></div><div class="rack r4"></div>
+<div class="pallet p1"></div><div class="pallet p3"></div><div class="pallet p5"></div><div class="pallet p7"></div>
+</div>
+
+<div class="zone pick">
+<div class="zoneTitle">D BLOK — TOPLAMA ALANI</div>
+<div class="pallet" style="left:15%;top:25%"></div>
+<div class="pallet" style="left:28%;top:25%"></div>
+<div class="pallet" style="left:41%;top:25%"></div>
+<div class="pallet" style="left:54%;top:25%"></div>
+<div class="pallet" style="left:67%;top:25%"></div>
+<div class="pallet" style="left:22%;top:62%"></div>
+<div class="pallet" style="left:38%;top:62%"></div>
+<div class="pallet" style="left:54%;top:62%"></div>
+<div class="human worker1"><div class="cart"></div></div>
+<div class="human worker2"><div class="cart"></div></div>
+</div>
+
+<div class="zone ship">
+<div class="zoneTitle">E BLOK — SEVKİYAT</div>
+<div class="shipSlot slot1"><span>NO 01</span><b>BOŞ</b></div>
+<div class="shipSlot slot2"><span>NO 02</span><b>BOŞ</b></div>
+<div class="shipSlot slot3"><span>NO 03</span><b>BOŞ</b></div>
+<div class="shipSlot slot4"><span>NO 04</span><b>BOŞ</b></div>
+<div class="shipSlot slot5"><span>NO 05</span><b>BOŞ</b></div>
+<div class="shipSlot slot6"><span>NO 06</span><b>BOŞ</b></div>
+<div class="shipSlot slot7"><span>NO 07</span><b>BOŞ</b></div>
+<div class="pallet" style="left:16%;top:34%"></div>
+<div class="pallet" style="left:37%;top:34%"></div>
+<div class="pallet" style="left:58%;top:34%"></div>
+<div class="pallet" style="left:79%;top:34%"></div>
+<div class="shipWorker"></div>
+</div>
+
+<div class="forklift fork1"></div>
+<div class="forklift fork2"></div>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- PROFILE -->
+<section id="profile" class="page">
+<div class="pageTitle">Profilim</div>
+<div class="pageSubtitle">Senin ve deponun diğer oyuncular tarafından görülebilen özeti.</div>
+
+<div class="card">
+<div class="profileHero">
+<div class="avatar" id="profileAvatar">W</div>
+<div>
+<h2 id="profileUsername">-</h2>
+<p style="color:#8994a3;margin-top:4px" id="profileCompany">-</p>
+</div>
+</div>
+
+<div class="grid4">
+<div class="card"><div class="cardLabel">DEPO</div><b id="profileDepot">-</b></div>
+<div class="card"><div class="cardLabel">ÇALIŞAN</div><b id="profileWorkers">12</b></div>
+<div class="card"><div class="cardLabel">MAĞAZA</div><b id="profileStores">0</b></div>
+<div class="card"><div class="cardLabel">SEVKIYAT</div><b id="profileShipments">0</b></div>
+</div>
+
+<div class="grid2" style="margin-top:15px">
+<div class="card"><div class="cardLabel">ŞİRKET PARASI</div><div class="big green" id="profileMoney">$0</div></div>
+<div class="card"><div class="cardLabel">ELMAS</div><div class="big purple" id="profileDiamonds">💎 0</div></div>
+</div>
+</div>
+</section>
+
+
+<!-- INCOMING -->
+<section id="incoming" class="page">
+<div class="pageTitle">Gelen Sevkiyatlar</div>
+<div class="pageSubtitle">Gelen tırın evrakını kontrol edin.</div>
+<div id="shipments"></div>
+</section>
+
+
+<!-- INVENTORY -->
+<section id="inventory" class="page">
+<div class="pageTitle">Depo Stokları</div>
+<div class="pageSubtitle">Ürünleri, görsellerini ve stok durumlarını takip edin.</div>
+
+<div class="stats">
+<div class="card"><div class="cardLabel">TOPLAM ÜRÜN</div><div class="cardValue" id="inventoryTotal">0</div></div>
+<div class="card"><div class="cardLabel">DOLULUK</div><div class="cardValue blue" id="inventoryPercent">0%</div></div>
+<div class="card"><div class="cardLabel">ÜRÜN ÇEŞİDİ</div><div class="cardValue" id="productTypes">0</div></div>
+<div class="card"><div class="cardLabel">KAPASİTE</div><div class="cardValue">100,000</div></div>
+</div>
+
+<div class="card">
+<table>
+<thead><tr><th>Ürün</th><th>Kategori</th><th>Stok</th><th>Raf</th><th>Durum</th></tr></thead>
+<tbody id="inventoryTable"></tbody>
+</table>
+</div>
+</section>
+
+
+<!-- STORES -->
+<section id="stores" class="page">
+<div class="pageTitle">Mağazalar</div>
+<div class="pageSubtitle">Kiralamış olduğunuz mağazaları yönetin.</div>
+
+<div id="storesGrid" class="grid3"></div>
+
+<div id="noStores" class="card" style="display:none;text-align:center">
+<p style="color:#8994a3">Henüz kiralık mağazanız yok.</p>
+<button class="btn btnGreen" style="margin-top:12px" onclick="goPage('rentals')">KİRALIK DÜKKANLARA GİT</button>
+</div>
+</section>
+
+
+<!-- RENTALS -->
+<section id="rentals" class="page">
+<div class="pageTitle">Kiralık Dükkanlar</div>
+<div class="pageSubtitle">Mağaza satın alınamaz. Bütün mağazalar kiralıktır ve aylık kira ödenir.</div>
+
+<div class="card" style="margin-bottom:16px">
+<b>🏪 Yeni Mağaza Aç</b>
+<p style="color:#8994a3;font-size:12px;margin-top:5px">
+Bir mağaza seçip kiralayın. Mağaza her yeni gün başladığında aylık kira giderine katkıda bulunur.
+</p>
+</div>
+
+<div class="grid3" id="rentalsGrid"></div>
+</section>
+
+
+<!-- ORDERS -->
+<section id="orders" class="page">
+<div class="pageTitle">Mağaza Siparişleri</div>
+<div class="pageSubtitle">Her mağazanın siparişi ayrı kutucukta gösterilir.</div>
+<div id="ordersGrid" class="grid3"></div>
+</section>
+
+
+<!-- VEHICLES -->
+<section id="vehicles" class="page">
+<div class="pageTitle">Genel Sevkiyatlar</div>
+<div class="pageSubtitle">Bütün sevkiyat araçları Mercedes Actros'tur.</div>
+<div id="vehiclesGrid" class="grid3"></div>
+</section>
+
+
+<!-- SUPPLIERS -->
+<section id="suppliers" class="page">
+<div class="pageTitle">Tedarikçiler</div>
+<div class="pageSubtitle">Satın alma yöneticiniz tedarikçilerden ürün siparişlerini yönetir.</div>
+
+<div class="card" style="margin-bottom:16px">
+<div style="display:flex;align-items:center;gap:15px">
+<div style="width:60px;height:60px;border-radius:50%;background:#18232e;display:flex;align-items:center;justify-content:center;font-size:27px">👔</div>
+<div>
+<div style="font-size:18px;font-weight:bold">Satın Alma Yöneticisi</div>
+<div id="purchaseManagerName" style="color:#8994a3;font-size:12px;margin-top:4px">Atanmadı</div>
+</div>
+<button class="btn btnBlue" style="margin-left:auto" onclick="choosePurchaseManager()">YÖNETİCİ ATA</button>
+</div>
+</div>
+
+<div class="grid3" id="suppliersGrid"></div>
+</section>
+
+
+<!-- EMPLOYEES -->
+<section id="employees" class="page">
+<div class="pageTitle">Çalışanlar</div>
+<div class="pageSubtitle">Çalışanlarınızın görevlerini, maaşlarını ve durumlarını yönetin.</div>
+
+<div class="stats">
+<div class="card"><div class="cardLabel">TOPLAM ÇALIŞAN</div><div class="cardValue" id="employeeTotal">12</div></div>
+<div class="card"><div class="cardLabel">FORKLİFT</div><div class="cardValue" id="forkliftCount">4</div></div>
+<div class="card"><div class="cardLabel">TOPLAYICI</div><div class="cardValue" id="pickerCount">6</div></div>
+<div class="card"><div class="cardLabel">SEVKİYAT</div><div class="cardValue" id="shipWorkerCount">2</div></div>
+</div>
+
+<div class="grid2">
+<div class="card">
+<h3 style="margin-bottom:14px">İş Başvuruları</h3>
+<div id="applications"></div>
+</div>
+
+<div class="card">
+<h3 style="margin-bottom:14px">Mevcut Çalışanlar</h3>
+<div class="tableWrap">
+<table>
+<thead><tr><th>Çalışan</th><th>Görev</th><th>Maaş</th><th>Durum</th><th>İşlem</th></tr></thead>
+<tbody id="employeesTable"></tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+
+
+<!-- WAREHOUSE -->
+<section id="warehouse" class="page">
+<div class="pageTitle">Depo Yönetimi</div>
+<div class="pageSubtitle">Depo bilgilerinizi yönetin.</div>
+
+<div class="grid2">
+<div class="card">
+<h3>Depo Bilgileri</h3>
+<div style="margin-top:15px">
+<label style="font-size:11px;color:#8994a3">DEPO ADI</label>
+<input id="depotNameEdit" class="input" style="margin-top:6px">
+<button class="btn btnGreen" onclick="changeDepotName()">DEPO ADINI KAYDET</button>
+<p id="nameChangeInfo" style="font-size:11px;color:#8994a3;margin-top:10px"></p>
+</div>
+</div>
+
+<div class="card">
+<h3>Depo Kapasitesi</h3>
+<div style="font-size:35px;font-weight:bold;margin-top:13px">100,000</div>
+<p style="color:#8994a3;font-size:12px;margin-top:5px">Depo kapasitesi sabittir. Genişletme sistemi kapalıdır.</p>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h3 style="margin-bottom:14px">Operasyon Alanları</h3>
+<table>
+<tr><td>A Blok</td><td>Gıda</td><td>Raflı palet depolama</td></tr>
+<tr><td>B Blok</td><td>İçecek</td><td>Raflı palet depolama</td></tr>
+<tr><td>C Blok</td><td>Temizlik</td><td>Raflı palet depolama</td></tr>
+<tr><td>D Blok</td><td>Toplama</td><td>Mağaza siparişleri</td></tr>
+<tr><td>E Blok</td><td>Sevkiyat</td><td>7 sevkiyat kapısı</td></tr>
+</table>
+</div>
+</section>
+
+
+<!-- CHAT -->
+<section id="chat" class="page">
+<div class="pageTitle">Genel Sohbet</div>
+<div class="pageSubtitle">Warehouse Tycoon oyuncularının sohbet alanı.</div>
+
+<div class="card chatBox">
+<div id="chatMessages" class="chatMessages"></div>
+<div class="chatInput">
+<input id="chatInput" class="input" placeholder="Mesajınızı yazın...">
+<button class="btn btnGreen" onclick="sendChat()">GÖNDER</button>
+</div>
+</div>
+</section>
+
+
+<!-- ADMIN -->
+<section id="admin" class="page">
+<div class="pageTitle">🔐 Yönetici Merkezi</div>
+<div class="pageSubtitle">Bu bölüm yalnızca yönetici hesabında görünür.</div>
+
+<div class="card adminCard" style="margin-bottom:16px">
+<h3>⚠ Yönetici Komutları</h3>
+<p style="color:#8994a3;font-size:12px;margin-top:6px">
+Para, elmas, hediye ve hesap yönetimi.
+</p>
+</div>
+
+<div class="grid2">
+
+<div class="card">
+<h3>💰 Para Ekle</h3>
+<input id="adminMoney" class="input" type="number" placeholder="Miktar" style="margin-top:14px">
+<button class="btn btnGreen" onclick="adminAddMoney()">PARA EKLE</button>
+</div>
+
+<div class="card">
+<h3>💎 Elmas Ekle</h3>
+<input id="adminDiamond" class="input" type="number" placeholder="Miktar" style="margin-top:14px">
+<button class="btn btnPurple" onclick="adminAddDiamond()">ELMAS EKLE</button>
+</div>
+
+<div class="card">
+<h3>🎁 Hediye Gönder</h3>
+<input id="giftUser" class="input" placeholder="Hesap adı" style="margin-top:14px">
+<input id="giftMoney" class="input" type="number" placeholder="Para">
+<input id="giftDiamond" class="input" type="number" placeholder="Elmas">
+<button class="btn btnBlue" onclick="adminGift()">HEDİYE GÖNDER</button>
+</div>
+
+<div class="card">
+<h3>🚫 Banla</h3>
+<input id="banUser" class="input" placeholder="Hesap adı" style="margin-top:14px">
+<button class="btn btnRed" onclick="adminBan()">HESABI BANLA</button>
+</div>
+
+</div>
+
+<div class="card" style="margin-top:16px">
+<h3>👥 Kayıtlı Hesaplar</h3>
+<div id="adminUsers" style="margin-top:12px"></div>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+
+
+<div id="modal" class="modal">
+<div class="modalBox">
+<div id="modalTitle" class="modalTitle">İşlem</div>
+<div id="modalContent"></div>
+<div class="modalActions">
+<button class="btn btnDark" onclick="closeModal()">İptal</button>
+<button id="modalConfirm" class="btn btnGreen">Onayla</button>
+</div>
+</div>
+</div>
+
+<div id="toast"></div>
+
+
+<script>
+
+/* =====================================================
+ VERİLER
+===================================================== */
+
+const products=[
+ {id:1,name:"Makarna",category:"Gıda",supplier:"Anadolu Food",price:4.5,icon:"🍝"},
+ {id:2,name:"Su 1.5L",category:"İçecek",supplier:"Aqua Global",price:2,icon:"💧"},
+ {id:3,name:"Kola 330ml",category:"İçecek",supplier:"Global Drinks",price:3,icon:"🥤"},
+ {id:4,name:"Deterjan",category:"Temizlik",supplier:"Euro Distribution",price:8,icon:"🧴"},
+ {id:5,name:"Şampuan",category:"Kişisel Bakım",supplier:"Anatolia Care",price:7,icon:"🧴"},
+ {id:6,name:"Pirinç 1kg",category:"Gıda",supplier:"Asia Foods",price:6,icon:"🍚"},
+ {id:7,name:"Bisküvi",category:"Gıda",supplier:"Anadolu Food",price:3.5,icon:"🍪"},
+ {id:8,name:"Meyve Suyu",category:"İçecek",supplier:"Global Drinks",price:4,icon:"🧃"},
+ {id:9,name:"Çamaşır Suyu",category:"Temizlik",supplier:"Euro Distribution",price:9,icon:"🧼"},
+ {id:10,name:"Peçete",category:"Temizlik",supplier:"Euro Distribution",price:2.5,icon:"🧻"}
+];
+
+const availableShops=[
+ {name:"Kadıköy Merkez",city:"İstanbul",rent:28000},
+ {name:"Ataşehir Bulvar",city:"İstanbul",rent:32000},
+ {name:"Kartal Sahil",city:"İstanbul",rent:24000},
+ {name:"Ümraniye Meydan",city:"İstanbul",rent:30000},
+ {name:"Pendik Çarşı",city:"İstanbul",rent:26000},
+ {name:"Maltepe Park",city:"İstanbul",rent:31000},
+ {name:"Sancaktepe Merkez",city:"İstanbul",rent:22000},
+ {name:"Çekmeköy Meydan",city:"İstanbul",rent:23000},
+ {name:"Üsküdar Sahil",city:"İstanbul",rent:36000},
+ {name:"Bakırköy Cadde",city:"İstanbul",rent:39000},
+ {name:"Beşiktaş Merkez",city:"İstanbul",rent:45000},
+ {name:"Beylikdüzü AVM",city:"İstanbul",rent:34000},
+ {name:"Avcılar Merkez",city:"İstanbul",rent:27000},
+ {name:"Başakşehir Kayaşehir",city:"İstanbul",rent:30000},
+ {name:"Esenyurt Meydan",city:"İstanbul",rent:21000},
+ {name:"Kağıthane Merkez",city:"İstanbul",rent:33000},
+ {name:"Sarıyer Merkez",city:"İstanbul",rent:48000},
+ {name:"Tuzla Marina",city:"İstanbul",rent:29000},
+ {name:"Gebze Merkez",city:"Kocaeli",rent:20000},
+ {name:"Kurtköy Pendik",city:"İstanbul",rent:28000}
+];
+
+const suppliers=[
+ {name:"Anadolu Food",country:"Türkiye",products:"Gıda",factor:1},
+ {name:"Euro Distribution",country:"Almanya",products:"Temizlik",factor:1.35},
+ {name:"Asia Foods",country:"Çin",products:"Gıda",factor:.8},
+ {name:"Global Drinks",country:"Hollanda",products:"İçecek",factor:1.15},
+ {name:"Aqua Global",country:"İtalya",products:"İçecek",factor:1.1},
+ {name:"Anatolia Care",country:"Türkiye",products:"Kişisel Bakım",factor:1},
+ {name:"Bosphorus Trade",country:"Türkiye",products:"Gıda",factor:1.05},
+ {name:"Nordic Supply",country:"İsveç",products:"Temizlik",factor:1.3},
+ {name:"Mediterranean Goods",country:"İspanya",products:"Gıda",factor:1.12},
+ {name:"Black Sea Foods",country:"Türkiye",products:"Gıda",factor:.95},
+ {name:"Global Hygiene",country:"Fransa",products:"Temizlik",factor:1.28},
+ {name:"Pacific Imports",country:"Japonya",products:"Kişisel Bakım",factor:1.4},
+ {name:"Danube Logistics",country:"Avusturya",products:"Gıda",factor:1.18},
+ {name:"Balkan Distribution",country:"Bulgaristan",products:"İçecek",factor:1.02},
+ {name:"Central Europe Supply",country:"Polonya",products:"Temizlik",factor:1.14}
+];
+
+let vehicles=[
+ {id:1,plate:"34 VT 001",driver:"Ahmet Yılmaz",phone:"0532 410 22 01",capacity:2000,status:"Hazır",target:"—",remaining:0},
+ {id:2,plate:"34 VT 002",driver:"Mehmet Kaya",phone:"0533 214 45 72",capacity:2200,status:"Hazır",target:"—",remaining:0},
+ {id:3,plate:"34 VT 003",driver:"Burak Demir",phone:"0541 332 18 44",capacity:2400,status:"Hazır",target:"—",remaining:0},
+ {id:4,plate:"34 VT 004",driver:"Emre Şahin",phone:"0551 190 37 62",capacity:2200,status:"Hazır",target:"—",remaining:0},
+ {id:5,plate:"34 VT 005",driver:"Can Arslan",phone:"0536 221 54 19",capacity:2500,status:"Hazır",target:"—",remaining:0},
+ {id:6,plate:"34 VT 006",driver:"Hakan Koç",phone:"0542 761 30 55",capacity:2300,status:"Hazır",target:"—",remaining:0},
+ {id:7,plate:"34 VT 007",driver:"Eren Çelik",phone:"0553 682 41 20",capacity:2600,status:"Hazır",target:"—",remaining:0}
+];
+
+const defaultEmployees=[
+ {id:1,name:"Ahmet Y.",job:"Forklift",salary:32000,status:"Çalışıyor"},
+ {id:2,name:"Mehmet K.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
+ {id:3,name:"Burak T.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
+ {id:4,name:"Emre A.",job:"Sevkiyat",salary:30000,status:"Sahada"},
+ {id:5,name:"Can D.",job:"Forklift",salary:32000,status:"Çalışıyor"},
+ {id:6,name:"Hakan P.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
+ {id:7,name:"Murat S.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
+ {id:8,name:"Kerem B.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
+ {id:9,name:"Ali R.",job:"Toplayıcı",salary:28000,status:"Çalışıyor"},
+ {id:10,name:"Serkan T.",job:"Forklift",salary:32000,status:"Çalışıyor"},
+ {id:11,name:"Okan E.",job:"Forklift",salary:32000,status:"Çalışıyor"},
+ {id:12,name:"Furkan G.",job:"Sevkiyat",salary:30000,status:"Sahada"}
+];
+
+let registeredUsers=JSON.parse(localStorage.getItem("warehouseUsers")||"{}");
+
+let currentUser=null;
+let registerMode=false;
+
+let money=10000000;
+let diamonds=0;
+let day=1;
+let minutes=480;
+let depotName="Ana Depo";
+let warehouseCapacity=100000;
+let inventory=[];
+let stores=[];
+let orders=[];
+let shipments=[];
+let applications=[];
+let employees=[];
+let purchaseManager="";
+let nameChanged=false;
+let overtime=false;
+let lastRevenue=0;
+let lastPurchases=0;
+let lastRent=0;
+let lastOvertimeCost=0;
+let pickedItemsToday=0;
+let pickerMinutesToday=0;
+let workerMinutesToday=0;
+let chatMessages=JSON.parse(localStorage.getItem("warehouseChat")||"[]");
+
+
+/* =====================================================
+ AUTH
+===================================================== */
+
+document.getElementById("loginTab").onclick=()=>{
+ registerMode=false;
+ document.getElementById("loginTab").classList.add("active");
+ document.getElementById("registerTab").classList.remove("active");
+ document.getElementById("authButton").textContent="GİRİŞ YAP";
+ document.getElementById("depotName").style.display="none";
+};
+
+document.getElementById("registerTab").onclick=()=>{
+ registerMode=true;
+ document.getElementById("registerTab").classList.add("active");
+ document.getElementById("loginTab").classList.remove("active");
+ document.getElementById("authButton").textContent="ŞİRKETİ KUR";
+ document.getElementById("depotName").style.display="block";
+};
+
+document.getElementById("authButton").onclick=()=>{
+
+ const username=document.getElementById("username").value.trim();
+ const password=document.getElementById("password").value;
+ const depot=document.getElementById("depotName").value.trim();
+ const error=document.getElementById("authError");
+
+ if(username.length<3){
+  error.textContent="Hesap adı en az 3 karakter olmalı.";
+  return;
+ }
+
+ if(password.length<4){
+  error.textContent="Şifre en az 4 karakter olmalı.";
+  return;
+ }
+
+ if(registerMode){
+
+  if(username.toLowerCase()==="admin"){
+   error.textContent="Bu hesap adı kullanılamaz.";
+   return;
+  }
+
+  if(registeredUsers[username]){
+   error.textContent="Bu hesap zaten kayıtlı.";
+   return;
+  }
+
+  registeredUsers[username]={
+   password,
+   company:username+" Logistics",
+   depot:depot||username+" Ana Deposu",
+   money:10000000,
+   diamonds:0,
+   day:1,
+   inventory:[],
+   stores:[],
+   orders:[],
+   shipments:[],
+   applications:[],
+   employees:JSON.parse(JSON.stringify(defaultEmployees)),
+   purchaseManager:"",
+   nameChanged:false,
+   banned:false
+  };
+
+  localStorage.setItem("warehouseUsers",JSON.stringify(registeredUsers));
+
+  error.style.color="#31d158";
+  error.textContent="Şirketiniz oluşturuldu. Şimdi giriş yapabilirsiniz.";
+  document.getElementById("loginTab").click();
+
+ }else{
+
+  if(username.toLowerCase()==="admin" && password==="admin123"){
+   loginAdmin();
+   return;
+  }
+
+  if(!registeredUsers[username] ||
+     registeredUsers[username].password!==password){
+   error.textContent="Hesap adı veya şifre yanlış.";
+   return;
+  }
+
+  if(registeredUsers[username].banned){
+   error.textContent="Bu hesap yönetici tarafından banlanmış.";
+   return;
+  }
+
+  login(username);
+ }
+};
+
+
+function login(username){
+
+ currentUser=username;
+ const u=registeredUsers[username];
+
+ money=u.money;
+ diamonds=u.diamonds||0;
+ day=u.day||1;
+ depotName=u.depot||username+" Ana Deposu";
+ inventory=u.inventory||[];
+ stores=u.stores||[];
+ orders=u.orders||[];
+ shipments=u.shipments||[];
+ applications=u.applications||[];
+ employees=u.employees||JSON.parse(JSON.stringify(defaultEmployees));
+ purchaseManager=u.purchaseManager||"";
+ nameChanged=u.nameChanged||false;
+
+ showApp(u.company);
+}
+
+
+function loginAdmin(){
+
+ currentUser="admin";
+ money=999999999;
+ diamonds=999999;
+ day=999;
+ depotName="ADMINISTRATOR";
+ inventory=[];
+ stores=[];
+ orders=[];
+ shipments=[];
+ applications=[];
+ employees=[];
+ purchaseManager="";
+ nameChanged=true;
+
+ showApp("Warehouse Tycoon Administration");
+ document.getElementById("adminNav").style.display="block";
+}
+
+
+function showApp(company){
+
+ document.getElementById("authScreen").style.display="none";
+ document.getElementById("app").style.display="block";
+
+ document.getElementById("companyName").textContent=company;
+ document.getElementById("accountName").textContent=currentUser;
+ document.getElementById("depotNameDisplay").textContent=depotName;
+ document.getElementById("depotNameEdit").value=depotName;
+
+ updateAll();
+ startClock();
+}
+
+
+document.getElementById("logoutBtn").onclick=()=>{
+ saveGame();
+ location.reload();
+};
+
+
+/* =====================================================
+ SAVE
+===================================================== */
+
+function saveGame(){
+
+ if(!currentUser || currentUser==="admin")return;
+
+ const u=registeredUsers[currentUser];
+
+ u.money=money;
+ u.diamonds=diamonds;
+ u.day=day;
+ u.depot=depotName;
+ u.inventory=inventory;
+ u.stores=stores;
+ u.orders=orders;
+ u.shipments=shipments;
+ u.applications=applications;
+ u.employees=employees;
+ u.purchaseManager=purchaseManager;
+ u.nameChanged=nameChanged;
+
+ localStorage.setItem("warehouseUsers",JSON.stringify(registeredUsers));
+}
+
+
+/* =====================================================
+ NAV
+===================================================== */
+
+document.querySelectorAll(".navBtn").forEach(btn=>{
+ btn.onclick=()=>{
+  goPage(btn.dataset.page);
+ };
+});
+
+function goPage(page){
+
+ document.querySelectorAll(".navBtn").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+
+ const nav=document.querySelector(`.navBtn[data-page="${page}"]`);
+ if(nav)nav.classList.add("active");
+
+ const el=document.getElementById(page);
+ if(el)el.classList.add("active");
+
+ updateAll();
+}
+
+
+/* =====================================================
+ MESAI
+===================================================== */
+
+function toggleOvertime(){
+
+ if(overtime){
+  overtime=false;
+  showToast("Bugünkü mesai kapatıldı.");
+ }else{
+  overtime=true;
+  showToast("Bugün mesai aktif. Çalışma saati 20:30'a uzatıldı.");
+ }
+
+ updateAll();
+}
+
+
+function workEnd(){
+ return overtime?1230:1050;
+}
+
+
+/* =====================================================
+ CLOCK
+===================================================== */
+
+function startClock(){
+
+ setInterval(()=>{
+
+  if(minutes>=workEnd()){
+   if(overtime){
+    overtime=false;
+    showToast("Mesai sona erdi. Çalışanlar çıkış yaptı.");
+   }
+   nextDay();
+   return;
+  }
+
+  minutes+=5;
+
+  workerMinutesToday+=employees.length*5;
+
+  if(overtime){
+   lastOvertimeCost+=employees.length*150;
+   money-=employees.length*150;
+  }
+
+  renderClock();
+  updateWorkerStats();
+
+ },1500);
+}
+
+
+function renderClock(){
+
+ let h=Math.floor(minutes/60);
+ let m=minutes%60;
+
+ document.getElementById("gameClock").textContent=
+  String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+
+ document.getElementById("dayText").textContent=day+". Gün";
+
+ let progress=((minutes-480)/(workEnd()-480))*100;
+
+ document.getElementById("dayProgress").style.width=
+  Math.max(0,Math.min(100,progress))+"%";
+
+ document.getElementById("workHoursText").textContent=
+  "08:00 — "+(overtime?"20:30":"17:30");
+
+ document.getElementById("overtimeStatus").textContent=
+  overtime?"🔶 Bugün mesai aktif":"Normal mesai";
+
+ document.getElementById("overtimeBtn").textContent=
+  overtime?"MESAIYİ BİTİR":"BUGÜN MESAİYE KAL";
+}
+
+
+/* =====================================================
+ NEW DAY
+===================================================== */
+
+function nextDay(){
+
+ minutes=480;
+ day++;
+
+ let revenue=0;
+
+ stores.forEach(store=>{
+  let amount=12000+Math.floor(Math.random()*28000);
+  store.revenue=amount;
+  money+=amount;
+  revenue+=amount;
+ });
+
+ let rent=stores.reduce((a,b)=>a+b.rent,0);
+ money-=rent;
+
+ lastRevenue=revenue;
+ lastRent=rent;
+
+ pickedItemsToday=0;
+ pickerMinutesToday=0;
+ workerMinutesToday=0;
+ lastPurchases=0;
+ lastOvertimeCost=0;
+
+ createDailyOrders();
+ createShipment();
+
+ if(Math.random()<.65)createApplication();
+
+ showToast(
+  "Yeni gün başladı. Ciro: $"+revenue.toLocaleString()+
+  " | Mağaza kiraları: -$"+rent.toLocaleString()
+ );
+
+ saveGame();
+ updateAll();
+}
+
+
+/* =====================================================
+ SHIPMENTS
+===================================================== */
+
+function createShipment(){
+
+ const product=products[Math.floor(Math.random()*products.length)];
+ const expected=200+Math.floor(Math.random()*800);
+ const correct=Math.random()>.3;
+ const actual=correct?expected:Math.max(1,expected-Math.floor(Math.random()*80));
+
+ shipments.unshift({
+  id:Date.now(),
+  supplier:product.supplier,
+  product:product.name,
+  expected,
+  actual,
+  status:"Bekliyor"
+ });
+}
+
+
+function renderShipments(){
+
+ const el=document.getElementById("shipments");
+
+ if(!shipments.length){
+  el.innerHTML='<div class="card">Şu anda bekleyen sevkiyat yok.</div>';
+  return;
+ }
+
+ el.innerHTML=shipments.map(s=>{
+
+  const correct=s.expected===s.actual;
+
+  return `
+  <div class="card" style="margin-bottom:12px">
+   <div style="display:flex;justify-content:space-between">
+    <div>
+     <b>🚛 ${s.supplier}</b>
+     <div style="color:#8994a3;font-size:12px;margin-top:5px">
+      Ürün: ${s.product}
+     </div>
+    </div>
+    <span class="status ${
+     s.status==="Bekliyor"?"yellow":
+     s.status==="Kabul Edildi"?"green":"red"
+    }">${s.status}</span>
+   </div>
+
+   <div style="background:#151b22;border:1px dashed #36404c;padding:12px;border-radius:8px;margin:12px 0">
+    <b>SEVKİYAT EVRAKI</b><br><br>
+    Evrak miktarı: <b>${s.expected}</b><br>
+    Sayılan miktar: <b>${s.actual}</b><br><br>
+    ${correct?
+    '<span class="green">✓ Miktar doğru</span>':
+    '<span class="red">✕ Miktar uyuşmuyor</span>'}
+   </div>
+
+   ${s.status==="Bekliyor"?`
+   <button class="btn btnGreen" onclick="acceptShipment(${s.id})">✓ KABUL ET</button>
+   <button class="btn btnRed" onclick="rejectShipment(${s.id})">✕ REDDET</button>
+   `:""}
+  </div>`;
+ }).join("");
+}
+
+
+function acceptShipment(id){
+
+ const s=shipments.find(x=>x.id===id);
+ if(!s)return;
+
+ if(s.expected!==s.actual){
+  showToast("Miktar uyuşmuyor. Sevkiyat reddedilmeli.");
+  return;
+ }
+
+ const product=products.find(p=>p.name===s.product);
+ let item=inventory.find(i=>i.product===s.product);
+
+ if(!item){
+  item={
+   product:s.product,
+   category:product.category,
+   quantity:0,
+   shelf:product.category==="Gıda"?"A-"+(inventory.length+1):
+         product.category==="İçecek"?"B-"+(inventory.length+1):"C-"+(inventory.length+1)
+  };
+  inventory.push(item);
+ }
+
+ item.quantity+=s.actual;
+ s.status="Kabul Edildi";
+
+ showToast(s.actual+" adet "+s.product+" depoya alındı.");
+ saveGame();
+ updateAll();
+}
+
+
+function rejectShipment(id){
+
+ const s=shipments.find(x=>x.id===id);
+ if(!s)return;
+
+ if(s.expected===s.actual){
+  showToast("Miktar doğru. Bu sevkiyat reddedilemez.");
+  return;
+ }
+
+ s.status="Reddedildi";
+ showToast("Tır reddedildi ve ürünler geri gönderildi.");
+ saveGame();
+ updateAll();
+}
+
+
+/* =====================================================
+ INVENTORY
+===================================================== */
+
+function renderInventory(){
+
+ const el=document.getElementById("inventoryTable");
+
+ if(!inventory.length){
+  el.innerHTML='<tr><td colspan="5">Depoda henüz ürün bulunmuyor.</td></tr>';
+ }else{
+
+  el.innerHTML=inventory.map(i=>{
+
+   const p=products.find(x=>x.name===i.product);
+
+   let status=i.quantity>300?
+    '<span class="status green">YETERLİ</span>':
+    i.quantity>0?
+    '<span class="status yellow">AZALIYOR</span>':
+    '<span class="status red">YOK</span>';
+
+   return `
+   <tr>
+    <td>
+     <span style="font-size:25px;margin-right:8px">${p?p.icon:"📦"}</span>
+     <b>${i.product}</b>
+    </td>
+    <td>${i.category}</td>
+    <td><b>${i.quantity.toLocaleString()}</b></td>
+    <td>${i.shelf}</td>
+    <td>${status}</td>
+   </tr>`;
+  }).join("");
+ }
+
+ const total=inventory.reduce((a,b)=>a+b.quantity,0);
+
+ document.getElementById("statStock").textContent=total.toLocaleString();
+ document.getElementById("inventoryTotal").textContent=total.toLocaleString();
+ document.getElementById("inventoryPercent").textContent=Math.round(total/100000*100)+"%";
+ document.getElementById("productTypes").textContent=inventory.length;
+}
+
+
+/* =====================================================
+ RENTALS / STORES
+===================================================== */
+
+function renderRentals(){
+
+ const el=document.getElementById("rentalsGrid");
+
+ el.innerHTML=availableShops.map((s,i)=>{
+
+  const rented=stores.some(x=>x.shopId===i);
+
+  return `
+  <div class="rentCard">
+   <div class="storeIcon">🏪</div>
+   <h3 style="margin-top:12px">${s.name}</h3>
+   <p style="color:#8994a3;font-size:12px;margin-top:4px">${s.city}</p>
+
+   <div class="rentPrice">$${s.rent.toLocaleString()} / ay</div>
+
+   ${
+    rented?
+    '<span class="status green">KİRALANDI</span>':
+    `<button class="btn btnGreen" onclick="rentStore(${i})">MAĞAZAYI KİRALA</button>`
+   }
+  </div>`;
+ }).join("");
+}
+
+
+function rentStore(index){
+
+ const shop=availableShops[index];
+
+ if(stores.some(x=>x.shopId===index)){
+  showToast("Bu mağaza zaten kiralanmış.");
+  return;
+ }
+
+ if(money<shop.rent){
+  showToast("İlk kira bedelini ödemek için yeterli paranız yok.");
+  return;
+ }
+
+ money-=shop.rent;
+
+ stores.push({
+  id:Date.now(),
+  shopId:index,
+  name:"Warehouse Market "+shop.name,
+  city:shop.city,
+  rent:shop.rent,
+  revenue:0
+ });
+
+ showToast(shop.name+" mağazası kiralandı. İlk kira ödendi.");
+
+ saveGame();
+ updateAll();
+}
+
+
+function renderStores(){
+
+ const el=document.getElementById("storesGrid");
+ const empty=document.getElementById("noStores");
+
+ if(!stores.length){
+  el.innerHTML="";
+  empty.style.display="block";
+  return;
+ }
+
+ empty.style.display="none";
+
+ el.innerHTML=stores.map(s=>`
+
+ <div class="card storeCard">
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+   <div class="storeIcon">🏪</div>
+   <div>
+    <b>${s.name}</b>
+    <div style="color:#7f8997;font-size:10px;margin-top:3px">${s.city}</div>
+   </div>
+  </div>
+
+  <div class="cardLabel">AYLIK KİRA</div>
+  <div class="yellow" style="font-size:17px;font-weight:bold">
+   $${s.rent.toLocaleString()}
+  </div>
+
+  <div class="cardLabel" style="margin-top:12px">BUGÜNKÜ CİRO</div>
+  <div class="green" style="font-size:21px;font-weight:bold">
+   $${s.revenue.toLocaleString()}
+  </div>
+
+ </div>
+ `).join("");
+}
+
+
+/* =====================================================
+ ORDERS
+===================================================== */
+
+function createDailyOrders(){
+
+ if(!stores.length)return;
+
+ stores.forEach((store,index)=>{
+
+  if(orders.some(o=>o.storeId===store.id && o.status!=="Teslim Edildi"))return;
+
+  const product=products[Math.floor(Math.random()*products.length)];
+
+  orders.push({
+   id:Date.now()+index,
+   storeId:store.id,
+   store:store.name,
+   product:product.name,
+   quantity:40+Math.floor(Math.random()*180),
+   status:"Bekliyor",
+   picker:"Mehmet K.",
+   remaining:0
+  });
+ });
+}
+
+
+function renderOrders(){
+
+ const el=document.getElementById("ordersGrid");
+
+ if(!stores.length){
+  el.innerHTML=`
+   <div class="card">
+    Önce <b>Kiralık Dükkanlar</b> bölümünden mağaza kiralayın.
+   </div>`;
+  return;
+ }
+
+ el.innerHTML=stores.map(store=>{
+
+  const o=orders.find(x=>x.storeId===store.id && x.status!=="Teslim Edildi");
+
+  if(!o){
+   return `
+   <div class="card">
+    <h3>🏪 ${store.name}</h3>
+    <p style="color:#8994a3;margin-top:10px">Bekleyen sipariş yok.</p>
+   </div>`;
+  }
+
+  return `
+  <div class="card">
+   <h3>🏪 ${store.name}</h3>
+   <p style="color:#8994a3;font-size:11px;margin-top:4px">${store.city}</p>
+
+   <div style="margin-top:16px;padding:12px;background:#111820;border-radius:8px">
+    <div class="cardLabel">SİPARİŞ</div>
+    <div style="font-size:18px;font-weight:bold">
+     ${products.find(p=>p.name===o.product)?.icon||"📦"} ${o.product}
+    </div>
+    <p style="color:#8994a3;margin-top:5px">${o.quantity} adet</p>
+   </div>
+
+   <div style="margin-top:12px">
+    <span class="status ${
+     o.status==="Bekliyor"?"yellow":
+     o.status==="Toplanıyor"?"blue":
+     o.status==="Hazır"?"green":"blue"
+    }">${o.status}</span>
+   </div>
+
+   <div style="margin-top:12px">
+   ${
+    o.status==="Bekliyor"?
+    `<button class="btn btnBlue" onclick="prepareOrder(${o.id})">TOPLAMAYA BAŞLA</button>`:
+    o.status==="Toplanıyor"?
+    `<span style="color:#8994a3;font-size:12px">⏱ ${Math.ceil(o.remaining/60)} dakika kaldı</span>`:
+    o.status==="Hazır"?
+    `<button class="btn btnGreen" onclick="dispatchOrder(${o.id})">SEVKİYATA GÖNDER</button>`:
+    `<span class="status blue">SEVKİYATTA</span>`
+   }
+   </div>
+  </div>`;
+ }).join("");
+}
+
+
+function prepareOrder(id){
+
+ const o=orders.find(x=>x.id===id);
+ if(!o)return;
+
+ const item=inventory.find(x=>x.product===o.product);
+
+ if(!item || item.quantity<o.quantity){
+  showToast("Yeterli stok yok. Forkliftlerin rafları doldurması veya ürün siparişi gerekiyor.");
+  return;
+ }
+
+ o.status="Toplanıyor";
+ o.remaining=10*60+Math.floor(Math.random()*6*60);
+
+ showToast(
+  o.product+" toplama alanına gönderildi. Çalışan palet üzerinde çalışıyor."
+ );
+
+ saveGame();
+ updateAll();
+}
+
+
+/* =====================================================
+ TOPLAMA SÜRECİ
+===================================================== */
+
+setInterval(()=>{
+
+ orders.forEach(o=>{
+
+  if(o.status==="Toplanıyor"){
+
+   o.remaining-=5;
+   pickerMinutesToday+=5;
+
+   if(o.remaining<=0){
+
+    const item=inventory.find(x=>x.product===o.product);
+
+    if(item)item.quantity-=o.quantity;
+
+    pickedItemsToday+=o.quantity;
+
+    o.status="Hazır";
+    o.remaining=0;
+
+    showToast(
+     "📦 "+o.store+" paleti hazırlandı ve sevkiyat alanına bırakıldı."
+    );
+   }
+  }
+
+ });
+
+ /* Raf → toplama alanı otomatik stok takviyesi */
+ inventory.forEach(item=>{
+  if(item.quantity<150 && item.quantity>0){
+   item.quantity+=50;
+  }
+ });
+
+ updateAll();
+
+},1500);
+
+
+/* =====================================================
+ VEHICLES
+===================================================== */
+
+function renderVehicles(){
+
+ const el=document.getElementById("vehiclesGrid");
+
+ el.innerHTML=vehicles.map(v=>`
+
+ <div class="vehicleCard">
+
+  <div class="truckIcon">🚛</div>
+  <h3>Mercedes Actros</h3>
+
+  <div style="margin-top:10px">
+   <span class="cardLabel">PLAKA</span>
+   <b style="display:block;margin-top:3px">${v.plate}</b>
+  </div>
+
+  <div style="margin-top:10px">
+   <span class="cardLabel">ŞOFÖR</span>
+   <b style="display:block;margin-top:3px">${v.driver}</b>
+  </div>
+
+  <div style="margin-top:10px">
+   <span class="cardLabel">ŞOFÖR NUMARASI</span>
+   <b style="display:block;margin-top:3px">${v.phone}</b>
+  </div>
+
+  <div style="margin-top:10px">
+   <span class="cardLabel">KAPASİTE</span>
+   <b>${v.capacity.toLocaleString()} adet</b>
+  </div>
+
+  <div style="margin-top:12px">
+   <span class="status ${v.status==="Hazır"?"green":"blue"}">${v.status}</span>
+  </div>
+
+  ${v.status==="Hazır"?
+   `<button class="btn btnBlue" style="margin-top:12px" onclick="chooseVehicle(${v.id})">
+   MAĞAZAYA GÖNDER
+   </button>`:
+   `<p style="color:#8994a3;font-size:11px;margin-top:10px">
+   ${v.target} → ${Math.ceil(v.remaining/60)} dk
+   </p>`
+  }
+
+ </div>
+ `).join("");
+}
+
+
+function dispatchOrder(id){
+
+ const order=orders.find(x=>x.id===id);
+
+ if(!order || order.status!=="Hazır"){
+  showToast("Sipariş henüz hazır değil.");
+  return;
+ }
+
+ const vehicle=vehicles.find(v=>v.status==="Hazır");
+
+ if(!vehicle){
+  showToast("Boş sevkiyat aracı yok.");
+  return;
+ }
+
+ chooseVehicle(vehicle.id,order);
+}
+
+
+function chooseVehicle(vehicleId,order=null){
+
+ const vehicle=vehicles.find(v=>v.id===vehicleId);
+
+ const options=stores.map(
+  s=>`<option value="${s.name}">${s.name}</option>`
+ ).join("");
+
+ openModal(
+  "Mercedes Actros — Sevkiyat",
+  `
+  <div style="background:#111820;padding:12px;border-radius:8px;margin-bottom:12px">
+   🚛 <b>${vehicle.plate}</b><br>
+   <span style="color:#8994a3;font-size:12px">
+   Şoför: ${vehicle.driver} · ${vehicle.phone}
+   </span>
+  </div>
+
+  <label style="font-size:11px;color:#8994a3">MAĞAZA</label>
+  <select id="vehicleStore" class="input" style="margin-top:6px">
+   ${options}
+  </select>
+
+  <p style="color:#8994a3;font-size:12px">
+   Sevkiyat süresi tam olarak 30 dakikadır.
+  </p>
+  `,
+  ()=>{
+
+   const target=document.getElementById("vehicleStore").value;
+
+   vehicle.status="Yolda";
+   vehicle.target=target;
+   vehicle.remaining=30*60;
+
+   if(order)order.status="Sevkiyatta";
+
+   showToast(
+    "🚛 "+vehicle.plate+" "+target+" mağazasına gönderildi."
+   );
+
+   saveGame();
+   updateAll();
+  }
+ );
+}
+
+
+setInterval(()=>{
+
+ vehicles.forEach(v=>{
+
+  if(v.status==="Yolda"){
+
+   v.remaining-=5;
+
+   if(v.remaining<=0){
+
+    v.status="Hazır";
+    v.target="—";
+    v.remaining=0;
+
+    const order=orders.find(o=>o.status==="Sevkiyatta");
+
+    if(order)order.status="Teslim Edildi";
+
+    showToast("🚛 "+v.plate+" sevkiyatı tamamladı ve depoya döndü.");
+   }
+  }
+ });
+
+ updateAll();
+
+},1500);
+
+
+/* =====================================================
+ SUPPLIERS
+===================================================== */
+
+function renderSuppliers(){
+
+ const el=document.getElementById("suppliersGrid");
+
+ el.innerHTML=suppliers.map(s=>`
+
+ <div class="card">
+  <div style="font-size:28px;margin-bottom:10px">🌎</div>
+  <h3>${s.name}</h3>
+  <p style="color:#8994a3;font-size:12px;margin-top:5px">${s.country}</p>
+  <p style="color:#8994a3;font-size:12px;margin-top:3px">${s.products}</p>
+
+  <button class="btn btnGreen" style="margin-top:15px"
+   onclick="buyFromSupplier('${s.name}')">
+   ÜRÜN SİPARİŞ ET
+  </button>
+ </div>
+
+ `).join("");
+
+ document.getElementById("purchaseManagerName").textContent=
+  purchaseManager||"Atanmadı";
+}
+
+
+function buyFromSupplier(name){
+
+ if(!purchaseManager){
+  showToast("Önce bir satın alma yöneticisi atayın.");
+  return;
+ }
+
+ const supplier=suppliers.find(s=>s.name===name);
+
+ const available=products.filter(
+  p=>p.supplier===name || p.category===supplier.products
+ );
+
+ const options=available.map(p=>
+  `<option value="${p.id}">${p.icon} ${p.name} — $${p.price}/adet</option>`
+ ).join("");
+
+ openModal(
+  "Satın Alma — "+supplier.name,
+  `
+  <p style="color:#8994a3;font-size:12px;margin-bottom:10px">
+  Satın alma yöneticisi: <b style="color:white">${purchaseManager}</b>
+  </p>
+
+  <select id="buyProduct" class="input">${options}</select>
+
+  <input id="buyQuantity" class="input" type="number" min="1"
+   value="100" placeholder="Miktar">
+  `,
+  ()=>{
+
+   const pid=Number(document.getElementById("buyProduct").value);
+   const quantity=Number(document.getElementById("buyQuantity").value);
+   const product=products.find(p=>p.id===pid);
+
+   if(!quantity || quantity<=0){
+    showToast("Geçerli miktar girin.");
+    return;
+   }
+
+   const price=product.price*supplier.factor*quantity;
+
+   if(money<price){
+    showToast("Yeterli bütçe yok.");
+    return;
+   }
+
+   money-=price;
+   lastPurchases+=price;
+
+   shipments.unshift({
+    id:Date.now(),
+    supplier:supplier.name,
+    product:product.name,
+    expected:quantity,
+    actual:quantity,
+    status:"Bekliyor"
+   });
+
+   showToast("$"+price.toLocaleString()+" satın alma emri oluşturuldu.");
+   saveGame();
+   updateAll();
+  }
+ );
+}
+
+
+function choosePurchaseManager(){
+
+ openModal(
+  "Satın Alma Yöneticisi Ata",
+  `
+  <input id="managerName" class="input" placeholder="Çalışan adı">
+  <p style="color:#8994a3;font-size:12px">
+  Bu çalışan stok seviyelerini takip eder ve tedarikçilerden ürün satın alır.
+  </p>
+  `,
+  ()=>{
+
+   const name=document.getElementById("managerName").value.trim();
+
+   if(!name){
+    showToast("Bir isim girin.");
+    return;
+   }
+
+   purchaseManager=name;
+   showToast(name+" satın alma yöneticisi oldu.");
+   saveGame();
+   updateAll();
+  }
+ );
+}
+
+
+/* =====================================================
+ EMPLOYEES
+===================================================== */
+
+function createApplication(){
+
+ const names=["Ali Demir","Mert Kaya","Emir Yılmaz","Kerem Arslan","Burak Çelik","Onur Şahin","Eren Koç"];
+ const jobs=["Toplayıcı","Forklift Operatörü","Sevkiyat Personeli"];
+
+ applications.unshift({
+  id:Date.now(),
+  name:names[Math.floor(Math.random()*names.length)],
+  job:jobs[Math.floor(Math.random()*jobs.length)],
+  experience:Math.floor(Math.random()*6)+1
+ });
+}
+
+
+function renderApplications(){
+
+ const el=document.getElementById("applications");
+
+ if(!applications.length){
+  el.innerHTML='<p style="color:#8994a3;font-size:12px">Şu anda yeni iş başvurusu yok.</p>';
+  return;
+ }
+
+ el.innerHTML=applications.map(a=>`
+
+ <div style="background:#111720;border:1px solid #26313d;padding:14px;border-radius:10px;margin-bottom:10px">
+
+  <b>${a.name}</b>
+
+  <div style="color:#8994a3;font-size:11px;margin:5px 0 10px">
+   ${a.job} · ${a.experience} yıl deneyim
+  </div>
+
+  <button class="btn btnGreen" onclick="hireApplicant(${a.id})">İŞE AL</button>
+  <button class="btn btnRed" onclick="rejectApplicant(${a.id})">REDDET</button>
+
+ </div>
+
+ `).join("");
+}
+
+
+function hireApplicant(id){
+
+ const index=applications.findIndex(x=>x.id===id);
+ if(index<0)return;
+
+ const a=applications[index];
+
+ employees.push({
+  id:Date.now(),
+  name:a.name,
+  job:a.job.replace(" Operatörü",""),
+  salary:a.job.includes("Forklift")?32000:a.job.includes("Toplayıcı")?28000:30000,
+  status:"Çalışıyor"
+ });
+
+ applications.splice(index,1);
+
+ showToast(a.name+" işe alındı.");
+ saveGame();
+ updateAll();
+}
+
+
+function rejectApplicant(id){
+
+ applications=applications.filter(x=>x.id!==id);
+ saveGame();
+ updateAll();
+}
+
+
+function renderEmployees(){
+
+ document.getElementById("employeeTotal").textContent=employees.length;
+
+ document.getElementById("forkliftCount").textContent=
+  employees.filter(x=>x.job==="Forklift").length;
+
+ document.getElementById("pickerCount").textContent=
+  employees.filter(x=>x.job==="Toplayıcı").length;
+
+ document.getElementById("shipWorkerCount").textContent=
+  employees.filter(x=>x.job==="Sevkiyat").length;
+
+ document.getElementById("workerCount").textContent=employees.length;
+
+ const el=document.getElementById("employeesTable");
+
+ el.innerHTML=employees.map(e=>`
+
+ <tr>
+  <td><b>${e.name}</b></td>
+  <td>${e.job}</td>
+  <td>$${e.salary.toLocaleString()}</td>
+  <td><span class="status green">${e.status}</span></td>
+  <td>
+   <button class="btn btnBlue" onclick="changeJob(${e.id})">GÖREV</button>
+   <button class="btn btnOrange" onclick="raiseSalary(${e.id})">ZAM</button>
+   <button class="btn btnRed" onclick="fireEmployee(${e.id})">KOV</button>
+  </td>
+ </tr>
+
+ `).join("");
+}
+
+
+function changeJob(id){
+
+ const e=employees.find(x=>x.id===id);
+ if(!e)return;
+
+ openModal(
+  "Görev Değiştir — "+e.name,
+  `
+  <select id="newJob" class="input">
+   <option>Toplayıcı</option>
+   <option>Forklift</option>
+   <option>Sevkiyat</option>
+   <option>Satın Alma</option>
+  </select>
+  `,
+  ()=>{
+
+   e.job=document.getElementById("newJob").value;
+
+   if(e.job==="Toplayıcı")e.salary=28000;
+   if(e.job==="Forklift")e.salary=32000;
+   if(e.job==="Sevkiyat")e.salary=30000;
+   if(e.job==="Satın Alma")e.salary=35000;
+
+   showToast(e.name+" artık "+e.job+" olarak çalışıyor.");
+   saveGame();
+   updateAll();
+  }
+ );
+}
+
+
+function raiseSalary(id){
+
+ const e=employees.find(x=>x.id===id);
+ if(!e)return;
+
+ const old=e.salary;
+
+ openModal(
+  "Maaş Zammı — "+e.name,
+  `
+  <p style="color:#8994a3;margin-bottom:10px">
+  Mevcut maaş: <b style="color:white">$${old.toLocaleString()}</b>
+  </p>
+
+  <input id="newSalary" class="input" type="number" value="${old+2000}">
+  `,
+  ()=>{
+
+   const value=Number(document.getElementById("newSalary").value);
+
+   if(value<=e.salary){
+    showToast("Yeni maaş mevcut maaştan yüksek olmalı.");
+    return;
+   }
+
+   e.salary=value;
+
+   showToast(e.name+" maaşı $"+value.toLocaleString()+" oldu.");
+   saveGame();
+   updateAll();
+  }
+ );
+}
+
+
+function fireEmployee(id){
+
+ const e=employees.find(x=>x.id===id);
+ if(!e)return;
+
+ if(!confirm(e.name+" isimli çalışanı işten çıkarmak istiyor musunuz?"))return;
+
+ employees=employees.filter(x=>x.id!==id);
+
+ showToast(e.name+" işten çıkarıldı.");
+ saveGame();
+ updateAll();
+}
+
+
+/* =====================================================
+ WORKER STATS
+===================================================== */
+
+function updateWorkerStats(){
+
+ document.getElementById("activeWorkers").textContent=employees.length;
+ document.getElementById("pickerWork").textContent=pickerMinutesToday+" dk";
+ document.getElementById("pickedItems").textContent=pickedItemsToday.toLocaleString();
+ document.getElementById("workerHours").textContent=(workerMinutesToday/60).toFixed(1)+" saat";
+}
+
+
+/* =====================================================
+ DEPOT NAME + DIAMOND
+===================================================== */
+
+function changeDepotName(){
+
+ const name=document.getElementById("depotNameEdit").value.trim();
+
+ if(!name){
+  showToast("Depo adı boş bırakılamaz.");
+  return;
+ }
+
+ if(name===depotName){
+  showToast("Yeni bir isim girin.");
+  return;
+ }
+
+ if(nameChanged){
+
+  if(diamonds<500){
+   showToast("Depo adını tekrar değiştirmek için 500 💎 gerekiyor.");
+   return;
+  }
+
+  diamonds-=500;
+  showToast("500 💎 kullanıldı.");
+ }
+
+ depotName=name;
+ nameChanged=true;
+
+ document.getElementById("depotNameDisplay").textContent=depotName;
+
+ saveGame();
+ updateAll();
+}
+
+
+function updateNameInfo(){
+
+ document.getElementById("nameChangeInfo").textContent=
+  nameChanged?
+  "Sonraki depo adı değişikliği: 500 💎":
+  "İlk depo adı değişikliği ücretsiz.";
+}
+
+
+/* =====================================================
+ CHAT
+===================================================== */
+
+function renderChat(){
+
+ const el=document.getElementById("chatMessages");
+
+ if(!chatMessages.length){
+  el.innerHTML='<div style="color:#697583;text-align:center;padding:30px">Henüz mesaj yok. İlk mesajı sen gönder.</div>';
+  return;
+ }
+
+ el.innerHTML=chatMessages.map(m=>`
+
+ <div class="chatMessage">
+  <b>${escapeHtml(m.user)}</b>
+  <small>${m.time}</small>
+  <div style="margin-top:4px">${escapeHtml(m.text)}</div>
+ </div>
+
+ `).join("");
+
+ el.scrollTop=el.scrollHeight;
+}
+
+
+function sendChat(){
+
+ const input=document.getElementById("chatInput");
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ chatMessages.push({
+  user:currentUser,
+  text,
+  time:new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})
+ });
+
+ if(chatMessages.length>100)chatMessages.shift();
+
+ localStorage.setItem("warehouseChat",JSON.stringify(chatMessages));
+
+ input.value="";
+ renderChat();
+}
+
+
+document.getElementById("chatInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendChat();
+});
+
+
+function escapeHtml(text){
+ return String(text)
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;")
+ .replaceAll("'","&#039;");
+}
+
+
+/* =====================================================
+ ADMIN
+===================================================== */
+
+function adminAddMoney(){
+
+ if(currentUser!=="admin")return;
+
+ const amount=Number(document.getElementById("adminMoney").value);
+
+ if(!amount || amount<=0){
+  showToast("Geçerli bir miktar girin.");
+  return;
+ }
+
+ money+=amount;
+
+ document.getElementById("adminMoney").value="";
+
+ showToast("$"+amount.toLocaleString()+" yönetici bakiyesine eklendi.");
+ updateAll();
+}
+
+
+function adminAddDiamond(){
+
+ if(currentUser!=="admin")return;
+
+ const amount=Number(document.getElementById("adminDiamond").value);
+
+ if(!amount || amount<=0){
+  showToast("Geçerli bir miktar girin.");
+  return;
+ }
+
+ diamonds+=amount;
+
+ document.getElementById("adminDiamond").value="";
+
+ showToast(amount+" 💎 eklendi.");
+ updateAll();
+}
+
+
+function adminGift(){
+
+ if(currentUser!=="admin")return;
+
+ const user=document.getElementById("giftUser").value.trim();
+ const giftMoney=Number(document.getElementById("giftMoney").value)||0;
+ const giftDiamond=Number(document.getElementById("giftDiamond").value)||0;
+
+ if(!registeredUsers[user]){
+  showToast("Bu hesap bulunamadı.");
+  return;
+ }
+
+ registeredUsers[user].money+=giftMoney;
+ registeredUsers[user].diamonds=(registeredUsers[user].diamonds||0)+giftDiamond;
+
+ localStorage.setItem("warehouseUsers",JSON.stringify(registeredUsers));
+
+ showToast(user+" hesabına hediye gönderildi.");
+
+ document.getElementById("giftUser").value="";
+ document.getElementById("giftMoney").value="";
+ document.getElementById("giftDiamond").value="";
+
+ renderAdminUsers();
+}
+
+
+function adminBan(){
+
+ if(currentUser!=="admin")return;
+
+ const user=document.getElementById("banUser").value.trim();
+
+ if(!registeredUsers[user]){
+  showToast("Bu hesap bulunamadı.");
+  return;
+ }
+
+ registeredUsers[user].banned=true;
+
+ localStorage.setItem("warehouseUsers",JSON.stringify(registeredUsers));
+
+ document.getElementById("banUser").value="";
+
+ showToast(user+" hesabı banlandı.");
+ renderAdminUsers();
+}
+
+
+function renderAdminUsers(){
+
+ if(currentUser!=="admin")return;
+
+ const el=document.getElementById("adminUsers");
+
+ const users=Object.keys(registeredUsers);
+
+ if(!users.length){
+  el.innerHTML='<p style="color:#8994a3">Kayıtlı oyuncu yok.</p>';
+  return;
+ }
+
+ el.innerHTML=users.map(u=>{
+
+  const x=registeredUsers[u];
+
+  return `
+  <div style="
+   display:flex;align-items:center;justify-content:space-between;
+   padding:12px;border-bottom:1px solid #202832
+  ">
+   <div>
+    <b>${escapeHtml(u)}</b>
+    <div style="color:#8994a3;font-size:10px">
+     ${x.company||"Şirket"} · $${(x.money||0).toLocaleString()} · 💎${x.diamonds||0}
+    </div>
+   </div>
+
+   <span class="status ${x.banned?"red":"green"}">
+    ${x.banned?"BANLI":"AKTİF"}
+   </span>
+  </div>`;
+ }).join("");
+}
+
+
+/* =====================================================
+ PROFILE
+===================================================== */
+
+function renderProfile(){
+
+ document.getElementById("profileUsername").textContent=currentUser;
+ document.getElementById("profileCompany").textContent=
+  currentUser==="admin"?"Warehouse Tycoon Administration":currentUser+" Logistics";
+
+ document.getElementById("profileAvatar").textContent=
+  currentUser.charAt(0).toUpperCase();
+
+ document.getElementById("profileDepot").textContent=depotName;
+ document.getElementById("profileWorkers").textContent=employees.length;
+ document.getElementById("profileStores").textContent=stores.length;
+ document.getElementById("profileShipments").textContent=vehicles.filter(v=>v.status==="Yolda").length;
+ document.getElementById("profileMoney").textContent="$"+money.toLocaleString();
+ document.getElementById("profileDiamonds").textContent="💎 "+diamonds.toLocaleString();
+}
+
+
+/* =====================================================
+ MODAL
+===================================================== */
+
+function openModal(title,content,confirm){
+
+ document.getElementById("modalTitle").textContent=title;
+ document.getElementById("modalContent").innerHTML=content;
+ document.getElementById("modal").style.display="flex";
+
+ document.getElementById("modalConfirm").onclick=()=>{
+  closeModal();
+  confirm();
+ };
+}
+
+
+function closeModal(){
+ document.getElementById("modal").style.display="none";
+}
+
+
+/* =====================================================
+ TOAST
+===================================================== */
+
+let toastTimer;
+
+function showToast(message){
+
+ const toast=document.getElementById("toast");
+
+ toast.textContent=message;
+ toast.style.display="block";
+
+ clearTimeout(toastTimer);
+
+ toastTimer=setTimeout(()=>{
+  toast.style.display="none";
+ },4000);
+}
+
+
+/* =====================================================
+ UPDATE
+===================================================== */
+
+function updateAll(){
+
+ document.getElementById("money").textContent="$"+money.toLocaleString();
+ document.getElementById("diamonds").textContent="💎 "+diamonds.toLocaleString();
+
+ document.getElementById("statMoney").textContent="$"+money.toLocaleString();
+ document.getElementById("todayRevenue").textContent="+$"+lastRevenue.toLocaleString();
+ document.getElementById("todayPurchases").textContent="-$"+lastPurchases.toLocaleString();
+ document.getElementById("todayRent").textContent="-$"+lastRent.toLocaleString();
+ document.getElementById("todayOvertime").textContent="-$"+lastOvertimeCost.toLocaleString();
+
+ const net=lastRevenue-lastPurchases-lastRent-lastOvertimeCost;
+ document.getElementById("todayNet").textContent="$"+net.toLocaleString();
+
+ document.getElementById("statStores").textContent=stores.length;
+
+ document.getElementById("depotNameDisplay").textContent=depotName;
+ document.getElementById("depotNameEdit").value=depotName;
+
+ renderClock();
+ renderShipments();
+ renderInventory();
+ renderStores();
+ renderRentals();
+ renderOrders();
+ renderVehicles();
+ renderSuppliers();
+ renderApplications();
+ renderEmployees();
+ renderChat();
+ renderProfile();
+ updateWorkerStats();
+ updateNameInfo();
+
+ if(currentUser==="admin"){
+  document.getElementById("adminNav").style.display="block";
+  renderAdminUsers();
+ }
+}
+
+
+/* =====================================================
+ AUTO SAVE
+===================================================== */
+
+setInterval(()=>{
+ saveGame();
+},5000);
+
+
+/* =====================================================
+ DEFAULT SHIPMENT
+===================================================== */
+
+if(!shipments.length){
+ createShipment();
+}
+
+</script>
+</body>
+</html>
