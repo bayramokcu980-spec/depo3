@@ -1,238 +1,1109 @@
-
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="h-full bg-slate-900 text-slate-100">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DEPO TYCOON</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#0c131c;color:#edf5fc;font:14px Arial}
-header{background:#152333;padding:16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.logo{font-size:23px;font-weight:bold;color:#40d2df}
-.wallet{display:flex;gap:12px;flex-wrap:wrap}
-.layout{display:grid;grid-template-columns:205px 1fr;min-height:90vh}
-nav{background:#111d29;padding:12px}
-nav button,button{border:0;background:#244158;color:white;padding:11px;border-radius:7px;cursor:pointer}
-nav button{display:block;width:100%;text-align:left;margin-bottom:6px}
-nav button:hover,button:hover{background:#087f91}
-main{padding:18px;min-width:0}
-.page{display:none}.page.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}
-.card,.panel{background:#172635;border:1px solid #2b4053;border-radius:10px;padding:14px;margin-bottom:12px}
-.number{font-size:25px;font-weight:bold;margin-top:8px}
-.muted{color:#9cb0c2;font-size:12px}
-.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
-.warehouse{height:290px;border-radius:9px;overflow:hidden;position:relative;background:linear-gradient(#203c50 0 70%,#39454c 70%)}
-.roof{height:35px;background:#314d60;border-bottom:5px solid #71818b}
-.racks{display:flex;justify-content:space-around;padding:22px 10px}
-.rack{height:145px;width:18%;border:5px solid #8b9ba4;border-top:0;display:flex;flex-direction:column;justify-content:space-around}
-.shelf{height:4px;background:#8b9ba4}
-.boxes{font-size:23px;text-align:center}
-.forklift{position:absolute;bottom:28px;left:30%;font-size:44px}
-.truck{position:absolute;bottom:25px;right:7%;font-size:48px}
-input,select{background:#0c1721;color:white;border:1px solid #40586b;padding:9px;border-radius:6px;max-width:100%}
-table{width:100%;border-collapse:collapse;min-width:550px}
-th,td{text-align:left;padding:10px;border-bottom:1px solid #2a3e50}
-th{color:#9cb0c2}
-.tablewrap{overflow:auto}
-.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.product{background:#1c3040;border-radius:10px;padding:14px}
-.product .art{font-size:40px;margin:8px 0}
-.product button{width:100%;margin-top:10px}
-.log{font-size:12px;max-height:170px;overflow:auto}
-.log div{padding:8px 0;border-bottom:1px solid #2a3e50}
-@media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.shop{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.layout{grid-template-columns:1fr}nav{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}nav button{font-size:12px;margin:0;padding:9px}main{padding:10px}.shop{grid-template-columns:1fr}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benzinlik Simülatörü Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        gas: {
+                            gold: '#f59e0b',
+                            red: '#ef4444',
+                            green: '#10b981',
+                            blue: '#3b82f6',
+                            purple: '#8b5cf6',
+                            dark: '#0f172a',
+                            panel: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.6)); }
+            50% { filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.9)); }
+        }
+        .glow-pump { animation: pulse-glow 2s infinite; }
+        .digital-font { font-family: 'Courier New', Courier, monospace; letter-spacing: 2px; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
 </head>
-<body>
-<header>
- <div><div class="logo">DEPO TYCOON</div><small>WAREHOUSE MANAGEMENT SIMULATOR</small></div>
- <div class="wallet">
-  <span>💵 <b id="cash">250.000</b> ₺</span>
-  <span>🪙 <b id="gold">25.000</b></span>
-  <span>💎 <b id="diamonds">5.000</b></span>
- </div>
-</header>
-<div class="layout">
-<nav>
- <div class="card">👑 <b id="username">DepoYapimci</b><br><small>YAPIMCI HESABI · Seviye 50</small></div>
- <button onclick="page('home')">🏭 Genel Bakış</button>
- <button onclick="page('stock')">📦 Stok Yönetimi</button>
- <button onclick="page('orders')">🚚 Siparişler</button>
- <button onclick="page('upgrade')">🏗️ Depo Geliştirme</button>
- <button onclick="page('shop')">🛒 Mağaza</button>
- <button onclick="page('staff')">👷 Personel</button>
- <button onclick="page('finance')">📊 Finans</button>
-</nav>
-<main>
-<section id="home" class="page active">
- <h1>Depo kontrol merkezi</h1>
- <p class="muted">İstanbul dağıtım merkezi · Vardiya 1 · <span id="time">08:00</span></p>
- <div class="cards">
-  <div class="card">💵 Nakit<div class="number" id="m1">250.000 ₺</div></div>
-  <div class="card">📦 Bekleyen sipariş<div class="number" id="pending">0</div></div>
-  <div class="card">🏭 Depo doluluğu<div class="number" id="capacity">64%</div></div>
-  <div class="card">👷 Personel<div class="number" id="staffnum">18</div></div>
- </div>
- <div class="grid">
-  <div class="panel">
-   <h2>🏭 Depo sahası</h2>
-   <div class="warehouse">
-    <div class="roof"></div>
-    <div class="racks">
-     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
-     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
-     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
-     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
+<body class="h-full flex flex-col font-sans select-none overflow-x-hidden bg-slate-950 text-slate-100">
+
+    <!-- Top Status Dashboard -->
+    <header class="bg-slate-900 border-b border-slate-800 p-3 shadow-xl sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Level -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500 text-slate-950 p-2.5 rounded-xl font-black text-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-gas-pump text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide text-white flex items-center gap-2">
+                        PETROLİS <span class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">v2.5 PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-star text-amber-400"></i> Seviye <span id="lbl-level" class="font-bold text-white">1</span> (Saygınlık: %<span id="lbl-satisfaction">85</span>)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Main Financial & Tank Stats -->
+            <div class="flex items-center gap-4 flex-wrap">
+                <!-- Cash -->
+                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl px-4 py-2 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-turkish-lira-sign"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Kasa Bakiyesi</div>
+                        <div class="text-lg font-extrabold text-emerald-400 digital-font" id="lbl-money">12,500 ₺</div>
+                    </div>
+                </div>
+
+                <!-- Daily Time Cycle -->
+                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl px-4 py-2 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-clock" id="icon-time"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Gün <span id="lbl-day">1</span></div>
+                        <div class="text-lg font-bold text-slate-200 digital-font" id="lbl-time">08:00</div>
+                    </div>
+                </div>
+
+                <!-- Game Speed Controls -->
+                <div class="flex items-center bg-slate-800 border border-slate-700 rounded-xl p-1 gap-1">
+                    <button id="btn-speed-1" onclick="setGameSpeed(1)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition">1x</button>
+                    <button id="btn-speed-2" onclick="setGameSpeed(2)" class="px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 text-slate-300 transition">2x</button>
+                    <button id="btn-speed-5" onclick="setGameSpeed(5)" class="px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 text-slate-300 transition">5x</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Fuel Supply Ticker Bar -->
+    <div class="bg-slate-900/90 border-b border-slate-800/80 px-4 py-2 text-xs">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-6 flex-wrap">
+                <!-- Benzin Tank -->
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span class="font-semibold text-slate-300">Benzin:</span>
+                    <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                        <div id="bar-tank-benzin" class="bg-emerald-500 h-full transition-all duration-300" style="width: 75%"></div>
+                    </div>
+                    <span id="lbl-tank-benzin" class="text-slate-400 font-mono">3,750 / 5,000 L</span>
+                </div>
+                <!-- Motorin Tank -->
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    <span class="font-semibold text-slate-300">Motorin:</span>
+                    <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                        <div id="bar-tank-motorin" class="bg-amber-500 h-full transition-all duration-300" style="width: 60%"></div>
+                    </div>
+                    <span id="lbl-tank-motorin" class="text-slate-400 font-mono">3,000 / 5,000 L</span>
+                </div>
+                <!-- LPG Tank -->
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                    <span class="font-semibold text-slate-300">LPG:</span>
+                    <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                        <div id="bar-tank-lpg" class="bg-cyan-500 h-full transition-all duration-300" style="width: 40%"></div>
+                    </div>
+                    <span id="lbl-tank-lpg" class="text-slate-400 font-mono">2,000 / 5,000 L</span>
+                </div>
+            </div>
+
+            <!-- Quick Action Links -->
+            <div class="flex items-center gap-3">
+                <button onclick="openModal('modal-supply')" class="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-truck-droplet"></i> Yakıt Tankeri Çağır
+                </button>
+                <span class="text-slate-700">|</span>
+                <button onclick="openModal('modal-pricing')" class="text-slate-300 hover:text-white font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-tags"></i> Fiyat Listesi
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="forklift">🚜</div><div class="truck">🚚</div>
-   </div>
-   <p>Raf A1–D8 · 4 aktif forklift · 3 yükleme rampası</p>
-   <button onclick="advance()">⏩ Saati ilerlet</button>
-   <button onclick="newOrder()">＋ Yeni sipariş</button>
-  </div>
-  <div class="panel"><h2>📋 Son olaylar</h2><div class="log" id="log"></div></div>
- </div>
-</section>
 
-<section id="stock" class="page">
- <h1>Stok yönetimi</h1>
- <p class="muted">Ürünleri incele, stok ekle ve depo envanterini yönet.</p>
- <button onclick="receive()">＋ Mal kabulü</button>
- <div class="panel tablewrap"><table><thead><tr><th>Ürün</th><th>SKU</th><th>Raf</th><th>Stok</th><th>Birim fiyat</th><th>İşlem</th></tr></thead><tbody id="stocktable"></tbody></table></div>
-</section>
+    <!-- MAIN GAME CANVAS & HUB -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-<section id="orders" class="page">
- <h1>Sipariş merkezi</h1>
- <button onclick="newOrder()">＋ Sipariş oluştur</button>
- <div class="panel tablewrap"><table><thead><tr><th>Sipariş</th><th>Müşteri</th><th>Kalem</th><th>Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="ordertable"></tbody></table></div>
-</section>
+        <!-- Left 2 Columns: Visual Station Arena & Active Pumps -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Station Graphical View -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative overflow-hidden shadow-2xl">
+                <!-- Visual Background Elements -->
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 pointer-events-none"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot text-amber-500"></i> İstasyon Canlı Görünümü
+                        </h2>
+                        <span id="lbl-queue-count" class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1 rounded-full">
+                            Sırada Bekleyen Arat: <b class="text-amber-400 font-mono">0</b>
+                        </span>
+                    </div>
 
-<section id="upgrade" class="page">
- <h1>Depo geliştirme</h1>
- <div class="cards">
-  <div class="card">🏭 Depo seviyesi<div class="number" id="level">12</div></div>
-  <div class="card">📦 Kapasite<div class="number" id="cap2">12.500</div></div>
-  <div class="card">🗄️ Raf modülü<div class="number" id="racklevel">2</div></div>
-  <div class="card">⚙️ Otomasyon<div class="number" id="autolevel">1</div></div>
- </div>
- <div class="panel"><h2>Geliştirmeler</h2>
-  <p>🗄️ Ağır yük rafları — kapasiteyi artırır.</p><button onclick="buy('rack')">25.000 ₺ — Raf kur</button>
-  <p>⚙️ Konveyör hattı — sipariş operasyonunu geliştirir.</p><button onclick="buy('auto')">1.500 altın — Otomasyon</button>
-  <p>❄️ Soğuk oda — özel ürün depolaması.</p><button onclick="buy('cold')">1.200 altın — Soğuk oda</button>
- </div>
-</section>
+                    <!-- 3 Zones Interactive Station Map -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <!-- Zone 1: Mini Market Shop -->
+                        <div onclick="openMarketMiniGame()" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 rounded-xl p-4 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition text-6xl text-amber-400">
+                                <i class="fa-solid fa-store"></i>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Market & Kasa</span>
+                                    <span id="badge-market-customers" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md hidden">
+                                        Müşteri Var!
+                                    </span>
+                                </div>
+                                <h3 class="text-base font-bold text-white mb-1">Market Kasası</h3>
+                                <p class="text-xs text-slate-400">Atıştırmalık, kahve, motor yağı satışı ve kasa işlemleri.</p>
+                            </div>
+                            <div class="mt-4 flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Stok Durumu: <b id="lbl-market-stock-percent" class="text-emerald-400">100%</b></span>
+                                <span class="text-amber-400 group-hover:translate-x-1 transition flex items-center gap-1 font-semibold">
+                                    İncele <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </span>
+                            </div>
+                        </div>
 
-<section id="shop" class="page">
- <h1>Mağaza</h1>
- <p class="muted">Oyun içi para birimleriyle ekipman ve malzeme al.</p>
- <div class="shop" id="shopitems"></div>
-</section>
+                        <!-- Zone 2: Automatic Car Wash -->
+                        <div onclick="triggerCarWashService()" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition text-6xl text-blue-400">
+                                <i class="fa-solid fa-shower"></i>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Oto Yıkama</span>
+                                    <span id="badge-wash-status" class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                                        Hazır
+                                    </span>
+                                </div>
+                                <h3 class="text-base font-bold text-white mb-1">Köpüklü Yıkama</h3>
+                                <p class="text-xs text-slate-400">Araç temizleme hizmeti vererek ekstra gelir ve memnuniyet kazan.</p>
+                            </div>
+                            <div class="mt-4 flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Ücret: <b class="text-emerald-400">150 ₺</b></span>
+                                <span class="text-blue-400 group-hover:translate-x-1 transition flex items-center gap-1 font-semibold">
+                                    Yıkama Başlat <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </span>
+                            </div>
+                        </div>
 
-<section id="staff" class="page">
- <h1>Personel ve araçlar</h1>
- <div class="cards">
-  <div class="card">👷 Çalışan<div class="number" id="staff2">18</div></div>
-  <div class="card">🚜 Forklift<div class="number" id="forks">4</div></div>
-  <div class="card">🚚 Kamyon<div class="number">3</div></div>
-  <div class="card">🛡️ Güvenlik<div class="number">Aktif</div></div>
- </div>
- <div class="panel"><h2>Personel işe alımı</h2><p>Yeni depo personeli için 8.000 ₺ öde.</p><button onclick="hire()">Personel işe al</button></div>
- <div class="panel"><h2>Araç filosu</h2><p>Elektrikli forklift: 45.000 ₺</p><button onclick="buy('forklift')">Forklift satın al</button></div>
-</section>
+                        <!-- Zone 3: Air & Water Service -->
+                        <div onclick="triggerAirWaterService()" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-500/50 rounded-xl p-4 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition text-6xl text-purple-400">
+                                <i class="fa-solid fa-gauge-high"></i>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Servis Alanı</span>
+                                    <span class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-md">Ücretsiz</span>
+                                </div>
+                                <h3 class="text-base font-bold text-white mb-1">Hava & Su Tamamla</h3>
+                                <p class="text-xs text-slate-400">Müşterilerin lastik basınçlarını kontrol et, sadakat puanı topla.</p>
+                            </div>
+                            <div class="mt-4 flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Memnuniyet: <b class="text-purple-400">+5%</b></span>
+                                <span class="text-purple-400 group-hover:translate-x-1 transition flex items-center gap-1 font-semibold">
+                                    Servis Ver <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<section id="finance" class="page">
- <h1>Finans raporu</h1>
- <div class="cards">
-  <div class="card">📈 Toplam gelir<div class="number" id="revenue">42.850 ₺</div></div>
-  <div class="card">📉 Toplam gider<div class="number" id="expenses">12.400 ₺</div></div>
-  <div class="card">💰 Net sonuç<div class="number" id="profit">30.450 ₺</div></div>
-  <div class="card">📅 Gün<div class="number" id="day">1</div></div>
- </div>
- <div class="panel"><h2>Hesap hareketleri</h2><div class="log" id="transactions"></div></div>
-</section>
-</main>
-</div>
+            <!-- Active Fuel Pumps (4 Pumps Interactive) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-gas-pump text-amber-500"></i> Akaryakıt Pompaları
+                    </h2>
+                    <span class="text-xs text-slate-400">Araç geldiğinde dolum yapmak için pompalara tıkla</span>
+                </div>
 
-<script>
-const initialProducts=[
-{id:1,name:"Karton koli orta",sku:"BOX-MID",loc:"A-03-01",qty:2200,price:12,icon:"📦"},
-{id:2,name:"Koli bandı",sku:"PKG-045",loc:"A-01-03",qty:1450,price:18,icon:"🧻"},
-{id:3,name:"Streç film",sku:"PKG-017",loc:"A-02-01",qty:820,price:95,icon:"🧵"},
-{id:4,name:"Ahşap palet",sku:"PLT-120",loc:"B-01-02",qty:360,price:210,icon:"🪵"},
-{id:5,name:"İş eldiveni",sku:"PPE-010",loc:"C-03-04",qty:690,price:42,icon:"🧤"},
-{id:6,name:"Barkod etiketi",sku:"LBL-100",loc:"C-01-01",qty:3200,price:2,icon:"🏷️"},
-{id:7,name:"Temizlik sıvısı 5L",sku:"CLN-005",loc:"D-02-02",qty:180,price:115,icon:"🧴"},
-{id:8,name:"Güvenlik ayakkabısı",sku:"PPE-220",loc:"C-04-02",qty:95,price:650,icon:"🥾"},
-{id:9,name:"Elektrik motoru",sku:"MTR-380",loc:"D-01-03",qty:42,price:1850,icon:"⚙️"}
-];
-const fresh=()=>({cash:250000,gold:25000,diamonds:5000,hour:8,day:1,staff:18,forks:4,capacity:8000,capacityMax:12500,level:12,racks:2,auto:1,cold:0,revenue:42850,expenses:12400,ordersDone:0,nextId:1056,products:JSON.parse(JSON.stringify(initialProducts)),orders:[
-{id:1050,customer:"Hızlı Kargo A.Ş.",items:24,total:7300,status:"Hazırlanıyor"},
-{id:1051,customer:"Kuzey Tedarik",items:5,total:2150,status:"Bekliyor"},
-{id:1052,customer:"Kent Marketleri",items:16,total:8900,status:"Bekliyor"},
-{id:1053,customer:"Mavi Yapı",items:7,total:4200,status:"Bekliyor"},
-{id:1054,customer:"TeknoServis",items:4,total:15600,status:"Bekliyor"}
-],log:["08:02 · Mal kabul alanına 2 palet indirildi.","08:10 · Sipariş #1050 toplama aşamasında."],transactions:["Gün başlangıç bakiyesi: +250.000 ₺","Sipariş gelirleri: +42.850 ₺","Personel ve enerji giderleri: -12.400 ₺"]});
-let s;
-try{s=JSON.parse(localStorage.getItem("depoTycoon"))||fresh()}catch(e){s=fresh()}
-const $=id=>document.getElementById(id);
-const fmt=n=>Math.floor(n).toLocaleString("tr-TR");
-const tl=n=>fmt(n)+" ₺";
-function save(){localStorage.setItem("depoTycoon",JSON.stringify(s))}
-function note(t){s.log.unshift(String(s.hour).padStart(2,"0")+":00 · "+t);s.log=s.log.slice(0,25);renderLog();save()}
-function alertUser(t){window.alert(t)}
-function page(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===id));if(id==="stock")renderStock();if(id==="orders")renderOrders();render()}
-function ownedOrders(status){return s.orders.filter(o=>o.status===status).length}
-function renderLog(){$("log").innerHTML=s.log.map(x=>"<div>"+x+"</div>").join("");$("transactions").innerHTML=s.transactions.slice(0,20).map(x=>"<div>"+x+"</div>").join("")}
-function renderStock(){$("stocktable").innerHTML=s.products.map(p=>`<tr><td>${p.icon} ${p.name}</td><td>${p.sku}</td><td>${p.loc}</td><td>${fmt(p.qty)}</td><td>${tl(p.price)}</td><td><button onclick="changeStock(${p.id})">Stok ekle</button></td></tr>`).join("")}
-function renderOrders(){$("ordertable").innerHTML=s.orders.map(o=>`<tr><td>#${o.id}</td><td>${o.customer}</td><td>${o.items}</td><td>${tl(o.total)}</td><td>${o.status}</td><td>${o.status==="Bekliyor"?`<button onclick="process(${o.id})">Topla</button>`:o.status==="Hazırlanıyor"?`<button onclick="process(${o.id})">Sevk et</button>`:o.status==="Sevk edildi"?`<button onclick="process(${o.id})">Teslim et</button>`:"✓"}</td></tr>`).join("")}
-function renderShop(){
-const items=[
-["📦","Karton koli paketi","10.000 ₺","cash","stock"],
-["🚜","Elektrikli forklift","45.000 ₺","cash","forklift"],
-["🗄️","Ağır yük rafı","25.000 ₺","cash","rack"],
-["📟","El terminali","800 altın","gold","scanner"],
-["⚙️","Konveyör hattı","1.500 altın","gold","auto"],
-["❄️","Soğuk oda","1.200 altın","gold","cold"],
-["🤖","Otonom depo robotu","350 elmas","diamonds","robot"],
-["🏢","Yönetici ofisi","600 elmas","diamonds","office"],
-["🦺","İSG ekipman paketi","300 elmas","diamonds","safety"]
-];
-$("shopitems").innerHTML=items.map(i=>`<div class="product"><div class="art">${i[0]}</div><b>${i[1]}</b><div class="muted">Depo operasyonlarını geliştir.</div><p><b>${i[2]}</b></p><button onclick="buy('${i[4]}')">Satın al</button></div>`).join("")
-}
-function render(){
-$("cash").textContent=fmt(s.cash);$("gold").textContent=fmt(s.gold);$("diamonds").textContent=fmt(s.diamonds);$("m1").textContent=tl(s.cash);
-$("pending").textContent=ownedOrders("Bekliyor");$("capacity").textContent=Math.round(s.capacity/s.capacityMax*100)+"%";
-$("staffnum").textContent=s.staff;$("staff2").textContent=s.staff;$("forks").textContent=s.forks;
-$("cap2").textContent=fmt(s.capacityMax);$("level").textContent=s.level;$("racklevel").textContent=s.racks;$("autolevel").textContent=s.auto;
-$("revenue").textContent=tl(s.revenue);$("expenses").textContent=tl(s.expenses);$("profit").textContent=tl(s.revenue-s.expenses);
-$("time").textContent=String(s.hour).padStart(2,"0")+":00";$("day").textContent=s.day;
-$("username").textContent=s.username||"DepoYapimci";
-renderLog()
-}
-function changeStock(id){let p=s.products.find(x=>x.id===id);let n=Number(prompt("Eklenecek adet:", "100"));if(!Number.isInteger(n)||n<=0)return;p.qty+=n;note(n+" adet "+p.name+" stoğa alındı.");renderStock();render()}
-function receive(){let p=s.products[0],n=Number(prompt("Kaç koli kabul edilsin?","100"));if(!Number.isInteger(n)||n<=0)return;let cost=n*p.price;if(s.cash<cost)return alertUser("Yeterli nakit yok.");s.cash-=cost;p.qty+=n;s.expenses+=cost;s.transactions.unshift("Mal kabulü: -"+tl(cost));note(n+" adet "+p.name+" mal kabulü yapıldı.");renderStock();render()}
-function newOrder(){let names=["Marmara Endüstri","İstanbul Ambalaj","Anadolu Tedarik","Hızlı Dağıtım","Kent Marketleri"];let o={id:s.nextId++,customer:names[Math.floor(Math.random()*names.length)],items:1+Math.floor(Math.random()*20),total:1500+Math.floor(Math.random()*14000),status:"Bekliyor"};s.orders.unshift(o);note("Yeni sipariş #"+o.id+" oluşturuldu.");renderOrders();render()}
-function process(id){let o=s.orders.find(x=>x.id===id);if(o.status==="Bekliyor"){o.status="Hazırlanıyor";note("#"+id+" toplama aşamasına geçti.")}else if(o.status==="Hazırlanıyor"){o.status="Sevk edildi";note("#"+id+" kamyona yüklendi.")}else if(o.status==="Sevk edildi"){o.status="Tamamlandı";s.cash+=o.total;s.revenue+=o.total;s.ordersDone++;s.transactions.unshift("Sipariş #"+id+" geliri: +"+tl(o.total));note("#"+id+" teslim edildi. "+tl(o.total)+" kazanıldı.")}renderOrders();render()}
-function advance(){s.hour++;if(s.hour>=24){s.hour=0;s.day++;let wages=s.staff*450;s.cash-=wages;s.expenses+=wages;s.transactions.unshift("Personel gideri: -"+tl(wages));s.cash+=15000;s.revenue+=15000;s.transactions.unshift("Günlük operasyon geliri: +15.000 ₺");note("Yeni gün başladı. Maaşlar ve günlük gelir işlendi.")}else{note("Vardiya saati ilerledi.")}render()}
-function hire(){if(s.cash<8000)return alertUser("Yeterli nakit yok.");s.cash-=8000;s.staff++;s.expenses+=8000;s.transactions.unshift("Personel alımı: -8.000 ₺");note("Yeni personel işe alındı.");render()}
-function buy(type){
-const items={
-rack:{cost:25000,currency:"cash",run:()=>{s.capacityMax+=1500;s.capacity+=300;s.racks++},name:"Raf sistemi"},
-forklift:{cost:45000,currency:"cash",run:()=>s.forks++,name:"Forklift"},
-stock:{cost:10000,currency:"cash",run:()=>s.products[0].qty+=1000,name:"Koli paketi"},
-scanner:{cost:800,currency:"gold",run:()=>s.revenue+=2500,name:"El terminali"},
-auto:{cost:1500,currency:"gold",run:()=>s.auto++,name:"Konveyör"},
-cold:{cost:1200,currency:"gold",run:()=>{s.cold++;s.capacityMax+=800},name:"Soğuk oda"},
-robot:{cost:350,currency:"diamonds",run:()=>{s.capacityMax+=2500;s.capacity+=500},name:"Otonom robot"},
-office:{cost:600,currency:"diamonds",run:()=>s.revenue+=10000,name:"Yönetici ofisi"},
-safety:{cost:300,currency:"diamonds",run:()=>s.level++,name:"İSG paketi"}
-};
-let i=items[type];if(!i)return; if(s[i.currency]<i.cost)return alertUser("Yeterli oyun içi kaynağın yok.");s[i.currency]-=i.cost;i.run();note(i.name+" satın alındı.");render()
-}
-renderShop();renderStock();renderOrders();render();save();
-</script>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pumps-container">
+                    <!-- Pump Cards standard HTML structure injected dynamically or rendered below -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Management Control Panel & Side Tabs -->
+        <div class="space-y-6">
+            
+            <!-- Quick Management Navigation Tabs -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <div class="flex border-b border-slate-800 pb-3 mb-4 gap-2">
+                    <button onclick="switchTab('upgrades')" id="tab-btn-upgrades" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 transition">
+                        <i class="fa-solid fa-arrow-up-right-dots mr-1"></i> Geliştir
+                    </button>
+                    <button onclick="switchTab('staff')" id="tab-btn-staff" class="flex-1 py-2 text-xs font-bold rounded-lg hover:bg-slate-800 text-slate-400 transition">
+                        <i class="fa-solid fa-user-gear mr-1"></i> Personel
+                    </button>
+                    <button onclick="switchTab('market-shop')" id="tab-btn-market-shop" class="flex-1 py-2 text-xs font-bold rounded-lg hover:bg-slate-800 text-slate-400 transition">
+                        <i class="fa-solid fa-boxes-packing mr-1"></i> Stoklar
+                    </button>
+                </div>
+
+                <!-- Tab 1: Upgrades -->
+                <div id="tab-upgrades" class="space-y-3">
+                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Tesis Yükseltmeleri</h3>
+                    
+                    <!-- Upgrade Item 1 -->
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-white">Pompa Akış Hızı</div>
+                            <div class="text-xs text-slate-400">Yakıt dolum hızını %25 artırır.</div>
+                            <div class="text-xs text-amber-400 font-semibold mt-1">Seviye: <span id="lbl-lvl-pumpspeed">1</span></div>
+                        </div>
+                        <button onclick="buyUpgrade('pumpSpeed')" id="btn-upg-pumpspeed" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
+                            <span>Yükselt</span>
+                            <span class="text-[10px] opacity-90" id="cost-upg-pumpspeed">1,500 ₺</span>
+                        </button>
+                    </div>
+
+                    <!-- Upgrade Item 2 -->
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-white">Tank Kapasitesi</div>
+                            <div class="text-xs text-slate-400">Tüm depo hacimlerini +2,500 L büyütür.</div>
+                            <div class="text-xs text-amber-400 font-semibold mt-1">Seviye: <span id="lbl-lvl-tankcap">1</span></div>
+                        </div>
+                        <button onclick="buyUpgrade('tankCapacity')" id="btn-upg-tankcap" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
+                            <span>Yükselt</span>
+                            <span class="text-[10px] opacity-90" id="cost-upg-tankcap">3,000 ₺</span>
+                        </button>
+                    </div>
+
+                    <!-- Upgrade Item 3 -->
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-white">Yeni Pompa Alanı</div>
+                            <div class="text-xs text-slate-400">İstasyona ekstra 1 adet pompa ekler.</div>
+                            <div class="text-xs text-amber-400 font-semibold mt-1">Aktif Pompa: <span id="lbl-pump-count">2</span></div>
+                        </div>
+                        <button onclick="buyUpgrade('addPump')" id="btn-upg-addpump" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
+                            <span>Ekle</span>
+                            <span class="text-[10px] opacity-90" id="cost-upg-addpump">5,000 ₺</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Staff Hire -->
+                <div id="tab-staff" class="space-y-3 hidden">
+                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Otomasyon & Personel</h3>
+                    
+                    <!-- Staff 1: Pump Attendant -->
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-white">Pompa Görevlisi</div>
+                            <div class="text-xs text-slate-400">Gelen araçların yakıtını otomatik doldurur.</div>
+                            <div id="status-staff-pump" class="text-xs text-rose-400 mt-1">İşe Alınmadı</div>
+                        </div>
+                        <button onclick="toggleStaff('pumpAttendant')" id="btn-staff-pump" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
+                            <span>İşe Al</span>
+                            <span class="text-[10px] text-amber-300">200 ₺/gün</span>
+                        </button>
+                    </div>
+
+                    <!-- Staff 2: Market Cashier -->
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-white">Market Kasiyeri</div>
+                            <div class="text-xs text-slate-400">Market kasasında bekleyen müşterileri otomatik sunar.</div>
+                            <div id="status-staff-cashier" class="text-xs text-rose-400 mt-1">İşe Alınmadı</div>
+                        </div>
+                        <button onclick="toggleStaff('cashier')" id="btn-staff-cashier" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
+                            <span>İşe Al</span>
+                            <span class="text-[10px] text-amber-300">180 ₺/gün</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Market Stock Refill -->
+                <div id="tab-market-shop" class="space-y-3 hidden">
+                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Market Stok Siparişi</h3>
+                    <p class="text-xs text-slate-400 mb-2">Market raf stoklarınızı doldurarak müşterilerin boş dönmesini engelleyin.</p>
+                    
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-sm text-white">Karma Ürün Paketi</div>
+                            <div class="text-xs text-slate-400">İçecek, bisküvi, motor yağı ikmali.</div>
+                            <div class="text-xs text-emerald-400 mt-1">Mevcut Stok: <span id="lbl-stock-units">100</span> Adet</div>
+                        </div>
+                        <button onclick="restockMarket(50, 400)" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 rounded-lg text-xs font-bold transition flex flex-col items-end">
+                            <span>+50 Stok Al</span>
+                            <span class="text-[10px] opacity-90">400 ₺</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Logs Panel -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3 flex items-center justify-between">
+                    <span><i class="fa-solid fa-list-check text-amber-500 mr-1.5"></i> Canlı İstasyon Bildirimleri</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                </h3>
+                <div id="log-container" class="space-y-2 h-44 overflow-y-auto text-xs text-slate-300 pr-1">
+                    <div class="bg-slate-800/40 p-2 rounded border border-slate-800 text-slate-400">
+                        [08:00] Benzinlik açıldı! İlk müşterilerinizi bekliyorsunuz.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+
+    <!-- MODAL 1: FUEL WHOLESALE SUPPLY MODAL -->
+    <div id="modal-supply" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('modal-supply')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-truck-droplet text-amber-500"></i> Yakıt Tankeri Siparişi
+            </h2>
+            <p class="text-xs text-slate-400 mb-4">Toptan yakıt alım borsasında fiyatlar günlük değişmektedir.</p>
+
+            <div class="space-y-4">
+                <!-- Benzin Supply -->
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-sm text-emerald-400">Kurşunsuz Benzin 95</div>
+                        <div class="text-xs text-slate-400">Toptan Fiyat: <b class="text-white" id="wholesale-price-benzin">32.50 ₺/L</b></div>
+                    </div>
+                    <button onclick="orderFuel('benzin', 1000)" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                        +1,000 Litre Al
+                    </button>
+                </div>
+
+                <!-- Motorin Supply -->
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-sm text-amber-400">Euro Dizel / Motorin</div>
+                        <div class="text-xs text-slate-400">Toptan Fiyat: <b class="text-white" id="wholesale-price-motorin">34.10 ₺/L</b></div>
+                    </div>
+                    <button onclick="orderFuel('motorin', 1000)" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                        +1,000 Litre Al
+                    </button>
+                </div>
+
+                <!-- LPG Supply -->
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-sm text-cyan-400">Otogaz LPG</div>
+                        <div class="text-xs text-slate-400">Toptan Fiyat: <b class="text-white" id="wholesale-price-lpg">18.20 ₺/L</b></div>
+                    </div>
+                    <button onclick="orderFuel('lpg', 1000)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                        +1,000 Litre Al
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeModal('modal-supply')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PRICING SETTINGS MODAL -->
+    <div id="modal-pricing" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('modal-pricing')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-tags text-amber-500"></i> Perakende Fiyat Belirleme
+            </h2>
+            <p class="text-xs text-slate-400 mb-4">Piyasa ortalamasının çok üzerine çıkmak müşteri memnuniyetini düşürür.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-emerald-400">Benzin Satış Fiyatı</span>
+                        <span class="text-white font-mono" id="lbl-price-val-benzin">42.00 ₺</span>
+                    </div>
+                    <input type="range" min="30" max="60" step="0.5" value="42" id="input-price-benzin" oninput="updatePricingUI()" class="w-full accent-emerald-500 bg-slate-800 rounded-lg">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-amber-400">Motorin Satış Fiyatı</span>
+                        <span class="text-white font-mono" id="lbl-price-val-motorin">44.00 ₺</span>
+                    </div>
+                    <input type="range" min="32" max="62" step="0.5" value="44" id="input-price-motorin" oninput="updatePricingUI()" class="w-full accent-amber-500 bg-slate-800 rounded-lg">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-cyan-400">LPG Satış Fiyatı</span>
+                        <span class="text-white font-mono" id="lbl-price-val-lpg">22.00 ₺</span>
+                    </div>
+                    <input type="range" min="15" max="35" step="0.5" value="22" id="input-price-lpg" oninput="updatePricingUI()" class="w-full accent-cyan-500 bg-slate-800 rounded-lg">
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="savePricingAndClose()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-2 rounded-xl text-xs font-bold transition">Kaydet & Uygula</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: INTERACTIVE MINI-MARKET CASHIER GAME -->
+    <div id="modal-market-game" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('modal-market-game')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center mb-4">
+                <div class="inline-flex p-3 bg-amber-500/10 text-amber-400 rounded-2xl mb-2">
+                    <i class="fa-solid fa-barcode text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white">Market Kasa Ekranı</h2>
+                <p class="text-xs text-slate-400">Müşterinin sepetindeki ürünleri okutup ödemeyi al!</p>
+            </div>
+
+            <div id="market-customer-area" class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 text-center space-y-3">
+                <div class="text-xs text-slate-400">Müşteri Talebi:</div>
+                <div id="market-item-name" class="font-bold text-lg text-amber-300">Soğuk Enerji İçeceği + Sandviç</div>
+                <div class="text-2xl font-black text-emerald-400 font-mono" id="market-item-price">145 ₺</div>
+
+                <div class="pt-2">
+                    <button id="btn-scan-barcode" onclick="processMarketSale()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cash-register"></i> Barkodu Okut & Tahsil Et
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-xs text-slate-500" id="market-queue-status">Bekleyen Market Müşterisi: 0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --------------------------------------------------
+           GAME STATE & CONFIGURATION
+        -------------------------------------------------- */
+        const gameState = {
+            money: 12500,
+            satisfaction: 85,
+            level: 1,
+            day: 1,
+            timeHour: 8,
+            timeMinute: 0,
+            gameSpeed: 1,
+            
+            // Fuel Storage Tanks (Litre)
+            tanks: {
+                benzin: { current: 3750, max: 5000, wholesalePrice: 32.50, retailPrice: 42.00 },
+                motorin: { current: 3000, max: 5000, wholesalePrice: 34.10, retailPrice: 44.00 },
+                lpg: { current: 2000, max: 5000, wholesalePrice: 18.20, retailPrice: 22.00 }
+            },
+
+            // Market Inventory
+            marketStock: 100,
+            marketMaxStock: 100,
+            marketCustomersInQueue: 0,
+
+            // Upgrades Level
+            upgrades: {
+                pumpSpeed: 1,
+                tankCapacity: 1,
+                pumpCount: 2
+            },
+
+            // Staff
+            staff: {
+                pumpAttendant: false,
+                cashier: false
+            },
+
+            // Active Pumps Array
+            pumps: [
+                { id: 1, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'benzin', isFilling: false },
+                { id: 2, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'motorin', isFilling: false },
+                { id: 3, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'lpg', isFilling: false },
+                { id: 4, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'benzin', isFilling: false }
+            ]
+        };
+
+        const carNames = ['Sedan', 'Hatchback', 'SUV 4x4', 'Ticari Van', 'Spor Taksi', 'Lüks Limuzin'];
+        const marketItemsList = [
+            { name: "Kahve & Çikolata", price: 85 },
+            { name: "Soğuk İçecek & Cips", price: 110 },
+            { name: "4L Motor Yağı & Cam Suyu", price: 380 },
+            { name: "Oto Kokusu & Sandviç", price: 140 }
+        ];
+
+        /* Web Audio API Synthesizer Effects (No External Files Required) */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            playCashRegister() {
+                this.init();
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(987.77, this.ctx.currentTime); // B5
+                osc.frequency.exponentialRampToValueAtTime(1318.51, this.ctx.currentTime + 0.15); // E6
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            }
+            playFuelPumpSound() {
+                this.init();
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+            }
+            playUpgradeSound() {
+                this.init();
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.25);
+            }
+        }
+        const audioFX = new SoundEngine();
+
+        // Game Loop Trigger
+        window.onload = function() {
+            renderPumps();
+            updateUI();
+            
+            // Main Clock Interval (Simulates 1 Minute per tick)
+            setInterval(tickClock, 1000);
+
+            // Car Arrival Chance
+            setInterval(checkCarArrival, 3000);
+
+            // Random Events Engine
+            setInterval(checkRandomEvents, 20000);
+        };
+
+        function setGameSpeed(speed) {
+            gameState.gameSpeed = speed;
+            document.querySelectorAll('[id^="btn-speed-"]').forEach(btn => {
+                btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 text-slate-300 transition";
+            });
+            document.getElementById(`btn-speed-${speed}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition";
+        }
+
+        function tickClock() {
+            gameState.timeMinute += 5 * gameState.gameSpeed;
+            if (gameState.timeMinute >= 60) {
+                gameState.timeMinute = 0;
+                gameState.timeHour++;
+            }
+            if (gameState.timeHour >= 24) {
+                gameState.timeHour = 0;
+                gameState.day++;
+                processDailyExpenses();
+            }
+
+            // Automatic Filling by Staff
+            if (gameState.staff.pumpAttendant) {
+                gameState.pumps.forEach(pump => {
+                    if (pump.occupied && !pump.isFilling) {
+                        startPumping(pump.id);
+                    }
+                });
+            }
+
+            // Automatic Cashier Processing
+            if (gameState.staff.cashier && gameState.marketCustomersInQueue > 0) {
+                processMarketSale();
+            }
+
+            // Progress Active Pumps
+            gameState.pumps.forEach(pump => {
+                if (pump.isFilling) {
+                    let flowSpeed = 15 * gameState.upgrades.pumpSpeed;
+                    let targetLiters = pump.targetAmount / gameState.tanks[pump.fuelType].retailPrice;
+                    
+                    // Check Tank Level
+                    if (gameState.tanks[pump.fuelType].current <= 0) {
+                        pump.isFilling = false;
+                        addLog(`⚠️ ${pump.fuelType.toUpperCase()} tankınız boşaldığı için ${pump.car} benzin alamadı!`, 'red');
+                        return;
+                    }
+
+                    pump.progress += flowSpeed;
+                    gameState.tanks[pump.fuelType].current = Math.max(0, gameState.tanks[pump.fuelType].current - (flowSpeed / 30));
+                    audioFX.playFuelPumpSound();
+
+                    if (pump.progress >= pump.targetAmount) {
+                        // Filling Complete!
+                        pump.isFilling = false;
+                        completeFuelSale(pump);
+                    }
+                }
+            });
+
+            updateUI();
+        }
+
+        function checkCarArrival() {
+            // Find an empty unlocked pump
+            const availablePumps = gameState.pumps.filter((p, index) => index < gameState.upgrades.pumpCount && !p.occupied);
+            if (availablePumps.length === 0) return;
+
+            // Random chance based on satisfaction
+            if (Math.random() * 100 < gameState.satisfaction) {
+                const targetPump = availablePumps[Math.floor(Math.random() * availablePumps.length)];
+                const fuelTypes = ['benzin', 'motorin', 'lpg'];
+                const selectedFuel = fuelTypes[Math.floor(Math.random() * fuelTypes.length)];
+                const carModel = carNames[Math.floor(Math.random() * carNames.length)];
+                const requestedMoney = Math.floor(Math.random() * 8 + 3) * 100; // 300 ₺ - 1000 ₺
+
+                targetPump.occupied = true;
+                targetPump.car = carModel;
+                targetPump.fuelType = selectedFuel;
+                targetPump.targetAmount = requestedMoney;
+                targetPump.progress = 0;
+                targetPump.isFilling = false;
+
+                addLog(`🚗 ${carModel} Pompa ${targetPump.id}'e yanaştı. Sipariş: ${requestedMoney} ₺ (${selectedFuel.toUpperCase()})`);
+
+                // Market Chance: 30% of arriving drivers also visit shop
+                if (Math.random() < 0.3) {
+                    gameState.marketCustomersInQueue++;
+                }
+
+                renderPumps();
+            }
+        }
+
+        function startPumping(pumpId) {
+            const pump = gameState.pumps.find(p => p.id === pumpId);
+            if (pump && pump.occupied && !pump.isFilling) {
+                if (gameState.tanks[pump.fuelType].current <= 10) {
+                    addLog(`❌ Yetersiz ${pump.fuelType.toUpperCase()} stoğu! Önce depoyu doldurun.`, 'red');
+                    return;
+                }
+                pump.isFilling = true;
+                renderPumps();
+            }
+        }
+
+        function completeFuelSale(pump) {
+            const revenue = pump.targetAmount;
+            gameState.money += revenue;
+            audioFX.playCashRegister();
+            addLog(`✅ Pompa ${pump.id}: ${pump.car} aracına ${revenue} ₺ değerinde yakıt satıldı.`, 'green');
+
+            // Reset Pump
+            pump.occupied = false;
+            pump.car = null;
+            pump.progress = 0;
+            pump.isFilling = false;
+
+            renderPumps();
+            updateUI();
+        }
+
+        function orderFuel(type, amount) {
+            const cost = amount * gameState.tanks[type].wholesalePrice;
+            if (gameState.money >= cost) {
+                if (gameState.tanks[type].current + amount > gameState.tanks[type].max) {
+                    addLog(`⚠️ Depo kapasitesi aşılamaz!`, 'yellow');
+                    return;
+                }
+                gameState.money -= cost;
+                gameState.tanks[type].current += amount;
+                audioFX.playCashRegister();
+                addLog(`🚛 Tanker geldi! +${amount} Litre ${type.toUpperCase()} teslim alındı (-${cost.toFixed(0)} ₺)`, 'green');
+                updateUI();
+            } else {
+                addLog(`❌ Yetersiz bakiye! Gerekli: ${cost.toFixed(0)} ₺`, 'red');
+            }
+        }
+
+        function restockMarket(units, cost) {
+            if (gameState.money >= cost) {
+                if (gameState.marketStock + units > gameState.marketMaxStock) {
+                    addLog(`⚠️ Market deposu dolu!`, 'yellow');
+                    return;
+                }
+                gameState.money -= cost;
+                gameState.marketStock += units;
+                audioFX.playCashRegister();
+                addLog(`📦 Market stokları yenilendi (+${units} adet)`, 'green');
+                updateUI();
+            } else {
+                addLog(`❌ Market stoku için yetersiz kasa bakiyesi!`, 'red');
+            }
+        }
+
+        function openMarketMiniGame() {
+            if (gameState.marketCustomersInQueue <= 0) {
+                addLog(`ℹ️ Şuan markette bekleyen müşteri yok.`, 'slate');
+                return;
+            }
+            openModal('modal-market-game');
+            setupNextMarketCustomer();
+        }
+
+        function setupNextMarketCustomer() {
+            if (gameState.marketCustomersInQueue > 0) {
+                const randomItem = marketItemsList[Math.floor(Math.random() * marketItemsList.length)];
+                document.getElementById('market-item-name').innerText = randomItem.name;
+                document.getElementById('market-item-price').innerText = randomItem.price + ' ₺';
+                document.getElementById('market-queue-status').innerText = `Bekleyen Market Müşterisi: ${gameState.marketCustomersInQueue}`;
+            } else {
+                closeModal('modal-market-game');
+            }
+        }
+
+        function processMarketSale() {
+            if (gameState.marketCustomersInQueue > 0) {
+                if (gameState.marketStock <= 0) {
+                    addLog(`❌ Market rafları boş! Satış yapılamadı.`, 'red');
+                    closeModal('modal-market-game');
+                    return;
+                }
+                const randomItem = marketItemsList[Math.floor(Math.random() * marketItemsList.length)];
+                gameState.money += randomItem.price;
+                gameState.marketStock--;
+                gameState.marketCustomersInQueue--;
+                audioFX.playCashRegister();
+                addLog(`🛍️ Market satışı gerçekleşti: ${randomItem.name} (+${randomItem.price} ₺)`, 'green');
+
+                if (document.getElementById('modal-market-game').classList.contains('hidden')) {
+                    // Handled automatically by cashier
+                    updateUI();
+                } else {
+                    setupNextMarketCustomer();
+                    updateUI();
+                }
+            }
+        }
+
+        function triggerCarWashService() {
+            const washFee = 150;
+            gameState.money += washFee;
+            gameState.satisfaction = Math.min(100, gameState.satisfaction + 2);
+            audioFX.playCashRegister();
+            addLog(`🚿 Oto yıkama hizmeti verildi (+${washFee} ₺, +%2 Memnuniyet)`, 'blue');
+            updateUI();
+        }
+
+        function triggerAirWaterService() {
+            gameState.satisfaction = Math.min(100, gameState.satisfaction + 3);
+            addLog(`🛞 Lastik & Hava istasyonunda müşteriye yardımcı olundu (+%3 Memnuniyet)`, 'purple');
+            updateUI();
+        }
+
+        function buyUpgrade(type) {
+            if (type === 'pumpSpeed') {
+                const cost = gameState.upgrades.pumpSpeed * 1500;
+                if (gameState.money >= cost) {
+                    gameState.money -= cost;
+                    gameState.upgrades.pumpSpeed++;
+                    audioFX.playUpgradeSound();
+                    addLog(`⚡ Pompa akış hızı Seviye ${gameState.upgrades.pumpSpeed}'e yükseltildi!`, 'amber');
+                }
+            } else if (type === 'tankCapacity') {
+                const cost = gameState.upgrades.tankCapacity * 3000;
+                if (gameState.money >= cost) {
+                    gameState.money -= cost;
+                    gameState.upgrades.tankCapacity++;
+                    Object.keys(gameState.tanks).forEach(t => gameState.tanks[t].max += 2500);
+                    audioFX.playUpgradeSound();
+                    addLog(`🛢️ Tank depolama kapasiteleri artırıldı (+2,500 L)`, 'amber');
+                }
+            } else if (type === 'addPump') {
+                const cost = 5000;
+                if (gameState.upgrades.pumpCount >= 4) {
+                    addLog(`⚠️ Maksimum pompa sayısına ulaştınız!`, 'yellow');
+                    return;
+                }
+                if (gameState.money >= cost) {
+                    gameState.money -= cost;
+                    gameState.upgrades.pumpCount++;
+                    audioFX.playUpgradeSound();
+                    addLog(`⛽ Yeni Pompa Yanaşma Alanı Aktif Edildi!`, 'amber');
+                }
+            }
+            renderPumps();
+            updateUI();
+        }
+
+        function toggleStaff(role) {
+            if (role === 'pumpAttendant') {
+                gameState.staff.pumpAttendant = !gameState.staff.pumpAttendant;
+                addLog(gameState.staff.pumpAttendant ? `👨‍🔧 Pompa görevlisi işe alındı.` : `👨‍🔧 Pompa görevlisi çıkarıldı.`, 'slate');
+            } else if (role === 'cashier') {
+                gameState.staff.cashier = !gameState.staff.cashier;
+                addLog(gameState.staff.cashier ? `👩‍💼 Market kasiyeri işe alındı.` : `👩‍💼 Market kasiyeri çıkarıldı.`, 'slate');
+            }
+            updateUI();
+        }
+
+        function processDailyExpenses() {
+            let totalWages = 0;
+            if (gameState.staff.pumpAttendant) totalWages += 200;
+            if (gameState.staff.cashier) totalWages += 180;
+
+            if (totalWages > 0) {
+                gameState.money -= totalWages;
+                addLog(`📅 Gün bitti. Günlük personel maaşları ödendi (-${totalWages} ₺)`, 'yellow');
+            }
+
+            // Daily Wholesale Fluctuations
+            Object.keys(gameState.tanks).forEach(t => {
+                const delta = (Math.random() - 0.5) * 2;
+                gameState.tanks[t].wholesalePrice = Math.max(10, gameState.tanks[t].wholesalePrice + delta);
+            });
+        }
+
+        function checkRandomEvents() {
+            const rand = Math.random();
+            if (rand < 0.15) {
+                // VIP Customer
+                const tip = 300;
+                gameState.money += tip;
+                addLog(`🌟 VIP Müşteri istasyonunuzdan çok memnun kaldı! Bağış/Bahşiş: +${tip} ₺`, 'amber');
+            } else if (rand > 0.85) {
+                // Price Surge Announcement
+                addLog(`📢 Petrol piyasalarında hareketlilik var! Toptan fiyatları güncellendi.`, 'slate');
+            }
+            updateUI();
+        }
+
+        function renderPumps() {
+            const container = document.getElementById('pumps-container');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 4; i++) {
+                const pump = gameState.pumps[i];
+                const isUnlocked = i < gameState.upgrades.pumpCount;
+
+                if (!isUnlocked) {
+                    // Locked Pump Slot
+                    container.innerHTML += `
+                        <div class="bg-slate-900/50 border border-slate-800/80 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center opacity-60">
+                            <i class="fa-solid fa-lock text-3xl text-slate-600 mb-2"></i>
+                            <div class="font-bold text-sm text-slate-400">Pompa ${i+1} Kilitli</div>
+                            <div class="text-xs text-slate-500 mt-1">Geliştirme menüsünden açabilirsiniz.</div>
+                        </div>
+                    `;
+                    continue;
+                }
+
+                if (!pump.occupied) {
+                    // Empty Ready Pump
+                    container.innerHTML += `
+                        <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-5 flex flex-col justify-between relative">
+                            <div class="flex justify-between items-start">
+                                <span class="bg-slate-700 text-slate-300 font-extrabold text-xs px-2.5 py-1 rounded-lg">POMPA ${pump.id}</span>
+                                <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Boş & Hazır
+                                </span>
+                            </div>
+                            <div class="my-6 text-center text-slate-500">
+                                <i class="fa-solid fa-car text-4xl mb-2 opacity-30"></i>
+                                <div class="text-xs">Araç Yanaşması Bekleniyor...</div>
+                            </div>
+                            <div class="text-xs text-slate-500 text-center font-mono">-- ₺ / -- L</div>
+                        </div>
+                    `;
+                } else {
+                    // Occupied Pump
+                    const percent = Math.min(100, (pump.progress / pump.targetAmount) * 100);
+                    const fuelColor = pump.fuelType === 'benzin' ? 'emerald' : (pump.fuelType === 'motorin' ? 'amber' : 'cyan');
+
+                    container.innerHTML += `
+                        <div class="bg-slate-800 border border-${fuelColor}-500/40 rounded-2xl p-5 shadow-lg relative glow-pump">
+                            <div class="flex justify-between items-start">
+                                <span class="bg-${fuelColor}-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg">POMPA ${pump.id}</span>
+                                <span class="text-xs font-bold text-slate-200 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg">
+                                    ${pump.car}
+                                </span>
+                            </div>
+
+                            <div class="my-4 space-y-2">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-400">Talep: <b class="text-white">${pump.targetAmount} ₺</b> (${pump.fuelType.toUpperCase()})</span>
+                                    <span class="text-${fuelColor}-400 font-mono">${percent.toFixed(0)}%</span>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700/80 p-0.5">
+                                    <div class="bg-${fuelColor}-500 h-full rounded-full transition-all duration-200" style="width: ${percent}%"></div>
+                                </div>
+                            </div>
+
+                            ${pump.isFilling ? `
+                                <div class="w-full bg-slate-900/80 text-amber-400 border border-amber-500/30 py-2 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-rotate text-amber-400 animate-spin"></i> Dolum Yapılıyor...
+                                </div>
+                            ` : `
+                                <button onclick="startPumping(${pump.id})" class="w-full bg-${fuelColor}-500 hover:bg-${fuelColor}-400 text-slate-950 font-black py-2 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-gas-pump"></i> DOLUMU BAŞLAT
+                                </button>
+                            `}
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function updateUI() {
+            // General Stats
+            document.getElementById('lbl-money').innerText = gameState.money.toLocaleString('tr-TR') + ' ₺';
+            document.getElementById('lbl-satisfaction').innerText = gameState.satisfaction;
+            document.getElementById('lbl-level').innerText = gameState.level;
+            document.getElementById('lbl-day').innerText = gameState.day;
+            
+            const formattedTime = `${String(gameState.timeHour).padStart(2, '0')}:${String(gameState.timeMinute).padStart(2, '0')}`;
+            document.getElementById('lbl-time').innerText = formattedTime;
+
+            // Tanks
+            Object.keys(gameState.tanks).forEach(t => {
+                const tank = gameState.tanks[t];
+                const pct = (tank.current / tank.max) * 100;
+                document.getElementById(`bar-tank-${t}`).style.width = pct + '%';
+                document.getElementById(`lbl-tank-${t}`).innerText = `${Math.round(tank.current).toLocaleString('tr-TR')} / ${tank.max.toLocaleString('tr-TR')} L`;
+                
+                const wholesaleElem = document.getElementById(`wholesale-price-${t}`);
+                if (wholesaleElem) wholesaleElem.innerText = tank.wholesalePrice.toFixed(2) + ' ₺/L';
+            });
+
+            // Queue Count
+            const activeWaitingCars = gameState.pumps.filter((p, index) => index < gameState.upgrades.pumpCount && p.occupied && !p.isFilling).length;
+            document.getElementById('lbl-queue-count').innerHTML = `Bekleyen Araç: <b class="text-amber-400 font-mono">${activeWaitingCars}</b>`;
+
+            // Market Badge & Stock
+            const mktBadge = document.getElementById('badge-market-customers');
+            if (gameState.marketCustomersInQueue > 0) {
+                mktBadge.classList.remove('hidden');
+                mktBadge.innerText = `${gameState.marketCustomersInQueue} Müşteri Bekliyor`;
+            } else {
+                mktBadge.classList.add('hidden');
+            }
+            document.getElementById('lbl-market-stock-percent').innerText = `${Math.round((gameState.marketStock / gameState.marketMaxStock) * 100)}%`;
+            document.getElementById('lbl-stock-units').innerText = gameState.marketStock;
+
+            // Upgrade Labels & Costs
+            document.getElementById('lbl-lvl-pumpspeed').innerText = gameState.upgrades.pumpSpeed;
+            document.getElementById('cost-upg-pumpspeed').innerText = (gameState.upgrades.pumpSpeed * 1500) + ' ₺';
+            document.getElementById('lbl-lvl-tankcap').innerText = gameState.upgrades.tankCapacity;
+            document.getElementById('cost-upg-tankcap').innerText = (gameState.upgrades.tankCapacity * 3000) + ' ₺';
+            document.getElementById('lbl-pump-count').innerText = gameState.upgrades.pumpCount;
+
+            // Staff Statuses
+            document.getElementById('status-staff-pump').innerText = gameState.staff.pumpAttendant ? 'Çalışıyor (Aktif)' : 'İşe Alınmadı';
+            document.getElementById('status-staff-pump').className = gameState.staff.pumpAttendant ? 'text-xs text-emerald-400 font-semibold mt-1' : 'text-xs text-rose-400 mt-1';
+            
+            document.getElementById('status-staff-cashier').innerText = gameState.staff.cashier ? 'Çalışıyor (Aktif)' : 'İşe Alınmadı';
+            document.getElementById('status-staff-cashier').className = gameState.staff.cashier ? 'text-xs text-emerald-400 font-semibold mt-1' : 'text-xs text-rose-400 mt-1';
+        }
+
+        function updatePricingUI() {
+            const benzinPrice = parseFloat(document.getElementById('input-price-benzin').value);
+            const motorinPrice = parseFloat(document.getElementById('input-price-motorin').value);
+            const lpgPrice = parseFloat(document.getElementById('input-price-lpg').value);
+
+            document.getElementById('lbl-price-val-benzin').innerText = benzinPrice.toFixed(2) + ' ₺';
+            document.getElementById('lbl-price-val-motorin').innerText = motorinPrice.toFixed(2) + ' ₺';
+            document.getElementById('lbl-price-val-lpg').innerText = lpgPrice.toFixed(2) + ' ₺';
+        }
+
+        function savePricingAndClose() {
+            gameState.tanks.benzin.retailPrice = parseFloat(document.getElementById('input-price-benzin').value);
+            gameState.tanks.motorin.retailPrice = parseFloat(document.getElementById('input-price-motorin').value);
+            gameState.tanks.lpg.retailPrice = parseFloat(document.getElementById('input-price-lpg').value);
+
+            addLog(`🏷️ Akaryakıt satış fiyatları güncellendi.`, 'slate');
+            closeModal('modal-pricing');
+        }
+
+        function switchTab(tabName) {
+            ['upgrades', 'staff', 'market-shop'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).className = "flex-1 py-2 text-xs font-bold rounded-lg hover:bg-slate-800 text-slate-400 transition";
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 transition";
+        }
+
+        function addLog(msg, color = 'slate') {
+            const container = document.getElementById('log-container');
+            const timeStr = `${String(gameState.timeHour).padStart(2, '0')}:${String(gameState.timeMinute).padStart(2, '0')}`;
+            const logItem = document.createElement('div');
+            logItem.className = `p-2 rounded border border-slate-800 bg-slate-800/40 text-${color}-300 text-xs flex gap-2 items-start`;
+            logItem.innerHTML = `<span class="text-slate-500 font-mono font-bold">[${timeStr}]</span> <span>${msg}</span>`;
+            container.prepend(logItem);
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
