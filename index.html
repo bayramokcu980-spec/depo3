@@ -4,157 +4,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dünya Fetih Stratejisi</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<title>DEPO TYCOON</title>
 <style>
-body{margin:0;background:#111827;color:white;font-family:Arial}
-header{padding:14px;background:#1f2937;text-align:center}
-#stats{display:flex;justify-content:space-around;gap:8px;padding:12px;flex-wrap:wrap}
-button{padding:10px;border:0;border-radius:6px;background:#2563eb;color:white;font-weight:bold}
-button:disabled{opacity:.4}
-#map{height:62vh;width:100%;background:#172033}
-#panel{padding:14px;background:#1f2937}
-#message{color:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:#0c131c;color:#edf5fc;font:14px Arial}
+header{background:#152333;padding:16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:23px;font-weight:bold;color:#40d2df}
+.wallet{display:flex;gap:12px;flex-wrap:wrap}
+.layout{display:grid;grid-template-columns:205px 1fr;min-height:90vh}
+nav{background:#111d29;padding:12px}
+nav button,button{border:0;background:#244158;color:white;padding:11px;border-radius:7px;cursor:pointer}
+nav button{display:block;width:100%;text-align:left;margin-bottom:6px}
+nav button:hover,button:hover{background:#087f91}
+main{padding:18px;min-width:0}
+.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}
+.card,.panel{background:#172635;border:1px solid #2b4053;border-radius:10px;padding:14px;margin-bottom:12px}
+.number{font-size:25px;font-weight:bold;margin-top:8px}
+.muted{color:#9cb0c2;font-size:12px}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.warehouse{height:290px;border-radius:9px;overflow:hidden;position:relative;background:linear-gradient(#203c50 0 70%,#39454c 70%)}
+.roof{height:35px;background:#314d60;border-bottom:5px solid #71818b}
+.racks{display:flex;justify-content:space-around;padding:22px 10px}
+.rack{height:145px;width:18%;border:5px solid #8b9ba4;border-top:0;display:flex;flex-direction:column;justify-content:space-around}
+.shelf{height:4px;background:#8b9ba4}
+.boxes{font-size:23px;text-align:center}
+.forklift{position:absolute;bottom:28px;left:30%;font-size:44px}
+.truck{position:absolute;bottom:25px;right:7%;font-size:48px}
+input,select{background:#0c1721;color:white;border:1px solid #40586b;padding:9px;border-radius:6px;max-width:100%}
+table{width:100%;border-collapse:collapse;min-width:550px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid #2a3e50}
+th{color:#9cb0c2}
+.tablewrap{overflow:auto}
+.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.product{background:#1c3040;border-radius:10px;padding:14px}
+.product .art{font-size:40px;margin:8px 0}
+.product button{width:100%;margin-top:10px}
+.log{font-size:12px;max-height:170px;overflow:auto}
+.log div{padding:8px 0;border-bottom:1px solid #2a3e50}
+@media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.shop{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.layout{grid-template-columns:1fr}nav{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}nav button{font-size:12px;margin:0;padding:9px}main{padding:10px}.shop{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><h2>🌍 Dünya Fetih Stratejisi</h2></header>
-<div id="stats">
-<span>💰 Altın: <b id="gold">1000</b></span>
-<span>🪖 Ordu: <b id="army">50000</b></span>
-<span>🏙️ Ülke: <b id="country">Türkiye</b></span>
-<span>📅 Tur: <b id="turn">1</b></span>
+<header>
+ <div><div class="logo">DEPO TYCOON</div><small>WAREHOUSE MANAGEMENT SIMULATOR</small></div>
+ <div class="wallet">
+  <span>💵 <b id="cash">250.000</b> ₺</span>
+  <span>🪙 <b id="gold">25.000</b></span>
+  <span>💎 <b id="diamonds">5.000</b></span>
+ </div>
+</header>
+<div class="layout">
+<nav>
+ <div class="card">👑 <b id="username">DepoYapimci</b><br><small>YAPIMCI HESABI · Seviye 50</small></div>
+ <button onclick="page('home')">🏭 Genel Bakış</button>
+ <button onclick="page('stock')">📦 Stok Yönetimi</button>
+ <button onclick="page('orders')">🚚 Siparişler</button>
+ <button onclick="page('upgrade')">🏗️ Depo Geliştirme</button>
+ <button onclick="page('shop')">🛒 Mağaza</button>
+ <button onclick="page('staff')">👷 Personel</button>
+ <button onclick="page('finance')">📊 Finans</button>
+</nav>
+<main>
+<section id="home" class="page active">
+ <h1>Depo kontrol merkezi</h1>
+ <p class="muted">İstanbul dağıtım merkezi · Vardiya 1 · <span id="time">08:00</span></p>
+ <div class="cards">
+  <div class="card">💵 Nakit<div class="number" id="m1">250.000 ₺</div></div>
+  <div class="card">📦 Bekleyen sipariş<div class="number" id="pending">0</div></div>
+  <div class="card">🏭 Depo doluluğu<div class="number" id="capacity">64%</div></div>
+  <div class="card">👷 Personel<div class="number" id="staffnum">18</div></div>
+ </div>
+ <div class="grid">
+  <div class="panel">
+   <h2>🏭 Depo sahası</h2>
+   <div class="warehouse">
+    <div class="roof"></div>
+    <div class="racks">
+     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
+     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
+     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
+     <div class="rack"><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦📦</div><div class="shelf"></div><div class="boxes">📦</div></div>
+    </div>
+    <div class="forklift">🚜</div><div class="truck">🚚</div>
+   </div>
+   <p>Raf A1–D8 · 4 aktif forklift · 3 yükleme rampası</p>
+   <button onclick="advance()">⏩ Saati ilerlet</button>
+   <button onclick="newOrder()">＋ Yeni sipariş</button>
+  </div>
+  <div class="panel"><h2>📋 Son olaylar</h2><div class="log" id="log"></div></div>
+ </div>
+</section>
+
+<section id="stock" class="page">
+ <h1>Stok yönetimi</h1>
+ <p class="muted">Ürünleri incele, stok ekle ve depo envanterini yönet.</p>
+ <button onclick="receive()">＋ Mal kabulü</button>
+ <div class="panel tablewrap"><table><thead><tr><th>Ürün</th><th>SKU</th><th>Raf</th><th>Stok</th><th>Birim fiyat</th><th>İşlem</th></tr></thead><tbody id="stocktable"></tbody></table></div>
+</section>
+
+<section id="orders" class="page">
+ <h1>Sipariş merkezi</h1>
+ <button onclick="newOrder()">＋ Sipariş oluştur</button>
+ <div class="panel tablewrap"><table><thead><tr><th>Sipariş</th><th>Müşteri</th><th>Kalem</th><th>Tutar</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="ordertable"></tbody></table></div>
+</section>
+
+<section id="upgrade" class="page">
+ <h1>Depo geliştirme</h1>
+ <div class="cards">
+  <div class="card">🏭 Depo seviyesi<div class="number" id="level">12</div></div>
+  <div class="card">📦 Kapasite<div class="number" id="cap2">12.500</div></div>
+  <div class="card">🗄️ Raf modülü<div class="number" id="racklevel">2</div></div>
+  <div class="card">⚙️ Otomasyon<div class="number" id="autolevel">1</div></div>
+ </div>
+ <div class="panel"><h2>Geliştirmeler</h2>
+  <p>🗄️ Ağır yük rafları — kapasiteyi artırır.</p><button onclick="buy('rack')">25.000 ₺ — Raf kur</button>
+  <p>⚙️ Konveyör hattı — sipariş operasyonunu geliştirir.</p><button onclick="buy('auto')">1.500 altın — Otomasyon</button>
+  <p>❄️ Soğuk oda — özel ürün depolaması.</p><button onclick="buy('cold')">1.200 altın — Soğuk oda</button>
+ </div>
+</section>
+
+<section id="shop" class="page">
+ <h1>Mağaza</h1>
+ <p class="muted">Oyun içi para birimleriyle ekipman ve malzeme al.</p>
+ <div class="shop" id="shopitems"></div>
+</section>
+
+<section id="staff" class="page">
+ <h1>Personel ve araçlar</h1>
+ <div class="cards">
+  <div class="card">👷 Çalışan<div class="number" id="staff2">18</div></div>
+  <div class="card">🚜 Forklift<div class="number" id="forks">4</div></div>
+  <div class="card">🚚 Kamyon<div class="number">3</div></div>
+  <div class="card">🛡️ Güvenlik<div class="number">Aktif</div></div>
+ </div>
+ <div class="panel"><h2>Personel işe alımı</h2><p>Yeni depo personeli için 8.000 ₺ öde.</p><button onclick="hire()">Personel işe al</button></div>
+ <div class="panel"><h2>Araç filosu</h2><p>Elektrikli forklift: 45.000 ₺</p><button onclick="buy('forklift')">Forklift satın al</button></div>
+</section>
+
+<section id="finance" class="page">
+ <h1>Finans raporu</h1>
+ <div class="cards">
+  <div class="card">📈 Toplam gelir<div class="number" id="revenue">42.850 ₺</div></div>
+  <div class="card">📉 Toplam gider<div class="number" id="expenses">12.400 ₺</div></div>
+  <div class="card">💰 Net sonuç<div class="number" id="profit">30.450 ₺</div></div>
+  <div class="card">📅 Gün<div class="number" id="day">1</div></div>
+ </div>
+ <div class="panel"><h2>Hesap hareketleri</h2><div class="log" id="transactions"></div></div>
+</section>
+</main>
 </div>
-<div id="map"></div>
-<div id="panel">
-<p>Seçilen ülke: <b id="selected">Türkiye</b></p>
-<button onclick="recruit()">Ordu kur (300 altın)</button>
-<button onclick="attack()">Saldır</button>
-<button onclick="ally()">İttifak kur (200 altın)</button>
-<button onclick="nextTurn()">Sonraki tur</button>
-<p id="message">Haritadan bir ülke seç.</p>
-</div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-const map=L.map('map').setView([30,20],2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
- attribution:'© OpenStreetMap'
-}).addTo(map);
-
-let gold=1000, army=50000, turn=1;
-let home='Turkey', selected='Turkey';
-let owned=new Set(['Turkey']);
-let allies=new Set();
-let armies={'Turkey':50000};
-let layers={};
-
-const trNames={
-'Turkey':'Türkiye','Türkiye':'Türkiye',
-'United States of America':'ABD',
-'Russian Federation':'Rusya','Russia':'Rusya',
-'China':'Çin','Iran':'İran','Iraq':'Irak',
-'Greece':'Yunanistan','Bulgaria':'Bulgaristan',
-'Syria':'Suriye','Georgia':'Gürcistan',
-'Ukraine':'Ukrayna','France':'Fransa',
-'Germany':'Almanya','United Kingdom':'Birleşik Krallık',
-'India':'Hindistan','Japan':'Japonya',
-'Brazil':'Brezilya','Egypt':'Mısır',
-'Saudi Arabia':'Suudi Arabistan','Italy':'İtalya',
-'Spain':'İspanya','Pakistan':'Pakistan',
-'Afghanistan':'Afganistan','Armenia':'Ermenistan',
-'Azerbaijan':'Azerbaycan','Israel':'İsrail',
-'Jordan':'Ürdün','Lebanon':'Lübnan'
+const initialProducts=[
+{id:1,name:"Karton koli orta",sku:"BOX-MID",loc:"A-03-01",qty:2200,price:12,icon:"📦"},
+{id:2,name:"Koli bandı",sku:"PKG-045",loc:"A-01-03",qty:1450,price:18,icon:"🧻"},
+{id:3,name:"Streç film",sku:"PKG-017",loc:"A-02-01",qty:820,price:95,icon:"🧵"},
+{id:4,name:"Ahşap palet",sku:"PLT-120",loc:"B-01-02",qty:360,price:210,icon:"🪵"},
+{id:5,name:"İş eldiveni",sku:"PPE-010",loc:"C-03-04",qty:690,price:42,icon:"🧤"},
+{id:6,name:"Barkod etiketi",sku:"LBL-100",loc:"C-01-01",qty:3200,price:2,icon:"🏷️"},
+{id:7,name:"Temizlik sıvısı 5L",sku:"CLN-005",loc:"D-02-02",qty:180,price:115,icon:"🧴"},
+{id:8,name:"Güvenlik ayakkabısı",sku:"PPE-220",loc:"C-04-02",qty:95,price:650,icon:"🥾"},
+{id:9,name:"Elektrik motoru",sku:"MTR-380",loc:"D-01-03",qty:42,price:1850,icon:"⚙️"}
+];
+const fresh=()=>({cash:250000,gold:25000,diamonds:5000,hour:8,day:1,staff:18,forks:4,capacity:8000,capacityMax:12500,level:12,racks:2,auto:1,cold:0,revenue:42850,expenses:12400,ordersDone:0,nextId:1056,products:JSON.parse(JSON.stringify(initialProducts)),orders:[
+{id:1050,customer:"Hızlı Kargo A.Ş.",items:24,total:7300,status:"Hazırlanıyor"},
+{id:1051,customer:"Kuzey Tedarik",items:5,total:2150,status:"Bekliyor"},
+{id:1052,customer:"Kent Marketleri",items:16,total:8900,status:"Bekliyor"},
+{id:1053,customer:"Mavi Yapı",items:7,total:4200,status:"Bekliyor"},
+{id:1054,customer:"TeknoServis",items:4,total:15600,status:"Bekliyor"}
+],log:["08:02 · Mal kabul alanına 2 palet indirildi.","08:10 · Sipariş #1050 toplama aşamasında."],transactions:["Gün başlangıç bakiyesi: +250.000 ₺","Sipariş gelirleri: +42.850 ₺","Personel ve enerji giderleri: -12.400 ₺"]});
+let s;
+try{s=JSON.parse(localStorage.getItem("depoTycoon"))||fresh()}catch(e){s=fresh()}
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.floor(n).toLocaleString("tr-TR");
+const tl=n=>fmt(n)+" ₺";
+function save(){localStorage.setItem("depoTycoon",JSON.stringify(s))}
+function note(t){s.log.unshift(String(s.hour).padStart(2,"0")+":00 · "+t);s.log=s.log.slice(0,25);renderLog();save()}
+function alertUser(t){window.alert(t)}
+function page(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===id));if(id==="stock")renderStock();if(id==="orders")renderOrders();render()}
+function ownedOrders(status){return s.orders.filter(o=>o.status===status).length}
+function renderLog(){$("log").innerHTML=s.log.map(x=>"<div>"+x+"</div>").join("");$("transactions").innerHTML=s.transactions.slice(0,20).map(x=>"<div>"+x+"</div>").join("")}
+function renderStock(){$("stocktable").innerHTML=s.products.map(p=>`<tr><td>${p.icon} ${p.name}</td><td>${p.sku}</td><td>${p.loc}</td><td>${fmt(p.qty)}</td><td>${tl(p.price)}</td><td><button onclick="changeStock(${p.id})">Stok ekle</button></td></tr>`).join("")}
+function renderOrders(){$("ordertable").innerHTML=s.orders.map(o=>`<tr><td>#${o.id}</td><td>${o.customer}</td><td>${o.items}</td><td>${tl(o.total)}</td><td>${o.status}</td><td>${o.status==="Bekliyor"?`<button onclick="process(${o.id})">Topla</button>`:o.status==="Hazırlanıyor"?`<button onclick="process(${o.id})">Sevk et</button>`:o.status==="Sevk edildi"?`<button onclick="process(${o.id})">Teslim et</button>`:"✓"}</td></tr>`).join("")}
+function renderShop(){
+const items=[
+["📦","Karton koli paketi","10.000 ₺","cash","stock"],
+["🚜","Elektrikli forklift","45.000 ₺","cash","forklift"],
+["🗄️","Ağır yük rafı","25.000 ₺","cash","rack"],
+["📟","El terminali","800 altın","gold","scanner"],
+["⚙️","Konveyör hattı","1.500 altın","gold","auto"],
+["❄️","Soğuk oda","1.200 altın","gold","cold"],
+["🤖","Otonom depo robotu","350 elmas","diamonds","robot"],
+["🏢","Yönetici ofisi","600 elmas","diamonds","office"],
+["🦺","İSG ekipman paketi","300 elmas","diamonds","safety"]
+];
+$("shopitems").innerHTML=items.map(i=>`<div class="product"><div class="art">${i[0]}</div><b>${i[1]}</b><div class="muted">Depo operasyonlarını geliştir.</div><p><b>${i[2]}</b></p><button onclick="buy('${i[4]}')">Satın al</button></div>`).join("")
+}
+function render(){
+$("cash").textContent=fmt(s.cash);$("gold").textContent=fmt(s.gold);$("diamonds").textContent=fmt(s.diamonds);$("m1").textContent=tl(s.cash);
+$("pending").textContent=ownedOrders("Bekliyor");$("capacity").textContent=Math.round(s.capacity/s.capacityMax*100)+"%";
+$("staffnum").textContent=s.staff;$("staff2").textContent=s.staff;$("forks").textContent=s.forks;
+$("cap2").textContent=fmt(s.capacityMax);$("level").textContent=s.level;$("racklevel").textContent=s.racks;$("autolevel").textContent=s.auto;
+$("revenue").textContent=tl(s.revenue);$("expenses").textContent=tl(s.expenses);$("profit").textContent=tl(s.revenue-s.expenses);
+$("time").textContent=String(s.hour).padStart(2,"0")+":00";$("day").textContent=s.day;
+$("username").textContent=s.username||"DepoYapimci";
+renderLog()
+}
+function changeStock(id){let p=s.products.find(x=>x.id===id);let n=Number(prompt("Eklenecek adet:", "100"));if(!Number.isInteger(n)||n<=0)return;p.qty+=n;note(n+" adet "+p.name+" stoğa alındı.");renderStock();render()}
+function receive(){let p=s.products[0],n=Number(prompt("Kaç koli kabul edilsin?","100"));if(!Number.isInteger(n)||n<=0)return;let cost=n*p.price;if(s.cash<cost)return alertUser("Yeterli nakit yok.");s.cash-=cost;p.qty+=n;s.expenses+=cost;s.transactions.unshift("Mal kabulü: -"+tl(cost));note(n+" adet "+p.name+" mal kabulü yapıldı.");renderStock();render()}
+function newOrder(){let names=["Marmara Endüstri","İstanbul Ambalaj","Anadolu Tedarik","Hızlı Dağıtım","Kent Marketleri"];let o={id:s.nextId++,customer:names[Math.floor(Math.random()*names.length)],items:1+Math.floor(Math.random()*20),total:1500+Math.floor(Math.random()*14000),status:"Bekliyor"};s.orders.unshift(o);note("Yeni sipariş #"+o.id+" oluşturuldu.");renderOrders();render()}
+function process(id){let o=s.orders.find(x=>x.id===id);if(o.status==="Bekliyor"){o.status="Hazırlanıyor";note("#"+id+" toplama aşamasına geçti.")}else if(o.status==="Hazırlanıyor"){o.status="Sevk edildi";note("#"+id+" kamyona yüklendi.")}else if(o.status==="Sevk edildi"){o.status="Tamamlandı";s.cash+=o.total;s.revenue+=o.total;s.ordersDone++;s.transactions.unshift("Sipariş #"+id+" geliri: +"+tl(o.total));note("#"+id+" teslim edildi. "+tl(o.total)+" kazanıldı.")}renderOrders();render()}
+function advance(){s.hour++;if(s.hour>=24){s.hour=0;s.day++;let wages=s.staff*450;s.cash-=wages;s.expenses+=wages;s.transactions.unshift("Personel gideri: -"+tl(wages));s.cash+=15000;s.revenue+=15000;s.transactions.unshift("Günlük operasyon geliri: +15.000 ₺");note("Yeni gün başladı. Maaşlar ve günlük gelir işlendi.")}else{note("Vardiya saati ilerledi.")}render()}
+function hire(){if(s.cash<8000)return alertUser("Yeterli nakit yok.");s.cash-=8000;s.staff++;s.expenses+=8000;s.transactions.unshift("Personel alımı: -8.000 ₺");note("Yeni personel işe alındı.");render()}
+function buy(type){
+const items={
+rack:{cost:25000,currency:"cash",run:()=>{s.capacityMax+=1500;s.capacity+=300;s.racks++},name:"Raf sistemi"},
+forklift:{cost:45000,currency:"cash",run:()=>s.forks++,name:"Forklift"},
+stock:{cost:10000,currency:"cash",run:()=>s.products[0].qty+=1000,name:"Koli paketi"},
+scanner:{cost:800,currency:"gold",run:()=>s.revenue+=2500,name:"El terminali"},
+auto:{cost:1500,currency:"gold",run:()=>s.auto++,name:"Konveyör"},
+cold:{cost:1200,currency:"gold",run:()=>{s.cold++;s.capacityMax+=800},name:"Soğuk oda"},
+robot:{cost:350,currency:"diamonds",run:()=>{s.capacityMax+=2500;s.capacity+=500},name:"Otonom robot"},
+office:{cost:600,currency:"diamonds",run:()=>s.revenue+=10000,name:"Yönetici ofisi"},
+safety:{cost:300,currency:"diamonds",run:()=>s.level++,name:"İSG paketi"}
 };
-
-function displayName(name){return trNames[name]||name}
-function color(name){
- if(owned.has(name)) return '#16a34a';
- if(allies.has(name)) return '#2563eb';
- return '#64748b';
+let i=items[type];if(!i)return; if(s[i.currency]<i.cost)return alertUser("Yeterli oyun içi kaynağın yok.");s[i.currency]-=i.cost;i.run();note(i.name+" satın alındı.");render()
 }
-function styleFeature(feature){
- const name=feature.properties.ADMIN||feature.properties.name;
- return {color:'#d1d5db',weight:.7,fillColor:color(name),fillOpacity:.75};
-}
-function updateMap(){
- Object.entries(layers).forEach(([name,layer])=>{
-   layer.setStyle({fillColor:color(name)});
- });
-}
-function selectCountry(name){
- selected=name;
- document.getElementById('selected').textContent=displayName(name);
-}
-function update(){
- document.getElementById('gold').textContent=gold.toLocaleString('tr-TR');
- document.getElementById('army').textContent=army.toLocaleString('tr-TR');
- document.getElementById('country').textContent=displayName(home);
- document.getElementById('turn').textContent=turn;
- updateMap();
-}
-fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
-.then(r=>r.json())
-.then(data=>{
- L.geoJSON(data,{
-   style:styleFeature,
-   onEachFeature:(feature,layer)=>{
-     const name=feature.properties.ADMIN||feature.properties.name;
-     layers[name]=layer;
-     layer.bindTooltip(displayName(name));
-     layer.on('click',()=>selectCountry(name));
-   }
- }).addTo(map);
-})
-.catch(()=>document.getElementById('message').textContent=
- 'Harita yüklenemedi. İnternet bağlantını kontrol et.');
-
-function recruit(){
- if(gold<300){msg('Yeterli altının yok.');return}
- gold-=300;
- const amount=10000;
- army+=amount;
- armies[home]=(armies[home]||0)+amount;
- update();msg('10.000 asker toplandı.');
-}
-function attack(){
- if(selected===home||owned.has(selected)){msg('Kendi ülkene saldıramazsın.');return}
- if(allies.has(selected)){msg('Müttefikine saldıramazsın.');return}
- if(army<5000){msg('Saldırı için en az 5.000 asker gerekli.');return}
- const defender=armies[selected]||Math.floor(10000+Math.random()*40000);
- const attackers=army;
- const attackerLoss=Math.min(army,Math.floor(defender*(.25+Math.random()*.35)));
- const defenderLoss=Math.min(defender,Math.floor(attackers*(.35+Math.random()*.35)));
- army=Math.max(0,army-attackerLoss);
- armies[home]=army;
- armies[selected]=Math.max(0,defender-defenderLoss);
- if(armies[selected]===0){
-   owned.add(selected);
-   home=selected;
-   army=Math.max(0,army);
-   gold+=500;
-   msg(displayName(selected)+' fethedildi! +500 altın.');
- }else{
-   msg('Savaş bitti. Senin kaybın: '+attackerLoss.toLocaleString('tr-TR')+
-       ', düşman kaybı: '+defenderLoss.toLocaleString('tr-TR')+'.');
- }
- update();
-}
-function ally(){
- if(owned.has(selected)){msg('Bu ülke zaten senin.');return}
- if(gold<200){msg('İttifak için 200 altın gerekli.');return}
- gold-=200;allies.add(selected);update();
- msg(displayName(selected)+' ile ittifak kuruldu.');
-}
-function nextTurn(){
- turn++;
- gold+=owned.size*250;
- army+=owned.size*1000;
- armies[home]=army;
- update();
- msg('Yeni tur başladı. Ülkelerinden vergi ve asker geliri kazandın.');
-}
-function msg(text){document.getElementById('message').textContent=text}
-update();
+renderShop();renderStock();renderOrders();render();save();
 </script>
 </body>
 </html>
