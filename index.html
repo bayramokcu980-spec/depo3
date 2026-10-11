@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticarisk & Benzinlik Simülasyonu PRO</title>
+    <title>Ticarisk - Online İş ve Ticaret Simülasyonu</title>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --panel-bg: #1e293b;
-            --accent-orange: #f97316;
-            --accent-green: #22c55e;
-            --accent-blue: #3b82f6;
-            --accent-red: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-dark: #121824;
+            --panel-bg: #1e2532;
+            --accent-blue: #2563eb;
+            --accent-green: #16a34a;
+            --accent-orange: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
         }
 
         * {
@@ -27,373 +26,495 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            overflow: hidden;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* --- GİRİŞ / KAYIT EKRANI --- */
+        /* --- TİCARİSK GİRİŞ / AUTH EKRANI --- */
         #auth-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98)),
-                        url('https://images.unsplash.com/photo-1527018606416-a674e1780742?auto=format&fit=crop&w=1200&q=80') center/cover;
+            background: linear-gradient(rgba(18, 24, 36, 0.85), rgba(18, 24, 36, 0.95)), 
+                        radial-gradient(circle, #1e2532, #0f141d);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
 
-        .auth-card {
-            background: rgba(30, 41, 59, 0.9);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+        .auth-container {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
             padding: 40px;
-            width: 380px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             text-align: center;
         }
 
-        .auth-card h1 {
-            color: var(--accent-orange);
-            margin-bottom: 8px;
-            font-size: 26px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .auth-logo {
+            width: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
 
-        .auth-card p {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 24px;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(15, 23, 42, 0.8);
-            color: #fff;
-            outline: none;
-            font-size: 14px;
+        .auth-container h2 {
+            font-size: 24px;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            font-weight: 700;
         }
 
         .auth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             width: 100%;
             padding: 12px;
-            border: none;
             border-radius: 8px;
-            background: linear-gradient(90deg, var(--accent-orange), #ea580c);
-            color: white;
-            font-weight: bold;
-            font-size: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #ffffff;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 10px;
+            margin-bottom: 12px;
+            transition: 0.2s;
         }
 
         .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        .auth-btn.apple {
+            background: #000000;
+            color: #ffffff;
+            border: none;
+        }
+
+        .auth-btn.apple:hover {
+            background: #1f2937;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .divider::before { margin-right: 10px; }
+        .divider::after { margin-left: 10px; }
+
+        .register-link {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
         }
 
         /* --- OYUN ANA DÜZENİ --- */
-        #game-layout {
-            display: flex;
+        #game-app {
+            display: none;
             flex-direction: column;
             height: 100vh;
         }
 
-        /* TOP BAR */
-        .top-bar {
-            background: rgba(30, 41, 59, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            height: 60px;
+        .top-navbar {
+            height: 65px;
+            background: var(--panel-bg);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            z-index: 10;
+            padding: 0 25px;
         }
 
-        .brand {
+        .brand-title {
             font-size: 20px;
             font-weight: 800;
             color: var(--accent-orange);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            letter-spacing: 0.5px;
         }
 
-        .stats-container {
+        .user-panel-info {
             display: flex;
             gap: 20px;
+            align-items: center;
         }
 
-        .stat-box {
-            background: rgba(15, 23, 42, 0.6);
+        .info-pill {
+            background: rgba(18, 24, 36, 0.6);
             padding: 6px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
         }
 
-        .stat-box .label {
-            font-size: 10px;
+        .info-pill span {
             color: var(--text-muted);
+            font-size: 10px;
+            display: block;
             text-transform: uppercase;
         }
 
-        .stat-box .value {
+        .info-pill strong {
+            color: var(--accent-green);
             font-size: 14px;
-            font-weight: bold;
-            color: var(--text-main);
         }
 
-        .val-green { color: var(--accent-green) !important; }
-        .val-orange { color: var(--accent-orange) !important; }
-        .val-red { color: var(--accent-red) !important; }
-
-        /* MAIN CONTENT AREA */
-        .main-container {
+        /* ORTA ALAN VE SEKMELER */
+        .main-workspace {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* NAVIGATION SIDEBAR */
-        .sidebar {
-            width: 220px;
-            background: rgba(30, 41, 59, 0.7);
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        .left-sidebar {
+            width: 240px;
+            background: rgba(30, 37, 50, 0.5);
+            border-right: 1px solid rgba(255,255,255,0.06);
             display: flex;
             flex-direction: column;
-            padding: 15px 10px;
-            gap: 8px;
+            padding: 15px 12px;
+            gap: 6px;
         }
 
-        .nav-btn {
+        .menu-tab {
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 12px 16px;
-            border-radius: 10px;
+            padding: 12px 15px;
             text-align: left;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-        }
-
-        .nav-btn.active {
-            background: var(--accent-orange);
-            color: white;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
-        }
-
-        /* VIEW PANELS */
-        .content-area {
-            flex: 1;
-            position: relative;
-            background: #020617;
-            overflow-y: auto;
-        }
-
-        .tab-panel {
-            display: none;
-            height: 100%;
-            padding: 20px;
-        }
-
-        .tab-panel.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* SAHA CANLI İSTASYON CANVAS */
-        #station-canvas {
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            background: #1e293b;
-        }
-
-        /* BORSA & RİSK PANELS */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            height: 100%;
-        }
-
-        .card {
-            background: var(--panel-bg);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .card h2 {
-            font-size: 16px;
-            color: var(--accent-orange);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 10px;
-        }
-
-        /* CRISIS BANNER */
-        .crisis-banner {
-            background: linear-gradient(90deg, #7f1d1d, #ef4444);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
             font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.9; }
-            50% { opacity: 1; filter: brightness(1.2); }
-            100% { opacity: 0.9; }
-        }
-
-        /* TANKER SİPARİŞ LİSTESİ */
-        .fuel-order-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 12px;
+            font-weight: 600;
             border-radius: 8px;
-        }
-
-        .action-btn {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
             transition: 0.2s;
-        }
-
-        .action-btn:hover {
-            filter: brightness(1.2);
-        }
-
-        /* DEV TOOLBAR */
-        #dev-toolbar {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #000;
-            border: 2px solid #22c55e;
-            padding: 10px 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
-            z-index: 1000;
-        }
-
-        #dev-toolbar h4 {
-            color: #22c55e;
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-
-        .dev-btn {
-            background: #15803d;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        /* CHAT */
-        .chat-box {
-            flex: 1;
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 8px;
-            padding: 10px;
-            overflow-y: auto;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 400px;
-        }
-
-        .chat-msg {
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .chat-msg .user {
-            color: var(--accent-orange);
-            font-weight: bold;
-        }
-
-        .chat-input-group {
-            display: flex;
+            align-items: center;
             gap: 10px;
         }
 
-        .chat-input-group input {
-            flex: 1;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: #0f172a;
+        .menu-tab:hover {
+            background: rgba(255,255,255,0.04);
+            color: var(--text-main);
+        }
+
+        .menu-tab.active {
+            background: var(--accent-blue);
             color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .content-container {
+            flex: 1;
+            background: #0b0f17;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .ticarisk-card {
+            background: var(--panel-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ticarisk-card h3 {
+            font-size: 16px;
+            color: var(--accent-orange);
+        }
+
+        .ticarisk-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .btn-action {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            filter: brightness(1.2);
+        }
+
+        /* TABLO YAPILARI (Borsa / Sıralama) */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--panel-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 18px;
+            text-align: left;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .data-table th {
+            background: rgba(18, 24, 36, 0.8);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 11px;
         }
     </style>
 </head>
 <body>
 
-    <!-- GİRİŞ EKRANI -->
+    <!-- GİRİŞ EKRANI (Ticarisk Orijinal Giriş Tasarımı) -->
     <div id="auth-overlay">
-        <div class="auth-card">
-            <h1>TİCARİSK PRO</h1>
-            <p>Benzinlik & Borsa Simülasyonu</p>
-            <div class="input-group">
-                <label>Kullanıcı Adı</label>
-                <input type="text" id="username" placeholder="Örn: Bayram" value="Bayram">
+        <div class="auth-container">
+            <img src="https://www.ticarisk.com/images/txlogo.png" alt="Logo" class="auth-logo" onerror="this.style.display='none'">
+            <h2>TİCARİSK</h2>
+            
+            <button class="auth-btn" onclick="quickLogin()">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.14C3.15 21.32 7.22 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.62H1.18C.43 8.12 0 9.81 0 12s.43 3.88 1.18 5.38l4.09-3.14z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.62l4.09 3.14c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+                Sign in with Google
+            </button>
+
+            <button class="auth-btn apple" onclick="quickLogin()">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 5.35c.61-.75 1.02-1.8 0.91-2.85-.88.04-1.94.59-2.55 1.34-.56.68-1.05 1.77-.92 2.82 1 .08 1.95-.49 2.56-1.31z"/></svg>
+                Sign in with Apple
+            </button>
+
+            <div class="divider">or</div>
+            <div>
+                <a href="#" class="register-link" onclick="quickLogin()">No account? Register / Giriş Yap</a>
             </div>
-            <div class="input-group">
-                <label>Şifre</label>
-                <input type="password" id
+        </div>
+    </div>
+
+    <!-- OYUN ARAYÜZÜ (Ticarisk Menü ve Sistemleri) -->
+    <div id="game-app">
+        <div class="top-navbar">
+            <div class="brand-title">🌐 Ticarisk Trading Hub</div>
+            <div class="user-panel-info">
+                <div class="info-pill">
+                    <span>Toplam Bütçe</span>
+                    <strong id="ui-money">₺10,000,000</strong>
+                </div>
+                <div class="info-pill">
+                    <span>Şirket Değeri</span>
+                    <strong id="ui-networth">₺10,000,000</strong>
+                </div>
+                <div class="info-pill">
+                    <span>Seviye / Ünvan</span>
+                    <strong style="color:var(--accent-orange)">Tüccar Baron</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-workspace">
+            <div class="left-sidebar">
+                <button class="menu-tab active" onclick="switchTab('market')">📈 Emtea ve Borsa</button>
+                <button class="menu-tab" onclick="switchTab('factories')">🏭 Üretim Tesisleri</button>
+                <button class="menu-tab" onclick="switchTab('logistics')">🚚 Lojistik Filosu</button>
+                <button class="menu-tab" onclick="switchTab('rankings')">👑 Küresel Sıralama</button>
+            </div>
+
+            <div class="content-container">
+                <!-- 1. PİYASA SEKMESİ -->
+                <div id="tab-market" class="tab-pane active">
+                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Küresel Piyasa Ürünleri</h2>
+                    <div class="grid-layout">
+                        <div class="ticarisk-card">
+                            <h3>Lüks Segment Otomobil</h3>
+                            <p>Anlık Fiyat: ₺1,850,000<br>Talep: Yüksek</p>
+                            <button class="btn-action" onclick="buyTradeItem('Otomobil', 1850000)">Portföye Ekle</button>
+                        </div>
+                        <div class="ticarisk-card">
+                            <h3>Yüksek Kalite Çelik</h3>
+                            <p>Anlık Fiyat: ₺420,000<br>Talep: Kararlı</p>
+                            <button class="btn-action" onclick="buyTradeItem('Çelik', 420000)">Hammadde Al</button>
+                        </div>
+                        <div class="ticarisk-card">
+                            <h3>Yarı İletken Çip</h3>
+                            <p>Anlık Fiyat: ₺950,000<br>Talep: Kritik Artış</p>
+                            <button class="btn-action" onclick="buyTradeItem('Çip', 950000)">Yatırım Yap</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. FABRİKA SEKMESİ -->
+                <div id="tab-factories" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Fabrika ve Tesis Yönetimi</h2>
+                    <div class="grid-layout">
+                        <div class="ticarisk-card">
+                            <h3>Montaj Fabrikası</h3>
+                            <p>Maliyet: ₺3,500,000<br>Getiri: Dakikada otomatik üretim geliri sağlar.</p>
+                            <button class="btn-action" onclick="buildFactory(3500000)">Fabrika Kur</button>
+                        </div>
+                        <div class="ticarisk-card">
+                            <h3>Metal İşleme Tesisi</h3>
+                            <p>Maliyet: ₺2,000,000<br>Getiri: Sürekli hammadde ticareti akışı.</p>
+                            <button class="btn-action" onclick="buildFactory(2000000)">Tesis Kur</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. LOJİSTİK SEKMESİ -->
+                <div id="tab-logistics" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Lojistik Ağı ve Tır Filosu</h2>
+                    <div class="grid-layout">
+                        <div class="ticarisk-card">
+                            <h3>Uluslararası Tır Filosu</h3>
+                            <p>Maliyet: ₺1,200,000<br>Getiri: Düzenli nakliye pasif geliri.</p>
+                            <button class="btn-action" onclick="buyTruck(1200000)">Tır Filosunu Genişlet</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. SIRALAMA SEKMESİ -->
+                <div id="tab-rankings" class="tab-pane">
+                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Ticarisk Küresel Baronlar Listesi</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sıra</th>
+                                <th>Şirket Adı</th>
+                                <th>Varlık Değeri</th>
+                                <th>Unvan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>Bayram Holding (Sen)</strong></td>
+                                <td id="rank-net">₺10,000,000</td>
+                                <td><span style="color:var(--accent-orange)">Küresel Baron</span></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Anadolu Global Ticaret</td>
+                                <td>₺24,500,000</td>
+                                <td>Sektör Lideri</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Nexus Lojistik A.Ş.</td>
+                                <td>₺16,800,000</td>
+                                <td>Yatırımcı</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            money: 10000000,
+            factoryCount: 0,
+            passiveIncome: 0
+        };
+
+        function quickLogin() {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('game-app').style.display = 'flex';
+            setInterval(runPassiveLoop, 8000);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.menu-tab').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function updateUI() {
+            document.getElementById('ui-money').innerText = '₺' + state.money.toLocaleString();
+            let net = state.money + (state.factoryCount * 2500000);
+            document.getElementById('ui-networth').innerText = '₺' + net.toLocaleString();
+            document.getElementById('rank-net').innerText = '₺' + net.toLocaleString();
+        }
+
+        function buyTradeItem(name, price) {
+            if (state.money >= price) {
+                state.money -= price;
+                updateUI();
+                alert(name + ' başarıyla portföye eklendi ve işlem gerçekleşti!');
+            } else {
+                alert('Yetersiz bütçe!');
+            }
+        }
+
+        function buildFactory(cost) {
+            if (state.money >= cost) {
+                state.money -= cost;
+                state.factoryCount++;
+                state.passiveIncome += 180000;
+                updateUI();
+                alert('Fabrika kuruldu! Düzenli ticaret pasif geliri başlatıldı.');
+            } else {
+                alert('Yetersiz bütçe!');
+            }
+        }
+
+        function buyTruck(cost) {
+            if (state.money >= cost) {
+                state.money -= cost;
+                state.passiveIncome += 75000;
+                updateUI();
+                alert('Tır filoya dahil edildi!');
+            } else {
+                alert('Yetersiz bütçe!');
+            }
+        }
+
+        function runPassiveLoop() {
+            if (state.passiveIncome > 0) {
+                state.money += state.passiveIncome;
+                updateUI();
+            }
+        }
+    </script>
+</body>
+</html>
