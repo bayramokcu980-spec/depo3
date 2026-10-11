@@ -1,1109 +1,399 @@
 <!DOCTYPE html>
-<html lang="tr" class="h-full bg-slate-900 text-slate-100">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benzinlik Simülatörü Pro</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        gas: {
-                            gold: '#f59e0b',
-                            red: '#ef4444',
-                            green: '#10b981',
-                            blue: '#3b82f6',
-                            purple: '#8b5cf6',
-                            dark: '#0f172a',
-                            panel: '#1e293b'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <title>Ticarisk & Benzinlik Simülasyonu PRO</title>
     <style>
-        @keyframes pulse-glow {
-            0%, 100% { filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.6)); }
-            50% { filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.9)); }
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent-orange: #f97316;
+            --accent-green: #22c55e;
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
-        .glow-pump { animation: pulse-glow 2s infinite; }
-        .digital-font { font-family: 'Courier New', Courier, monospace; letter-spacing: 2px; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- GİRİŞ / KAYIT EKRANI --- */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98)),
+                        url('https://images.unsplash.com/photo-1527018606416-a674e1780742?auto=format&fit=crop&w=1200&q=80') center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .auth-card {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            width: 380px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .auth-card h1 {
+            color: var(--accent-orange);
+            margin-bottom: 8px;
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--accent-orange), #ea580c);
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+        }
+
+        /* --- OYUN ANA DÜZENİ --- */
+        #game-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stat-box .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .stat-box .value {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .val-green { color: var(--accent-green) !important; }
+        .val-orange { color: var(--accent-orange) !important; }
+        .val-red { color: var(--accent-red) !important; }
+
+        /* MAIN CONTENT AREA */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* NAVIGATION SIDEBAR */
+        .sidebar {
+            width: 220px;
+            background: rgba(30, 41, 59, 0.7);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            padding: 15px 10px;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .nav-btn.active {
+            background: var(--accent-orange);
+            color: white;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        /* VIEW PANELS */
+        .content-area {
+            flex: 1;
+            position: relative;
+            background: #020617;
+            overflow-y: auto;
+        }
+
+        .tab-panel {
+            display: none;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .tab-panel.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SAHA CANLI İSTASYON CANVAS */
+        #station-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: #1e293b;
+        }
+
+        /* BORSA & RİSK PANELS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card h2 {
+            font-size: 16px;
+            color: var(--accent-orange);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        /* CRISIS BANNER */
+        .crisis-banner {
+            background: linear-gradient(90deg, #7f1d1d, #ef4444);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; filter: brightness(1.2); }
+            100% { opacity: 0.9; }
+        }
+
+        /* TANKER SİPARİŞ LİSTESİ */
+        .fuel-order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .action-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.2);
+        }
+
+        /* DEV TOOLBAR */
+        #dev-toolbar {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #000;
+            border: 2px solid #22c55e;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+            z-index: 1000;
+        }
+
+        #dev-toolbar h4 {
+            color: #22c55e;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .dev-btn {
+            background: #15803d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        /* CHAT */
+        .chat-box {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+        }
+
+        .chat-msg {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .chat-msg .user {
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-group input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: white;
+        }
     </style>
 </head>
-<body class="h-full flex flex-col font-sans select-none overflow-x-hidden bg-slate-950 text-slate-100">
+<body>
 
-    <!-- Top Status Dashboard -->
-    <header class="bg-slate-900 border-b border-slate-800 p-3 shadow-xl sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            
-            <!-- Logo & Level -->
-            <div class="flex items-center space-x-3">
-                <div class="bg-amber-500 text-slate-950 p-2.5 rounded-xl font-black text-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
-                    <i class="fa-solid fa-gas-pump text-2xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-wide text-white flex items-center gap-2">
-                        PETROLİS <span class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">v2.5 PRO</span>
-                    </h1>
-                    <p class="text-xs text-slate-400 flex items-center gap-1">
-                        <i class="fa-solid fa-star text-amber-400"></i> Seviye <span id="lbl-level" class="font-bold text-white">1</span> (Saygınlık: %<span id="lbl-satisfaction">85</span>)
-                    </p>
-                </div>
+    <!-- GİRİŞ EKRANI -->
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h1>TİCARİSK PRO</h1>
+            <p>Benzinlik & Borsa Simülasyonu</p>
+            <div class="input-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" id="username" placeholder="Örn: Bayram" value="Bayram">
             </div>
-
-            <!-- Main Financial & Tank Stats -->
-            <div class="flex items-center gap-4 flex-wrap">
-                <!-- Cash -->
-                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl px-4 py-2 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-turkish-lira-sign"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400">Kasa Bakiyesi</div>
-                        <div class="text-lg font-extrabold text-emerald-400 digital-font" id="lbl-money">12,500 ₺</div>
-                    </div>
-                </div>
-
-                <!-- Daily Time Cycle -->
-                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl px-4 py-2 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-clock" id="icon-time"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-400">Gün <span id="lbl-day">1</span></div>
-                        <div class="text-lg font-bold text-slate-200 digital-font" id="lbl-time">08:00</div>
-                    </div>
-                </div>
-
-                <!-- Game Speed Controls -->
-                <div class="flex items-center bg-slate-800 border border-slate-700 rounded-xl p-1 gap-1">
-                    <button id="btn-speed-1" onclick="setGameSpeed(1)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition">1x</button>
-                    <button id="btn-speed-2" onclick="setGameSpeed(2)" class="px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 text-slate-300 transition">2x</button>
-                    <button id="btn-speed-5" onclick="setGameSpeed(5)" class="px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 text-slate-300 transition">5x</button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Fuel Supply Ticker Bar -->
-    <div class="bg-slate-900/90 border-b border-slate-800/80 px-4 py-2 text-xs">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-6 flex-wrap">
-                <!-- Benzin Tank -->
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span class="font-semibold text-slate-300">Benzin:</span>
-                    <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-                        <div id="bar-tank-benzin" class="bg-emerald-500 h-full transition-all duration-300" style="width: 75%"></div>
-                    </div>
-                    <span id="lbl-tank-benzin" class="text-slate-400 font-mono">3,750 / 5,000 L</span>
-                </div>
-                <!-- Motorin Tank -->
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                    <span class="font-semibold text-slate-300">Motorin:</span>
-                    <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-                        <div id="bar-tank-motorin" class="bg-amber-500 h-full transition-all duration-300" style="width: 60%"></div>
-                    </div>
-                    <span id="lbl-tank-motorin" class="text-slate-400 font-mono">3,000 / 5,000 L</span>
-                </div>
-                <!-- LPG Tank -->
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-                    <span class="font-semibold text-slate-300">LPG:</span>
-                    <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-                        <div id="bar-tank-lpg" class="bg-cyan-500 h-full transition-all duration-300" style="width: 40%"></div>
-                    </div>
-                    <span id="lbl-tank-lpg" class="text-slate-400 font-mono">2,000 / 5,000 L</span>
-                </div>
-            </div>
-
-            <!-- Quick Action Links -->
-            <div class="flex items-center gap-3">
-                <button onclick="openModal('modal-supply')" class="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-truck-droplet"></i> Yakıt Tankeri Çağır
-                </button>
-                <span class="text-slate-700">|</span>
-                <button onclick="openModal('modal-pricing')" class="text-slate-300 hover:text-white font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-tags"></i> Fiyat Listesi
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN GAME CANVAS & HUB -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Left 2 Columns: Visual Station Arena & Active Pumps -->
-        <div class="lg:col-span-2 space-y-6">
-            
-            <!-- Station Graphical View -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative overflow-hidden shadow-2xl">
-                <!-- Visual Background Elements -->
-                <div class="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 pointer-events-none"></div>
-                <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-map-location-dot text-amber-500"></i> İstasyon Canlı Görünümü
-                        </h2>
-                        <span id="lbl-queue-count" class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1 rounded-full">
-                            Sırada Bekleyen Arat: <b class="text-amber-400 font-mono">0</b>
-                        </span>
-                    </div>
-
-                    <!-- 3 Zones Interactive Station Map -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        
-                        <!-- Zone 1: Mini Market Shop -->
-                        <div onclick="openMarketMiniGame()" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 rounded-xl p-4 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition text-6xl text-amber-400">
-                                <i class="fa-solid fa-store"></i>
-                            </div>
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Market & Kasa</span>
-                                    <span id="badge-market-customers" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md hidden">
-                                        Müşteri Var!
-                                    </span>
-                                </div>
-                                <h3 class="text-base font-bold text-white mb-1">Market Kasası</h3>
-                                <p class="text-xs text-slate-400">Atıştırmalık, kahve, motor yağı satışı ve kasa işlemleri.</p>
-                            </div>
-                            <div class="mt-4 flex justify-between items-center text-xs">
-                                <span class="text-slate-400">Stok Durumu: <b id="lbl-market-stock-percent" class="text-emerald-400">100%</b></span>
-                                <span class="text-amber-400 group-hover:translate-x-1 transition flex items-center gap-1 font-semibold">
-                                    İncele <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Zone 2: Automatic Car Wash -->
-                        <div onclick="triggerCarWashService()" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition text-6xl text-blue-400">
-                                <i class="fa-solid fa-shower"></i>
-                            </div>
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Oto Yıkama</span>
-                                    <span id="badge-wash-status" class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md">
-                                        Hazır
-                                    </span>
-                                </div>
-                                <h3 class="text-base font-bold text-white mb-1">Köpüklü Yıkama</h3>
-                                <p class="text-xs text-slate-400">Araç temizleme hizmeti vererek ekstra gelir ve memnuniyet kazan.</p>
-                            </div>
-                            <div class="mt-4 flex justify-between items-center text-xs">
-                                <span class="text-slate-400">Ücret: <b class="text-emerald-400">150 ₺</b></span>
-                                <span class="text-blue-400 group-hover:translate-x-1 transition flex items-center gap-1 font-semibold">
-                                    Yıkama Başlat <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Zone 3: Air & Water Service -->
-                        <div onclick="triggerAirWaterService()" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-500/50 rounded-xl p-4 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition text-6xl text-purple-400">
-                                <i class="fa-solid fa-gauge-high"></i>
-                            </div>
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Servis Alanı</span>
-                                    <span class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-md">Ücretsiz</span>
-                                </div>
-                                <h3 class="text-base font-bold text-white mb-1">Hava & Su Tamamla</h3>
-                                <p class="text-xs text-slate-400">Müşterilerin lastik basınçlarını kontrol et, sadakat puanı topla.</p>
-                            </div>
-                            <div class="mt-4 flex justify-between items-center text-xs">
-                                <span class="text-slate-400">Memnuniyet: <b class="text-purple-400">+5%</b></span>
-                                <span class="text-purple-400 group-hover:translate-x-1 transition flex items-center gap-1 font-semibold">
-                                    Servis Ver <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Active Fuel Pumps (4 Pumps Interactive) -->
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-gas-pump text-amber-500"></i> Akaryakıt Pompaları
-                    </h2>
-                    <span class="text-xs text-slate-400">Araç geldiğinde dolum yapmak için pompalara tıkla</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pumps-container">
-                    <!-- Pump Cards standard HTML structure injected dynamically or rendered below -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Management Control Panel & Side Tabs -->
-        <div class="space-y-6">
-            
-            <!-- Quick Management Navigation Tabs -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <div class="flex border-b border-slate-800 pb-3 mb-4 gap-2">
-                    <button onclick="switchTab('upgrades')" id="tab-btn-upgrades" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 transition">
-                        <i class="fa-solid fa-arrow-up-right-dots mr-1"></i> Geliştir
-                    </button>
-                    <button onclick="switchTab('staff')" id="tab-btn-staff" class="flex-1 py-2 text-xs font-bold rounded-lg hover:bg-slate-800 text-slate-400 transition">
-                        <i class="fa-solid fa-user-gear mr-1"></i> Personel
-                    </button>
-                    <button onclick="switchTab('market-shop')" id="tab-btn-market-shop" class="flex-1 py-2 text-xs font-bold rounded-lg hover:bg-slate-800 text-slate-400 transition">
-                        <i class="fa-solid fa-boxes-packing mr-1"></i> Stoklar
-                    </button>
-                </div>
-
-                <!-- Tab 1: Upgrades -->
-                <div id="tab-upgrades" class="space-y-3">
-                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Tesis Yükseltmeleri</h3>
-                    
-                    <!-- Upgrade Item 1 -->
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-sm text-white">Pompa Akış Hızı</div>
-                            <div class="text-xs text-slate-400">Yakıt dolum hızını %25 artırır.</div>
-                            <div class="text-xs text-amber-400 font-semibold mt-1">Seviye: <span id="lbl-lvl-pumpspeed">1</span></div>
-                        </div>
-                        <button onclick="buyUpgrade('pumpSpeed')" id="btn-upg-pumpspeed" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
-                            <span>Yükselt</span>
-                            <span class="text-[10px] opacity-90" id="cost-upg-pumpspeed">1,500 ₺</span>
-                        </button>
-                    </div>
-
-                    <!-- Upgrade Item 2 -->
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-sm text-white">Tank Kapasitesi</div>
-                            <div class="text-xs text-slate-400">Tüm depo hacimlerini +2,500 L büyütür.</div>
-                            <div class="text-xs text-amber-400 font-semibold mt-1">Seviye: <span id="lbl-lvl-tankcap">1</span></div>
-                        </div>
-                        <button onclick="buyUpgrade('tankCapacity')" id="btn-upg-tankcap" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
-                            <span>Yükselt</span>
-                            <span class="text-[10px] opacity-90" id="cost-upg-tankcap">3,000 ₺</span>
-                        </button>
-                    </div>
-
-                    <!-- Upgrade Item 3 -->
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-sm text-white">Yeni Pompa Alanı</div>
-                            <div class="text-xs text-slate-400">İstasyona ekstra 1 adet pompa ekler.</div>
-                            <div class="text-xs text-amber-400 font-semibold mt-1">Aktif Pompa: <span id="lbl-pump-count">2</span></div>
-                        </div>
-                        <button onclick="buyUpgrade('addPump')" id="btn-upg-addpump" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
-                            <span>Ekle</span>
-                            <span class="text-[10px] opacity-90" id="cost-upg-addpump">5,000 ₺</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 2: Staff Hire -->
-                <div id="tab-staff" class="space-y-3 hidden">
-                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Otomasyon & Personel</h3>
-                    
-                    <!-- Staff 1: Pump Attendant -->
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-sm text-white">Pompa Görevlisi</div>
-                            <div class="text-xs text-slate-400">Gelen araçların yakıtını otomatik doldurur.</div>
-                            <div id="status-staff-pump" class="text-xs text-rose-400 mt-1">İşe Alınmadı</div>
-                        </div>
-                        <button onclick="toggleStaff('pumpAttendant')" id="btn-staff-pump" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
-                            <span>İşe Al</span>
-                            <span class="text-[10px] text-amber-300">200 ₺/gün</span>
-                        </button>
-                    </div>
-
-                    <!-- Staff 2: Market Cashier -->
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-sm text-white">Market Kasiyeri</div>
-                            <div class="text-xs text-slate-400">Market kasasında bekleyen müşterileri otomatik sunar.</div>
-                            <div id="status-staff-cashier" class="text-xs text-rose-400 mt-1">İşe Alınmadı</div>
-                        </div>
-                        <button onclick="toggleStaff('cashier')" id="btn-staff-cashier" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex flex-col items-end">
-                            <span>İşe Al</span>
-                            <span class="text-[10px] text-amber-300">180 ₺/gün</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 3: Market Stock Refill -->
-                <div id="tab-market-shop" class="space-y-3 hidden">
-                    <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Market Stok Siparişi</h3>
-                    <p class="text-xs text-slate-400 mb-2">Market raf stoklarınızı doldurarak müşterilerin boş dönmesini engelleyin.</p>
-                    
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-sm text-white">Karma Ürün Paketi</div>
-                            <div class="text-xs text-slate-400">İçecek, bisküvi, motor yağı ikmali.</div>
-                            <div class="text-xs text-emerald-400 mt-1">Mevcut Stok: <span id="lbl-stock-units">100</span> Adet</div>
-                        </div>
-                        <button onclick="restockMarket(50, 400)" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 rounded-lg text-xs font-bold transition flex flex-col items-end">
-                            <span>+50 Stok Al</span>
-                            <span class="text-[10px] opacity-90">400 ₺</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Activity Logs Panel -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3 flex items-center justify-between">
-                    <span><i class="fa-solid fa-list-check text-amber-500 mr-1.5"></i> Canlı İstasyon Bildirimleri</span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                </h3>
-                <div id="log-container" class="space-y-2 h-44 overflow-y-auto text-xs text-slate-300 pr-1">
-                    <div class="bg-slate-800/40 p-2 rounded border border-slate-800 text-slate-400">
-                        [08:00] Benzinlik açıldı! İlk müşterilerinizi bekliyorsunuz.
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-
-    <!-- MODAL 1: FUEL WHOLESALE SUPPLY MODAL -->
-    <div id="modal-supply" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('modal-supply')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h2 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-truck-droplet text-amber-500"></i> Yakıt Tankeri Siparişi
-            </h2>
-            <p class="text-xs text-slate-400 mb-4">Toptan yakıt alım borsasında fiyatlar günlük değişmektedir.</p>
-
-            <div class="space-y-4">
-                <!-- Benzin Supply -->
-                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
-                    <div>
-                        <div class="font-bold text-sm text-emerald-400">Kurşunsuz Benzin 95</div>
-                        <div class="text-xs text-slate-400">Toptan Fiyat: <b class="text-white" id="wholesale-price-benzin">32.50 ₺/L</b></div>
-                    </div>
-                    <button onclick="orderFuel('benzin', 1000)" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                        +1,000 Litre Al
-                    </button>
-                </div>
-
-                <!-- Motorin Supply -->
-                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
-                    <div>
-                        <div class="font-bold text-sm text-amber-400">Euro Dizel / Motorin</div>
-                        <div class="text-xs text-slate-400">Toptan Fiyat: <b class="text-white" id="wholesale-price-motorin">34.10 ₺/L</b></div>
-                    </div>
-                    <button onclick="orderFuel('motorin', 1000)" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                        +1,000 Litre Al
-                    </button>
-                </div>
-
-                <!-- LPG Supply -->
-                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
-                    <div>
-                        <div class="font-bold text-sm text-cyan-400">Otogaz LPG</div>
-                        <div class="text-xs text-slate-400">Toptan Fiyat: <b class="text-white" id="wholesale-price-lpg">18.20 ₺/L</b></div>
-                    </div>
-                    <button onclick="orderFuel('lpg', 1000)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                        +1,000 Litre Al
-                    </button>
-                </div>
-            </div>
-            
-            <div class="mt-6 flex justify-end">
-                <button onclick="closeModal('modal-supply')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold">Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: PRICING SETTINGS MODAL -->
-    <div id="modal-pricing" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('modal-pricing')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h2 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-tags text-amber-500"></i> Perakende Fiyat Belirleme
-            </h2>
-            <p class="text-xs text-slate-400 mb-4">Piyasa ortalamasının çok üzerine çıkmak müşteri memnuniyetini düşürür.</p>
-
-            <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between text-xs font-bold mb-1">
-                        <span class="text-emerald-400">Benzin Satış Fiyatı</span>
-                        <span class="text-white font-mono" id="lbl-price-val-benzin">42.00 ₺</span>
-                    </div>
-                    <input type="range" min="30" max="60" step="0.5" value="42" id="input-price-benzin" oninput="updatePricingUI()" class="w-full accent-emerald-500 bg-slate-800 rounded-lg">
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-xs font-bold mb-1">
-                        <span class="text-amber-400">Motorin Satış Fiyatı</span>
-                        <span class="text-white font-mono" id="lbl-price-val-motorin">44.00 ₺</span>
-                    </div>
-                    <input type="range" min="32" max="62" step="0.5" value="44" id="input-price-motorin" oninput="updatePricingUI()" class="w-full accent-amber-500 bg-slate-800 rounded-lg">
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-xs font-bold mb-1">
-                        <span class="text-cyan-400">LPG Satış Fiyatı</span>
-                        <span class="text-white font-mono" id="lbl-price-val-lpg">22.00 ₺</span>
-                    </div>
-                    <input type="range" min="15" max="35" step="0.5" value="22" id="input-price-lpg" oninput="updatePricingUI()" class="w-full accent-cyan-500 bg-slate-800 rounded-lg">
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end">
-                <button onclick="savePricingAndClose()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-2 rounded-xl text-xs font-bold transition">Kaydet & Uygula</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 3: INTERACTIVE MINI-MARKET CASHIER GAME -->
-    <div id="modal-market-game" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('modal-market-game')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            
-            <div class="text-center mb-4">
-                <div class="inline-flex p-3 bg-amber-500/10 text-amber-400 rounded-2xl mb-2">
-                    <i class="fa-solid fa-barcode text-3xl"></i>
-                </div>
-                <h2 class="text-xl font-bold text-white">Market Kasa Ekranı</h2>
-                <p class="text-xs text-slate-400">Müşterinin sepetindeki ürünleri okutup ödemeyi al!</p>
-            </div>
-
-            <div id="market-customer-area" class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 text-center space-y-3">
-                <div class="text-xs text-slate-400">Müşteri Talebi:</div>
-                <div id="market-item-name" class="font-bold text-lg text-amber-300">Soğuk Enerji İçeceği + Sandviç</div>
-                <div class="text-2xl font-black text-emerald-400 font-mono" id="market-item-price">145 ₺</div>
-
-                <div class="pt-2">
-                    <button id="btn-scan-barcode" onclick="processMarketSale()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-cash-register"></i> Barkodu Okut & Tahsil Et
-                    </button>
-                </div>
-            </div>
-
-            <div class="mt-4 text-center">
-                <p class="text-xs text-slate-500" id="market-queue-status">Bekleyen Market Müşterisi: 0</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        /* --------------------------------------------------
-           GAME STATE & CONFIGURATION
-        -------------------------------------------------- */
-        const gameState = {
-            money: 12500,
-            satisfaction: 85,
-            level: 1,
-            day: 1,
-            timeHour: 8,
-            timeMinute: 0,
-            gameSpeed: 1,
-            
-            // Fuel Storage Tanks (Litre)
-            tanks: {
-                benzin: { current: 3750, max: 5000, wholesalePrice: 32.50, retailPrice: 42.00 },
-                motorin: { current: 3000, max: 5000, wholesalePrice: 34.10, retailPrice: 44.00 },
-                lpg: { current: 2000, max: 5000, wholesalePrice: 18.20, retailPrice: 22.00 }
-            },
-
-            // Market Inventory
-            marketStock: 100,
-            marketMaxStock: 100,
-            marketCustomersInQueue: 0,
-
-            // Upgrades Level
-            upgrades: {
-                pumpSpeed: 1,
-                tankCapacity: 1,
-                pumpCount: 2
-            },
-
-            // Staff
-            staff: {
-                pumpAttendant: false,
-                cashier: false
-            },
-
-            // Active Pumps Array
-            pumps: [
-                { id: 1, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'benzin', isFilling: false },
-                { id: 2, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'motorin', isFilling: false },
-                { id: 3, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'lpg', isFilling: false },
-                { id: 4, occupied: false, car: null, progress: 0, targetAmount: 0, fuelType: 'benzin', isFilling: false }
-            ]
-        };
-
-        const carNames = ['Sedan', 'Hatchback', 'SUV 4x4', 'Ticari Van', 'Spor Taksi', 'Lüks Limuzin'];
-        const marketItemsList = [
-            { name: "Kahve & Çikolata", price: 85 },
-            { name: "Soğuk İçecek & Cips", price: 110 },
-            { name: "4L Motor Yağı & Cam Suyu", price: 380 },
-            { name: "Oto Kokusu & Sandviç", price: 140 }
-        ];
-
-        /* Web Audio API Synthesizer Effects (No External Files Required) */
-        class SoundEngine {
-            constructor() {
-                this.ctx = null;
-            }
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-            }
-            playCashRegister() {
-                this.init();
-                if (!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(987.77, this.ctx.currentTime); // B5
-                osc.frequency.exponentialRampToValueAtTime(1318.51, this.ctx.currentTime + 0.15); // E6
-                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.3);
-            }
-            playFuelPumpSound() {
-                this.init();
-                if (!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(80, this.ctx.currentTime);
-                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.2);
-            }
-            playUpgradeSound() {
-                this.init();
-                if (!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.25);
-                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.25);
-            }
-        }
-        const audioFX = new SoundEngine();
-
-        // Game Loop Trigger
-        window.onload = function() {
-            renderPumps();
-            updateUI();
-            
-            // Main Clock Interval (Simulates 1 Minute per tick)
-            setInterval(tickClock, 1000);
-
-            // Car Arrival Chance
-            setInterval(checkCarArrival, 3000);
-
-            // Random Events Engine
-            setInterval(checkRandomEvents, 20000);
-        };
-
-        function setGameSpeed(speed) {
-            gameState.gameSpeed = speed;
-            document.querySelectorAll('[id^="btn-speed-"]').forEach(btn => {
-                btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 text-slate-300 transition";
-            });
-            document.getElementById(`btn-speed-${speed}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition";
-        }
-
-        function tickClock() {
-            gameState.timeMinute += 5 * gameState.gameSpeed;
-            if (gameState.timeMinute >= 60) {
-                gameState.timeMinute = 0;
-                gameState.timeHour++;
-            }
-            if (gameState.timeHour >= 24) {
-                gameState.timeHour = 0;
-                gameState.day++;
-                processDailyExpenses();
-            }
-
-            // Automatic Filling by Staff
-            if (gameState.staff.pumpAttendant) {
-                gameState.pumps.forEach(pump => {
-                    if (pump.occupied && !pump.isFilling) {
-                        startPumping(pump.id);
-                    }
-                });
-            }
-
-            // Automatic Cashier Processing
-            if (gameState.staff.cashier && gameState.marketCustomersInQueue > 0) {
-                processMarketSale();
-            }
-
-            // Progress Active Pumps
-            gameState.pumps.forEach(pump => {
-                if (pump.isFilling) {
-                    let flowSpeed = 15 * gameState.upgrades.pumpSpeed;
-                    let targetLiters = pump.targetAmount / gameState.tanks[pump.fuelType].retailPrice;
-                    
-                    // Check Tank Level
-                    if (gameState.tanks[pump.fuelType].current <= 0) {
-                        pump.isFilling = false;
-                        addLog(`⚠️ ${pump.fuelType.toUpperCase()} tankınız boşaldığı için ${pump.car} benzin alamadı!`, 'red');
-                        return;
-                    }
-
-                    pump.progress += flowSpeed;
-                    gameState.tanks[pump.fuelType].current = Math.max(0, gameState.tanks[pump.fuelType].current - (flowSpeed / 30));
-                    audioFX.playFuelPumpSound();
-
-                    if (pump.progress >= pump.targetAmount) {
-                        // Filling Complete!
-                        pump.isFilling = false;
-                        completeFuelSale(pump);
-                    }
-                }
-            });
-
-            updateUI();
-        }
-
-        function checkCarArrival() {
-            // Find an empty unlocked pump
-            const availablePumps = gameState.pumps.filter((p, index) => index < gameState.upgrades.pumpCount && !p.occupied);
-            if (availablePumps.length === 0) return;
-
-            // Random chance based on satisfaction
-            if (Math.random() * 100 < gameState.satisfaction) {
-                const targetPump = availablePumps[Math.floor(Math.random() * availablePumps.length)];
-                const fuelTypes = ['benzin', 'motorin', 'lpg'];
-                const selectedFuel = fuelTypes[Math.floor(Math.random() * fuelTypes.length)];
-                const carModel = carNames[Math.floor(Math.random() * carNames.length)];
-                const requestedMoney = Math.floor(Math.random() * 8 + 3) * 100; // 300 ₺ - 1000 ₺
-
-                targetPump.occupied = true;
-                targetPump.car = carModel;
-                targetPump.fuelType = selectedFuel;
-                targetPump.targetAmount = requestedMoney;
-                targetPump.progress = 0;
-                targetPump.isFilling = false;
-
-                addLog(`🚗 ${carModel} Pompa ${targetPump.id}'e yanaştı. Sipariş: ${requestedMoney} ₺ (${selectedFuel.toUpperCase()})`);
-
-                // Market Chance: 30% of arriving drivers also visit shop
-                if (Math.random() < 0.3) {
-                    gameState.marketCustomersInQueue++;
-                }
-
-                renderPumps();
-            }
-        }
-
-        function startPumping(pumpId) {
-            const pump = gameState.pumps.find(p => p.id === pumpId);
-            if (pump && pump.occupied && !pump.isFilling) {
-                if (gameState.tanks[pump.fuelType].current <= 10) {
-                    addLog(`❌ Yetersiz ${pump.fuelType.toUpperCase()} stoğu! Önce depoyu doldurun.`, 'red');
-                    return;
-                }
-                pump.isFilling = true;
-                renderPumps();
-            }
-        }
-
-        function completeFuelSale(pump) {
-            const revenue = pump.targetAmount;
-            gameState.money += revenue;
-            audioFX.playCashRegister();
-            addLog(`✅ Pompa ${pump.id}: ${pump.car} aracına ${revenue} ₺ değerinde yakıt satıldı.`, 'green');
-
-            // Reset Pump
-            pump.occupied = false;
-            pump.car = null;
-            pump.progress = 0;
-            pump.isFilling = false;
-
-            renderPumps();
-            updateUI();
-        }
-
-        function orderFuel(type, amount) {
-            const cost = amount * gameState.tanks[type].wholesalePrice;
-            if (gameState.money >= cost) {
-                if (gameState.tanks[type].current + amount > gameState.tanks[type].max) {
-                    addLog(`⚠️ Depo kapasitesi aşılamaz!`, 'yellow');
-                    return;
-                }
-                gameState.money -= cost;
-                gameState.tanks[type].current += amount;
-                audioFX.playCashRegister();
-                addLog(`🚛 Tanker geldi! +${amount} Litre ${type.toUpperCase()} teslim alındı (-${cost.toFixed(0)} ₺)`, 'green');
-                updateUI();
-            } else {
-                addLog(`❌ Yetersiz bakiye! Gerekli: ${cost.toFixed(0)} ₺`, 'red');
-            }
-        }
-
-        function restockMarket(units, cost) {
-            if (gameState.money >= cost) {
-                if (gameState.marketStock + units > gameState.marketMaxStock) {
-                    addLog(`⚠️ Market deposu dolu!`, 'yellow');
-                    return;
-                }
-                gameState.money -= cost;
-                gameState.marketStock += units;
-                audioFX.playCashRegister();
-                addLog(`📦 Market stokları yenilendi (+${units} adet)`, 'green');
-                updateUI();
-            } else {
-                addLog(`❌ Market stoku için yetersiz kasa bakiyesi!`, 'red');
-            }
-        }
-
-        function openMarketMiniGame() {
-            if (gameState.marketCustomersInQueue <= 0) {
-                addLog(`ℹ️ Şuan markette bekleyen müşteri yok.`, 'slate');
-                return;
-            }
-            openModal('modal-market-game');
-            setupNextMarketCustomer();
-        }
-
-        function setupNextMarketCustomer() {
-            if (gameState.marketCustomersInQueue > 0) {
-                const randomItem = marketItemsList[Math.floor(Math.random() * marketItemsList.length)];
-                document.getElementById('market-item-name').innerText = randomItem.name;
-                document.getElementById('market-item-price').innerText = randomItem.price + ' ₺';
-                document.getElementById('market-queue-status').innerText = `Bekleyen Market Müşterisi: ${gameState.marketCustomersInQueue}`;
-            } else {
-                closeModal('modal-market-game');
-            }
-        }
-
-        function processMarketSale() {
-            if (gameState.marketCustomersInQueue > 0) {
-                if (gameState.marketStock <= 0) {
-                    addLog(`❌ Market rafları boş! Satış yapılamadı.`, 'red');
-                    closeModal('modal-market-game');
-                    return;
-                }
-                const randomItem = marketItemsList[Math.floor(Math.random() * marketItemsList.length)];
-                gameState.money += randomItem.price;
-                gameState.marketStock--;
-                gameState.marketCustomersInQueue--;
-                audioFX.playCashRegister();
-                addLog(`🛍️ Market satışı gerçekleşti: ${randomItem.name} (+${randomItem.price} ₺)`, 'green');
-
-                if (document.getElementById('modal-market-game').classList.contains('hidden')) {
-                    // Handled automatically by cashier
-                    updateUI();
-                } else {
-                    setupNextMarketCustomer();
-                    updateUI();
-                }
-            }
-        }
-
-        function triggerCarWashService() {
-            const washFee = 150;
-            gameState.money += washFee;
-            gameState.satisfaction = Math.min(100, gameState.satisfaction + 2);
-            audioFX.playCashRegister();
-            addLog(`🚿 Oto yıkama hizmeti verildi (+${washFee} ₺, +%2 Memnuniyet)`, 'blue');
-            updateUI();
-        }
-
-        function triggerAirWaterService() {
-            gameState.satisfaction = Math.min(100, gameState.satisfaction + 3);
-            addLog(`🛞 Lastik & Hava istasyonunda müşteriye yardımcı olundu (+%3 Memnuniyet)`, 'purple');
-            updateUI();
-        }
-
-        function buyUpgrade(type) {
-            if (type === 'pumpSpeed') {
-                const cost = gameState.upgrades.pumpSpeed * 1500;
-                if (gameState.money >= cost) {
-                    gameState.money -= cost;
-                    gameState.upgrades.pumpSpeed++;
-                    audioFX.playUpgradeSound();
-                    addLog(`⚡ Pompa akış hızı Seviye ${gameState.upgrades.pumpSpeed}'e yükseltildi!`, 'amber');
-                }
-            } else if (type === 'tankCapacity') {
-                const cost = gameState.upgrades.tankCapacity * 3000;
-                if (gameState.money >= cost) {
-                    gameState.money -= cost;
-                    gameState.upgrades.tankCapacity++;
-                    Object.keys(gameState.tanks).forEach(t => gameState.tanks[t].max += 2500);
-                    audioFX.playUpgradeSound();
-                    addLog(`🛢️ Tank depolama kapasiteleri artırıldı (+2,500 L)`, 'amber');
-                }
-            } else if (type === 'addPump') {
-                const cost = 5000;
-                if (gameState.upgrades.pumpCount >= 4) {
-                    addLog(`⚠️ Maksimum pompa sayısına ulaştınız!`, 'yellow');
-                    return;
-                }
-                if (gameState.money >= cost) {
-                    gameState.money -= cost;
-                    gameState.upgrades.pumpCount++;
-                    audioFX.playUpgradeSound();
-                    addLog(`⛽ Yeni Pompa Yanaşma Alanı Aktif Edildi!`, 'amber');
-                }
-            }
-            renderPumps();
-            updateUI();
-        }
-
-        function toggleStaff(role) {
-            if (role === 'pumpAttendant') {
-                gameState.staff.pumpAttendant = !gameState.staff.pumpAttendant;
-                addLog(gameState.staff.pumpAttendant ? `👨‍🔧 Pompa görevlisi işe alındı.` : `👨‍🔧 Pompa görevlisi çıkarıldı.`, 'slate');
-            } else if (role === 'cashier') {
-                gameState.staff.cashier = !gameState.staff.cashier;
-                addLog(gameState.staff.cashier ? `👩‍💼 Market kasiyeri işe alındı.` : `👩‍💼 Market kasiyeri çıkarıldı.`, 'slate');
-            }
-            updateUI();
-        }
-
-        function processDailyExpenses() {
-            let totalWages = 0;
-            if (gameState.staff.pumpAttendant) totalWages += 200;
-            if (gameState.staff.cashier) totalWages += 180;
-
-            if (totalWages > 0) {
-                gameState.money -= totalWages;
-                addLog(`📅 Gün bitti. Günlük personel maaşları ödendi (-${totalWages} ₺)`, 'yellow');
-            }
-
-            // Daily Wholesale Fluctuations
-            Object.keys(gameState.tanks).forEach(t => {
-                const delta = (Math.random() - 0.5) * 2;
-                gameState.tanks[t].wholesalePrice = Math.max(10, gameState.tanks[t].wholesalePrice + delta);
-            });
-        }
-
-        function checkRandomEvents() {
-            const rand = Math.random();
-            if (rand < 0.15) {
-                // VIP Customer
-                const tip = 300;
-                gameState.money += tip;
-                addLog(`🌟 VIP Müşteri istasyonunuzdan çok memnun kaldı! Bağış/Bahşiş: +${tip} ₺`, 'amber');
-            } else if (rand > 0.85) {
-                // Price Surge Announcement
-                addLog(`📢 Petrol piyasalarında hareketlilik var! Toptan fiyatları güncellendi.`, 'slate');
-            }
-            updateUI();
-        }
-
-        function renderPumps() {
-            const container = document.getElementById('pumps-container');
-            container.innerHTML = '';
-
-            for (let i = 0; i < 4; i++) {
-                const pump = gameState.pumps[i];
-                const isUnlocked = i < gameState.upgrades.pumpCount;
-
-                if (!isUnlocked) {
-                    // Locked Pump Slot
-                    container.innerHTML += `
-                        <div class="bg-slate-900/50 border border-slate-800/80 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center opacity-60">
-                            <i class="fa-solid fa-lock text-3xl text-slate-600 mb-2"></i>
-                            <div class="font-bold text-sm text-slate-400">Pompa ${i+1} Kilitli</div>
-                            <div class="text-xs text-slate-500 mt-1">Geliştirme menüsünden açabilirsiniz.</div>
-                        </div>
-                    `;
-                    continue;
-                }
-
-                if (!pump.occupied) {
-                    // Empty Ready Pump
-                    container.innerHTML += `
-                        <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-5 flex flex-col justify-between relative">
-                            <div class="flex justify-between items-start">
-                                <span class="bg-slate-700 text-slate-300 font-extrabold text-xs px-2.5 py-1 rounded-lg">POMPA ${pump.id}</span>
-                                <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Boş & Hazır
-                                </span>
-                            </div>
-                            <div class="my-6 text-center text-slate-500">
-                                <i class="fa-solid fa-car text-4xl mb-2 opacity-30"></i>
-                                <div class="text-xs">Araç Yanaşması Bekleniyor...</div>
-                            </div>
-                            <div class="text-xs text-slate-500 text-center font-mono">-- ₺ / -- L</div>
-                        </div>
-                    `;
-                } else {
-                    // Occupied Pump
-                    const percent = Math.min(100, (pump.progress / pump.targetAmount) * 100);
-                    const fuelColor = pump.fuelType === 'benzin' ? 'emerald' : (pump.fuelType === 'motorin' ? 'amber' : 'cyan');
-
-                    container.innerHTML += `
-                        <div class="bg-slate-800 border border-${fuelColor}-500/40 rounded-2xl p-5 shadow-lg relative glow-pump">
-                            <div class="flex justify-between items-start">
-                                <span class="bg-${fuelColor}-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg">POMPA ${pump.id}</span>
-                                <span class="text-xs font-bold text-slate-200 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg">
-                                    ${pump.car}
-                                </span>
-                            </div>
-
-                            <div class="my-4 space-y-2">
-                                <div class="flex justify-between text-xs font-semibold">
-                                    <span class="text-slate-400">Talep: <b class="text-white">${pump.targetAmount} ₺</b> (${pump.fuelType.toUpperCase()})</span>
-                                    <span class="text-${fuelColor}-400 font-mono">${percent.toFixed(0)}%</span>
-                                </div>
-
-                                <!-- Progress Bar -->
-                                <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700/80 p-0.5">
-                                    <div class="bg-${fuelColor}-500 h-full rounded-full transition-all duration-200" style="width: ${percent}%"></div>
-                                </div>
-                            </div>
-
-                            ${pump.isFilling ? `
-                                <div class="w-full bg-slate-900/80 text-amber-400 border border-amber-500/30 py-2 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-rotate text-amber-400 animate-spin"></i> Dolum Yapılıyor...
-                                </div>
-                            ` : `
-                                <button onclick="startPumping(${pump.id})" class="w-full bg-${fuelColor}-500 hover:bg-${fuelColor}-400 text-slate-950 font-black py-2 rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-gas-pump"></i> DOLUMU BAŞLAT
-                                </button>
-                            `}
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        function updateUI() {
-            // General Stats
-            document.getElementById('lbl-money').innerText = gameState.money.toLocaleString('tr-TR') + ' ₺';
-            document.getElementById('lbl-satisfaction').innerText = gameState.satisfaction;
-            document.getElementById('lbl-level').innerText = gameState.level;
-            document.getElementById('lbl-day').innerText = gameState.day;
-            
-            const formattedTime = `${String(gameState.timeHour).padStart(2, '0')}:${String(gameState.timeMinute).padStart(2, '0')}`;
-            document.getElementById('lbl-time').innerText = formattedTime;
-
-            // Tanks
-            Object.keys(gameState.tanks).forEach(t => {
-                const tank = gameState.tanks[t];
-                const pct = (tank.current / tank.max) * 100;
-                document.getElementById(`bar-tank-${t}`).style.width = pct + '%';
-                document.getElementById(`lbl-tank-${t}`).innerText = `${Math.round(tank.current).toLocaleString('tr-TR')} / ${tank.max.toLocaleString('tr-TR')} L`;
-                
-                const wholesaleElem = document.getElementById(`wholesale-price-${t}`);
-                if (wholesaleElem) wholesaleElem.innerText = tank.wholesalePrice.toFixed(2) + ' ₺/L';
-            });
-
-            // Queue Count
-            const activeWaitingCars = gameState.pumps.filter((p, index) => index < gameState.upgrades.pumpCount && p.occupied && !p.isFilling).length;
-            document.getElementById('lbl-queue-count').innerHTML = `Bekleyen Araç: <b class="text-amber-400 font-mono">${activeWaitingCars}</b>`;
-
-            // Market Badge & Stock
-            const mktBadge = document.getElementById('badge-market-customers');
-            if (gameState.marketCustomersInQueue > 0) {
-                mktBadge.classList.remove('hidden');
-                mktBadge.innerText = `${gameState.marketCustomersInQueue} Müşteri Bekliyor`;
-            } else {
-                mktBadge.classList.add('hidden');
-            }
-            document.getElementById('lbl-market-stock-percent').innerText = `${Math.round((gameState.marketStock / gameState.marketMaxStock) * 100)}%`;
-            document.getElementById('lbl-stock-units').innerText = gameState.marketStock;
-
-            // Upgrade Labels & Costs
-            document.getElementById('lbl-lvl-pumpspeed').innerText = gameState.upgrades.pumpSpeed;
-            document.getElementById('cost-upg-pumpspeed').innerText = (gameState.upgrades.pumpSpeed * 1500) + ' ₺';
-            document.getElementById('lbl-lvl-tankcap').innerText = gameState.upgrades.tankCapacity;
-            document.getElementById('cost-upg-tankcap').innerText = (gameState.upgrades.tankCapacity * 3000) + ' ₺';
-            document.getElementById('lbl-pump-count').innerText = gameState.upgrades.pumpCount;
-
-            // Staff Statuses
-            document.getElementById('status-staff-pump').innerText = gameState.staff.pumpAttendant ? 'Çalışıyor (Aktif)' : 'İşe Alınmadı';
-            document.getElementById('status-staff-pump').className = gameState.staff.pumpAttendant ? 'text-xs text-emerald-400 font-semibold mt-1' : 'text-xs text-rose-400 mt-1';
-            
-            document.getElementById('status-staff-cashier').innerText = gameState.staff.cashier ? 'Çalışıyor (Aktif)' : 'İşe Alınmadı';
-            document.getElementById('status-staff-cashier').className = gameState.staff.cashier ? 'text-xs text-emerald-400 font-semibold mt-1' : 'text-xs text-rose-400 mt-1';
-        }
-
-        function updatePricingUI() {
-            const benzinPrice = parseFloat(document.getElementById('input-price-benzin').value);
-            const motorinPrice = parseFloat(document.getElementById('input-price-motorin').value);
-            const lpgPrice = parseFloat(document.getElementById('input-price-lpg').value);
-
-            document.getElementById('lbl-price-val-benzin').innerText = benzinPrice.toFixed(2) + ' ₺';
-            document.getElementById('lbl-price-val-motorin').innerText = motorinPrice.toFixed(2) + ' ₺';
-            document.getElementById('lbl-price-val-lpg').innerText = lpgPrice.toFixed(2) + ' ₺';
-        }
-
-        function savePricingAndClose() {
-            gameState.tanks.benzin.retailPrice = parseFloat(document.getElementById('input-price-benzin').value);
-            gameState.tanks.motorin.retailPrice = parseFloat(document.getElementById('input-price-motorin').value);
-            gameState.tanks.lpg.retailPrice = parseFloat(document.getElementById('input-price-lpg').value);
-
-            addLog(`🏷️ Akaryakıt satış fiyatları güncellendi.`, 'slate');
-            closeModal('modal-pricing');
-        }
-
-        function switchTab(tabName) {
-            ['upgrades', 'staff', 'market-shop'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${t}`).className = "flex-1 py-2 text-xs font-bold rounded-lg hover:bg-slate-800 text-slate-400 transition";
-            });
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 transition";
-        }
-
-        function addLog(msg, color = 'slate') {
-            const container = document.getElementById('log-container');
-            const timeStr = `${String(gameState.timeHour).padStart(2, '0')}:${String(gameState.timeMinute).padStart(2, '0')}`;
-            const logItem = document.createElement('div');
-            logItem.className = `p-2 rounded border border-slate-800 bg-slate-800/40 text-${color}-300 text-xs flex gap-2 items-start`;
-            logItem.innerHTML = `<span class="text-slate-500 font-mono font-bold">[${timeStr}]</span> <span>${msg}</span>`;
-            container.prepend(logItem);
-        }
-
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-    </script>
-</body>
-</html>
+            <div class="input-group">
+                <label>Şifre</label>
+                <input type="password" id
