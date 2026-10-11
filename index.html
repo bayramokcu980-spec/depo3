@@ -3,518 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticarisk - Online İş ve Ticaret Simülasyonu</title>
+    <title>Ticarisk - Şirket Simülasyonu</title>
     <style>
-        :root {
-            --bg-dark: #121824;
-            --panel-bg: #1e2532;
-            --accent-blue: #2563eb;
-            --accent-green: #16a34a;
-            --accent-orange: #f59e0b;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-        }
-
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- TİCARİSK GİRİŞ / AUTH EKRANI --- */
-        #auth-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(rgba(18, 24, 36, 0.85), rgba(18, 24, 36, 0.95)), 
-                        radial-gradient(circle, #1e2532, #0f141d);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .auth-container {
-            background: var(--panel-bg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 40px;
-            width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            text-align: center;
-        }
-
-        .auth-logo {
-            width: 80px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        }
-
-        .auth-container h2 {
-            font-size: 24px;
-            color: var(--text-main);
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-
-        .auth-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: #ffffff;
-            color: #1f2937;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            margin-bottom: 12px;
-            transition: 0.2s;
-        }
-
-        .auth-btn:hover {
-            background: #f3f4f6;
-            transform: translateY(-1px);
-        }
-
-        .auth-btn.apple {
-            background: #000000;
-            color: #ffffff;
-            border: none;
-        }
-
-        .auth-btn.apple:hover {
-            background: #1f2937;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 20px 0;
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .divider::before { margin-right: 10px; }
-        .divider::after { margin-left: 10px; }
-
-        .register-link {
-            color: var(--accent-orange);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .register-link:hover {
-            text-decoration: underline;
-        }
-
-        /* --- OYUN ANA DÜZENİ --- */
-        #game-app {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .top-navbar {
-            height: 65px;
-            background: var(--panel-bg);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-        }
-
-        .brand-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--accent-orange);
-            letter-spacing: 0.5px;
-        }
-
-        .user-panel-info {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .info-pill {
-            background: rgba(18, 24, 36, 0.6);
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.05);
-            font-size: 13px;
-        }
-
-        .info-pill span {
-            color: var(--text-muted);
-            font-size: 10px;
-            display: block;
-            text-transform: uppercase;
-        }
-
-        .info-pill strong {
-            color: var(--accent-green);
-            font-size: 14px;
-        }
-
-        /* ORTA ALAN VE SEKMELER */
-        .main-workspace {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .left-sidebar {
-            width: 240px;
-            background: rgba(30, 37, 50, 0.5);
-            border-right: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            flex-direction: column;
-            padding: 15px 12px;
-            gap: 6px;
-        }
-
-        .menu-tab {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 12px 15px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu-tab:hover {
-            background: rgba(255,255,255,0.04);
-            color: var(--text-main);
-        }
-
-        .menu-tab.active {
-            background: var(--accent-blue);
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .content-container {
-            flex: 1;
-            background: #0b0f17;
-            padding: 25px;
-            overflow-y: auto;
-        }
-
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .ticarisk-card {
-            background: var(--panel-bg);
-            border-radius: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
             padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
         }
-
-        .ticarisk-card h3 {
-            font-size: 16px;
-            color: var(--accent-orange);
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
-
-        .ticarisk-card p {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.5;
+        h1, h2 {
+            text-align: center;
+            color: #00e676;
         }
-
-        .btn-action {
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .stat-box {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.4em;
             font-weight: bold;
+            color: #ffeb3b;
+        }
+        .market-panel, .actions-panel {
+            background: #252525;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #00e676;
+            color: #121212;
+            border: none;
+            padding: 10px 18px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 6px;
             cursor: pointer;
+            margin: 5px;
             transition: 0.2s;
         }
-
-        .btn-action:hover {
-            filter: brightness(1.2);
+        button:hover {
+            background-color: #00b359;
         }
-
-        /* TABLO YAPILARI (Borsa / Sıralama) */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--panel-bg);
-            border-radius: 8px;
-            overflow: hidden;
+        .btn-danger {
+            background-color: #ff5252;
+            color: white;
         }
-
-        .data-table th, .data-table td {
-            padding: 12px 18px;
-            text-align: left;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .btn-danger:hover {
+            background-color: #d32f2f;
         }
-
-        .data-table th {
-            background: rgba(18, 24, 36, 0.8);
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-size: 11px;
+        #log-area {
+            background: #000;
+            color: #00ff66;
+            font-family: monospace;
+            padding: 10px;
+            height: 120px;
+            overflow-y: auto;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
 
-    <!-- GİRİŞ EKRANI (Ticarisk Orijinal Giriş Tasarımı) -->
-    <div id="auth-overlay">
-        <div class="auth-container">
-            <img src="https://www.ticarisk.com/images/txlogo.png" alt="Logo" class="auth-logo" onerror="this.style.display='none'">
-            <h2>TİCARİSK</h2>
-            
-            <button class="auth-btn" onclick="quickLogin()">
-                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.14C3.15 21.32 7.22 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.62H1.18C.43 8.12 0 9.81 0 12s.43 3.88 1.18 5.38l4.09-3.14z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.62l4.09 3.14c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
-                Sign in with Google
-            </button>
-
-            <button class="auth-btn apple" onclick="quickLogin()">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 5.35c.61-.75 1.02-1.8 0.91-2.85-.88.04-1.94.59-2.55 1.34-.56.68-1.05 1.77-.92 2.82 1 .08 1.95-.49 2.56-1.31z"/></svg>
-                Sign in with Apple
-            </button>
-
-            <div class="divider">or</div>
-            <div>
-                <a href="#" class="register-link" onclick="quickLogin()">No account? Register / Giriş Yap</a>
-            </div>
-        </div>
+<div class="container">
+    <h1>💼 TICARISK SIMÜLATÖRÜ</h1>
+    
+    <div class="dashboard">
+        <div class="stat-box">Ay: <div class="stat-value" id="month">1</div></div>
+        <div class="stat-box">Kasa: <div class="stat-value" id="cash">500.000 TL</div></div>
+        <div class="stat-box">Çelik Depo: <div class="stat-value" id="inventory">0 Birim</div></div>
+        <div class="stat-box">Tır Sayısı: <div class="stat-value" id="trucks">0</div></div>
     </div>
 
-    <!-- OYUN ARAYÜZÜ (Ticarisk Menü ve Sistemleri) -->
-    <div id="game-app">
-        <div class="top-navbar">
-            <div class="brand-title">🌐 Ticarisk Trading Hub</div>
-            <div class="user-panel-info">
-                <div class="info-pill">
-                    <span>Toplam Bütçe</span>
-                    <strong id="ui-money">₺10,000,000</strong>
-                </div>
-                <div class="info-pill">
-                    <span>Şirket Değeri</span>
-                    <strong id="ui-networth">₺10,000,000</strong>
-                </div>
-                <div class="info-pill">
-                    <span>Seviye / Ünvan</span>
-                    <strong style="color:var(--accent-orange)">Tüccar Baron</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="main-workspace">
-            <div class="left-sidebar">
-                <button class="menu-tab active" onclick="switchTab('market')">📈 Emtea ve Borsa</button>
-                <button class="menu-tab" onclick="switchTab('factories')">🏭 Üretim Tesisleri</button>
-                <button class="menu-tab" onclick="switchTab('logistics')">🚚 Lojistik Filosu</button>
-                <button class="menu-tab" onclick="switchTab('rankings')">👑 Küresel Sıralama</button>
-            </div>
-
-            <div class="content-container">
-                <!-- 1. PİYASA SEKMESİ -->
-                <div id="tab-market" class="tab-pane active">
-                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Küresel Piyasa Ürünleri</h2>
-                    <div class="grid-layout">
-                        <div class="ticarisk-card">
-                            <h3>Lüks Segment Otomobil</h3>
-                            <p>Anlık Fiyat: ₺1,850,000<br>Talep: Yüksek</p>
-                            <button class="btn-action" onclick="buyTradeItem('Otomobil', 1850000)">Portföye Ekle</button>
-                        </div>
-                        <div class="ticarisk-card">
-                            <h3>Yüksek Kalite Çelik</h3>
-                            <p>Anlık Fiyat: ₺420,000<br>Talep: Kararlı</p>
-                            <button class="btn-action" onclick="buyTradeItem('Çelik', 420000)">Hammadde Al</button>
-                        </div>
-                        <div class="ticarisk-card">
-                            <h3>Yarı İletken Çip</h3>
-                            <p>Anlık Fiyat: ₺950,000<br>Talep: Kritik Artış</p>
-                            <button class="btn-action" onclick="buyTradeItem('Çip', 950000)">Yatırım Yap</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. FABRİKA SEKMESİ -->
-                <div id="tab-factories" class="tab-pane">
-                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Fabrika ve Tesis Yönetimi</h2>
-                    <div class="grid-layout">
-                        <div class="ticarisk-card">
-                            <h3>Montaj Fabrikası</h3>
-                            <p>Maliyet: ₺3,500,000<br>Getiri: Dakikada otomatik üretim geliri sağlar.</p>
-                            <button class="btn-action" onclick="buildFactory(3500000)">Fabrika Kur</button>
-                        </div>
-                        <div class="ticarisk-card">
-                            <h3>Metal İşleme Tesisi</h3>
-                            <p>Maliyet: ₺2,000,000<br>Getiri: Sürekli hammadde ticareti akışı.</p>
-                            <button class="btn-action" onclick="buildFactory(2000000)">Tesis Kur</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. LOJİSTİK SEKMESİ -->
-                <div id="tab-logistics" class="tab-pane">
-                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Lojistik Ağı ve Tır Filosu</h2>
-                    <div class="grid-layout">
-                        <div class="ticarisk-card">
-                            <h3>Uluslararası Tır Filosu</h3>
-                            <p>Maliyet: ₺1,200,000<br>Getiri: Düzenli nakliye pasif geliri.</p>
-                            <button class="btn-action" onclick="buyTruck(1200000)">Tır Filosunu Genişlet</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. SIRALAMA SEKMESİ -->
-                <div id="tab-rankings" class="tab-pane">
-                    <h2 style="margin-bottom: 15px; font-size: 18px; color: var(--accent-orange);">Ticarisk Küresel Baronlar Listesi</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Sıra</th>
-                                <th>Şirket Adı</th>
-                                <th>Varlık Değeri</th>
-                                <th>Unvan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><strong>Bayram Holding (Sen)</strong></td>
-                                <td id="rank-net">₺10,000,000</td>
-                                <td><span style="color:var(--accent-orange)">Küresel Baron</span></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Anadolu Global Ticaret</td>
-                                <td>₺24,500,000</td>
-                                <td>Sektör Lideri</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Nexus Lojistik A.Ş.</td>
-                                <td>₺16,800,000</td>
-                                <td>Yatırımcı</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div class="market-panel">
+        <h2>📈 Piyasa Fiyatları</h2>
+        <p>Çelik Alış/Satış Fiyatı: <strong id="steel-price" style="color:#00e676">100 TL</strong> / Birim</p>
     </div>
 
-    <script>
-        const state = {
-            money: 10000000,
-            factoryCount: 0,
-            passiveIncome: 0
-        };
+    <div class="actions-panel">
+        <h2>🕹️ Hamleler</h2>
+        <button onclick="buySteel()">100 Birim Çelik Al (10.000 TL)</button>
+        <button onclick="sellSteel()">100 Birim Çelik Sat</button>
+        <button onclick="buyTruck()">Lojistik Tırı Al (200.000 TL)</button>
+        <button class="btn-danger" onclick="nextMonth()">Aylık Turu Bitir ➔</button>
+    </div>
 
-        function quickLogin() {
-            document.getElementById('auth-overlay').style.display = 'none';
-            document.getElementById('game-app').style.display = 'flex';
-            setInterval(runPassiveLoop, 8000);
+    <h2>📜 Bildirimler & Olaylar</h2>
+    <div id="log-area">Piyasaya hoş geldin! İlk hamleni seç...</div>
+</div>
+
+<script>
+    let cash = 500000;
+    let month = 1;
+    let inventory = 0;
+    let trucks = 0;
+    let steelPrice = 100;
+
+    function updateUI() {
+        document.getElementById('cash').innerText = cash.toLocaleString() + ' TL';
+        document.getElementById('month').innerText = month;
+        document.getElementById('inventory').innerText = inventory + ' Birim';
+        document.getElementById('trucks').innerText = trucks;
+        document.getElementById('steel-price').innerText = steelPrice + ' TL';
+    }
+
+    function log(msg) {
+        const logArea = document.getElementById('log-area');
+        logArea.innerHTML = `> Ay ${month}: ${msg}<br>` + logArea.innerHTML;
+    }
+
+    function buySteel() {
+        let cost = steelPrice * 100;
+        if (cash >= cost) {
+            cash -= cost;
+            inventory += 100;
+            log(`100 birim Çelik alındı (${cost.toLocaleString()} TL).`);
+            updateUI();
+        } else {
+            alert('Kasalarda yeterli para yok!');
+        }
+    }
+
+    function sellSteel() {
+        if (inventory >= 100) {
+            let revenue = steelPrice * 100;
+            cash += revenue;
+            inventory -= 100;
+            log(`100 birim Çelik satıldı (${revenue.toLocaleString()} TL).`);
+            updateUI();
+        } else {
+            alert('Depoda yeterli çelik yok!');
+        }
+    }
+
+    function buyTruck() {
+        if (cash >= 200000) {
+            cash -= 200000;
+            trucks += 1;
+            log('1 adet Lojistik Tırı satın alındı!');
+            updateUI();
+        } else {
+            alert('Tır almak için 200.000 TL gerekiyor!');
+        }
+    }
+
+    function nextMonth() {
+        month++;
+        
+        // Sabit Giderler
+        let expense = 15000;
+        cash -= expense;
+
+        // Tır Gelirleri
+        let truckIncome = trucks * 30000;
+        cash += truckIncome;
+
+        // Fiyat Dalgalanması (%-30 ile %+40 arası)
+        let changePercent = (Math.random() * 0.7) - 0.3;
+        steelPrice = Math.max(30, Math.round(steelPrice * (1 + changePercent)));
+
+        log(`Ay tamamlandı. Sabit gider: -15.000 TL | Tır Geliri: +${truckIncome.toLocaleString()} TL | Yeni Çelik Fiyatı: ${steelPrice} TL`);
+        
+        if (cash < 0) {
+            alert('İflas ettin! Oyunu baştan başlatıyoruz.');
+            location.reload();
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.menu-tab').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
+        updateUI();
+    }
+</script>
 
-        function updateUI() {
-            document.getElementById('ui-money').innerText = '₺' + state.money.toLocaleString();
-            let net = state.money + (state.factoryCount * 2500000);
-            document.getElementById('ui-networth').innerText = '₺' + net.toLocaleString();
-            document.getElementById('rank-net').innerText = '₺' + net.toLocaleString();
-        }
-
-        function buyTradeItem(name, price) {
-            if (state.money >= price) {
-                state.money -= price;
-                updateUI();
-                alert(name + ' başarıyla portföye eklendi ve işlem gerçekleşti!');
-            } else {
-                alert('Yetersiz bütçe!');
-            }
-        }
-
-        function buildFactory(cost) {
-            if (state.money >= cost) {
-                state.money -= cost;
-                state.factoryCount++;
-                state.passiveIncome += 180000;
-                updateUI();
-                alert('Fabrika kuruldu! Düzenli ticaret pasif geliri başlatıldı.');
-            } else {
-                alert('Yetersiz bütçe!');
-            }
-        }
-
-        function buyTruck(cost) {
-            if (state.money >= cost) {
-                state.money -= cost;
-                state.passiveIncome += 75000;
-                updateUI();
-                alert('Tır filoya dahil edildi!');
-            } else {
-                alert('Yetersiz bütçe!');
-            }
-        }
-
-        function runPassiveLoop() {
-            if (state.passiveIncome > 0) {
-                state.money += state.passiveIncome;
-                updateUI();
-            }
-        }
-    </script>
 </body>
 </html>
